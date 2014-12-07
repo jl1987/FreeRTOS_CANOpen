@@ -45,9 +45,9 @@
 	#define LED1 			GPIO_Pin_5
 	#define LED2   		GPIO_Pin_6
 	#define LED3  		GPIO_Pin_7
-	#define LED_GREEN GPIO_Pin_5
-	#define LED_RED   GPIO_Pin_6
-	#define LED_BLUE  GPIO_Pin_7
+	#define LED_GREEN LED1
+	#define LED_RED   LED2
+	#define LED_BLUE  LED3
 #endif
 
 void bsp_InitLed(void);

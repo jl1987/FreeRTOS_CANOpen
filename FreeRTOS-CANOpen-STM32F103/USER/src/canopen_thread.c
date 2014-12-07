@@ -54,8 +54,6 @@
 /* TEST */
 #include "bsp_led.h"
 
-#include "stm32f10x_can.h"
-#include "stm32f10x_rcc.h"
 
 #include "ObjDict_CAN1.h"
 #include "ObjDict_CAN2.h"
@@ -88,10 +86,11 @@ static void canopen_dataprocess_thread(void * pvParameters)
   /* 得到BSP的ID号，这里应为NodeID */
   setNodeId (&ObjDict_CAN1_Data, LIFTER_ID);
 	
-	CO_D.CO_CAN2 = &ObjDict_CAN1_Data;
+	CO_D.CO_CAN1 = &ObjDict_CAN1_Data;
+	CO_D.CO_CAN1->canHandle = CAN1;  //Config CANOpen Port CAN1
   printf("CANOpen OD Get The Lifer NodeID...\r\n");
 
-  ret_canInit = canInit(CAN2,CAN_BAUD_1M);
+  ret_canInit = canInit(CAN1,CAN_BAUD_1M);
 	
   if(ret_canInit)
   {
@@ -166,10 +165,10 @@ static void canopen_dataprocess_thread(void * pvParameters)
 			printf("\r\n");
       
       /* 判断是CAN1还是CAN2接收到并与访问对象字典 */
-		  if((NULL != CO_D.CO_CAN2) && (1 == CAN_Rx_m.CANx))       /*Data From CAN1*/
+		  if((NULL != CO_D.CO_CAN1) && (1 == CAN_Rx_m.CANx))       /*Data From CAN1*/
 		  {
         /*Handle The Data Receive, 此处和对象字典进行交互*/
-		  	canDispatch(CO_D.CO_CAN2, &RxMSG); 
+		  	canDispatch(CO_D.CO_CAN1, &RxMSG); 
 		  }
 		  else if((NULL != CO_D.CO_CAN2) && (2 == CAN_Rx_m.CANx))  /*Data From CAN2*/
 		  {

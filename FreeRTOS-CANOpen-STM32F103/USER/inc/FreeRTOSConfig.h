@@ -127,7 +127,7 @@
 #define configMINIMAL_STACK_SIZE		( ( unsigned short ) 128 )
 
 /* 系统可用内存。一般设成除操作系统和程序所用RAM外的最大RAM。如20KRAM个人用2K，系统用3K，剩15即最大HEAP 。可以先设小然后看编译结果往大里加*/
-#define configTOTAL_HEAP_SIZE			( ( size_t ) ( 10 * 1024 ) )
+#define configTOTAL_HEAP_SIZE			( ( size_t ) ( 15 * 1024 ) )
 
 /* 任务的PC名字最大长度，因函数名编译完后就不见，故追踪时不知道哪个名字。10表示10个char */
 #define configMAX_TASK_NAME_LEN			( 10 )

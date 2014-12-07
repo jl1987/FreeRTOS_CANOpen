@@ -29,9 +29,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "data.h"
 // #include "objdict/ObjDict_CAN1.h"  //使用绝对路径的时候编译不成功，改为下面的“文件名.h”后正常，傻逼
 // #include "objdict/ObjDict_CAN2.h"  //使用绝对路径的时候编译不成功，改为下面的“文件名.h”后正常，傻逼
-// #include "ObjDict_CAN1.h"
-// #include "ObjDict_CAN2.h"
-#include "LIFTER_OD.h"
+#include "ObjDict_CAN1.h"
+#include "ObjDict_CAN2.h"
+
 
 //#define DEBUG_WAR_CONSOLE_ON  //测试原装DEBUG是否可用
 

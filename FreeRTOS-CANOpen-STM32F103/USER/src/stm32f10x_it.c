@@ -26,8 +26,30 @@
 #include "ObjDict_CAN2.h"
 //#include "globalstruct.h"
 
+extern xQueueHandle xQ_CAN_MSG;
+CO_DATA_STRUCT  CO_D_TEST = {NULL,NULL};  //test
+
 void NMI_Handler(void)
 {
+	/* This interrupt is generated when HSE clock fails */
+	if (RCC_GetITStatus(RCC_IT_CSS) != RESET)
+	{
+		/* At this stage: HSE, PLL are disabled (but no change on PLL config) and HSI
+		is selected as system clock source */
+
+		/* Enable HSE */
+		RCC_HSEConfig(RCC_HSE_ON);
+
+		/* Enable HSE Ready and PLL Ready interrupts */
+		RCC_ITConfig(RCC_IT_HSERDY | RCC_IT_PLLRDY, ENABLE);
+
+		/* Clear Clock Security System interrupt pending bit */
+		RCC_ClearITPendingBit(RCC_IT_CSS);
+
+		/* Once HSE clock recover, the HSERDY interrupt is generated and in the RCC ISR
+		routine the system clock will be reconfigured to its previous state (before
+		HSE clock failure) */
+	}
 }
 void HardFault_Handler(void)
 {
@@ -75,6 +97,67 @@ void DebugMon_Handler(void)
 //  
 // }
 /*****************************************************************************/
+void USART1_IRQHandler(void)
+{ 
+  uint8_t RX_dat; 
+	CanTxMsg USART2CAN;
+  
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+  {	
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+		
+		RX_dat =USART_ReceiveData(USART1);
+		
+		printf("USART1 Recevie Data: %x ",RX_dat);
+				
+		if(RX_dat == 0x01)
+		{
+			printf("Send a SDO Message: \r\n");
+			
+			USART2CAN.StdId = 0x206;
+			USART2CAN.ExtId = 0x00;
+			/* 是否远程帧 */
+			USART2CAN.RTR = 0x00;
+			/* CAN 2.0A 若用B需更改 */
+			USART2CAN.IDE = CAN_ID_STD;
+			/* 数据长度 */
+			USART2CAN.DLC = 1;
+			/* 为数据赋值 */                 
+
+			USART2CAN.Data[0] = 0xFF;
+
+			CAN_Transmit(CAN1, &USART2CAN);
+			
+		}
+		else if(RX_dat == 0x02)
+		{
+			printf("Send a PDO Message: \r\n");
+			
+			USART2CAN.StdId = 0x206;
+			USART2CAN.ExtId = 0x00;
+			/* 是否远程帧 */
+			USART2CAN.RTR = 0x00;
+			/* CAN 2.0A 若用B需更改 */
+			USART2CAN.IDE = CAN_ID_STD;
+			/* 数据长度 */
+			USART2CAN.DLC = 1;
+			/* 为数据赋值 */                 
+
+			USART2CAN.Data[0] = 0xEE;
+
+			CAN_Transmit(CAN1, &USART2CAN);
+		}else{
+			printf("Nothing Send \r\n");
+		}
+		
+		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE)==RESET);
+		{
+		  //USART_ClearFlag(USART1,USART_FLAG_RXNE);
+		}
+  }	
+}
+
+/*****************************************************************************/
 void USART2_IRQHandler(void)
 {
 		
@@ -83,7 +166,62 @@ void USART2_IRQHandler(void)
 
 void USART3_IRQHandler(void)
 { 
- 
+  	uint8_t RX_dat; 
+	CanTxMsg USART2CAN;
+  
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+  {	
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+		
+		RX_dat =USART_ReceiveData(USART1);
+		
+		printf("USART1 Recevie Data: %x ",RX_dat);
+				
+		if(RX_dat == 0x01)
+		{
+			printf("Send a SDO Message: \r\n");
+			
+			USART2CAN.StdId = 0x206;
+			USART2CAN.ExtId = 0x00;
+			/* 是否远程帧 */
+			USART2CAN.RTR = 0x00;
+			/* CAN 2.0A 若用B需更改 */
+			USART2CAN.IDE = CAN_ID_STD;
+			/* 数据长度 */
+			USART2CAN.DLC = 1;
+			/* 为数据赋值 */                 
+
+			USART2CAN.Data[0] = 0xFF;
+
+			CAN_Transmit(CAN1, &USART2CAN);
+			
+		}
+		else if(RX_dat == 0x02)
+		{
+			printf("Send a PDO Message: \r\n");
+			
+			USART2CAN.StdId = 0x206;
+			USART2CAN.ExtId = 0x00;
+			/* 是否远程帧 */
+			USART2CAN.RTR = 0x00;
+			/* CAN 2.0A 若用B需更改 */
+			USART2CAN.IDE = CAN_ID_STD;
+			/* 数据长度 */
+			USART2CAN.DLC = 1;
+			/* 为数据赋值 */                 
+
+			USART2CAN.Data[0] = 0xEE;
+
+			CAN_Transmit(CAN1, &USART2CAN);
+		}else{
+			printf("Nothing Send \r\n");
+		}
+		
+		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE)==RESET);
+		{
+		  //USART_ClearFlag(USART1,USART_FLAG_RXNE);
+		}
+  }	
 }
 /*****************************************************************************/
 void DMA1_Channel7_IRQHandler(void)	//TX
@@ -103,10 +241,6 @@ void DMA1_Channel4_IRQHandler(void)
 	 DMA_Cmd(DMA1_Channel4, ENABLE);*/
 }
 
-void USART1_IRQHandler(void)
-{
- 	
-}
 
 void DMA1_Channel5_IRQHandler(void)
 {
@@ -115,9 +249,50 @@ void DMA1_Channel5_IRQHandler(void)
 }
 
 
-
+ /**
+  * CAN1接收中断处理函数
+  * @brief  
+  *         在通常的处理中，CAN中断中只需调用ST库函数中的CAN接收处理函数CAN_Receive()
+  *         和CANOpen中的CAN接收函数canDispatch(&object_data,&m)即可.
+  *         
+  *         在本程序中，CAN信息被存储在队列xQ_CAN_MSG中(队列可存储20个完整CAN2.0A信息)
+  *         所以，在CANx_RX0_IQRHandler中仅仅是将接收到的数据从CAN_FIFO0中取出，传输至
+  *         xQ_CAN_MSG中，整个处理流程应为：
+  *         
+  *         定义CAN接收变量->失能CAN中断->接收CAN总线数据->将接收到数据push到队列中->
+  *         退出临界区->让出CPU占用->清除挂起中断->使能CAN中断
+  *         
+  * @param  None
+  * @retval None
+  */
 void USB_LP_CAN1_RX0_IRQHandler(void)
 {
+	CANOpen_Message CAN1_Rx_m;
+
+	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;     //中断中唤醒新任务
+
+	printf("ENTER CAN1 RX0 IRQHandler... \r\n");
+
+	taskENTER_CRITICAL();                                  //进入中断
+
+	CAN_Receive(CAN1, CAN_FIFO0, &(CAN1_Rx_m.m));	    //从CAN1 FIFO0接收数据
+
+	CAN1_Rx_m.CANx = 1;
+
+	if(NULL != xQ_CAN_MSG)         // 向队列发送数据包
+	{
+		xQueueSendFromISR(xQ_CAN_MSG, &CAN1_Rx_m, &xHigherPriorityTaskWoken);
+	}
+	
+	taskEXIT_CRITICAL();
+	
+	if( xHigherPriorityTaskWoken != pdFALSE )
+	{
+		portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );           //强制上下文切换
+	}  
+
+	
+	
 // 	u8 n;
 // 	CanTxMsg TXMSG;
 // 	
@@ -257,26 +432,26 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 
 void TIM2_IRQHandler(void)
 {
-	if (TIM2->SR&0x0001)
-	{	
-		GPIO_SetBits(GPIOA, GPIO_Pin_0);  //Work LED
-		
-// 		if (GPIO_ReadInputDataBit(POWER_DET_PORT,POWER_DET_PIN)== 0)
-// 		{
-// 			if (TimerFlag.BQZ < 3)
-// 			{
-// 				CanSendDataShun[0] = 0x12;
-// 				CanSendDataShun[0] = 0x01;
-// 				CanSend(CAN1,0x057,0,CAN_ID_STD,CAN_RTR_DATA,2,CanSendDataShun);
-// 			}
-// 			
-// 			TimerFlag.BQZ++;  //Counter for WIFI Block Shut down
-// 			//USART_SendData(USART1,TimerFlag.BQZ);
-// 		}
+// 	if (TIM2->SR&0x0001)
+// 	{	
+// 		GPIO_SetBits(GPIOA, GPIO_Pin_0);  //Work LED
 // 		
-//		Robot_task();
-	}
-	TIM2->SR&=~(1<<0);
+// // 		if (GPIO_ReadInputDataBit(POWER_DET_PORT,POWER_DET_PIN)== 0)
+// // 		{
+// // 			if (TimerFlag.BQZ < 3)
+// // 			{
+// // 				CanSendDataShun[0] = 0x12;
+// // 				CanSendDataShun[0] = 0x01;
+// // 				CanSend(CAN1,0x057,0,CAN_ID_STD,CAN_RTR_DATA,2,CanSendDataShun);
+// // 			}
+// // 			
+// // 			TimerFlag.BQZ++;  //Counter for WIFI Block Shut down
+// // 			//USART_SendData(USART1,TimerFlag.BQZ);
+// // 		}
+// // 		
+// //		Robot_task();
+// 	}
+// 	TIM2->SR&=~(1<<0);
 }
 
 /**********************************************************************/

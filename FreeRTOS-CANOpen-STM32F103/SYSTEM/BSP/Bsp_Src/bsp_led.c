@@ -41,26 +41,24 @@ void bsp_InitLed(void)
 #ifdef ARM_LIFTER
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 #endif
-
-	bsp_LedOff(1);
-	bsp_LedOff(2);
-	bsp_LedOff(3);
 	
 	GPIO_InitStructure.GPIO_Pin = LED1|LED2|LED3;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(LEDPORT, &GPIO_InitStructure);
+	
+	bsp_LedOff(1);
+	bsp_LedOff(2);
+	bsp_LedOff(3);
 }
 
 
 /**
  * Turn LED On Function
- * @param _no LED Number: 1 - 4
+ * @param _no LED Number: 1 - 3
  */
 void bsp_LedOn(uint8_t _no)
 {
-	_no--;
-
 	if (_no == 1)
 	{
 		GPIO_WriteBit(LEDPORT, LED1, Bit_RESET);
@@ -73,7 +71,6 @@ void bsp_LedOn(uint8_t _no)
 	{
 		GPIO_WriteBit(LEDPORT, LED3, Bit_RESET);
 	}
-
 }
 
 /**
@@ -82,8 +79,6 @@ void bsp_LedOn(uint8_t _no)
  */
 void bsp_LedOff(uint8_t _no)
 {
-	_no--;
-
 	if (_no == 1)
 	{
 		GPIO_WriteBit(LEDPORT, LED1, Bit_SET);

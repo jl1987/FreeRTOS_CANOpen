@@ -296,7 +296,7 @@ struct struct_CO_Data {
 	\
 	/* General */\
 	0,                                         /* toggle */\
-	CAN2,                   /* canSend NULL original-test jim*/\
+	NULL,                   /* canSend NULL original-test jim*/\
 	NODE_PREFIX ## _scanIndexOD,                /* scanIndexOD */\
 	_storeODSubIndex,                /* storeODSubIndex */\
     /* DCF concise */\

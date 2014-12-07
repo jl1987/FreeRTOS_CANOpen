@@ -115,13 +115,25 @@ unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate)
 	//   CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
 	//   CAN_FilterInit(&CAN_FilterInitStructure);			
 		/* Only Recive CAN Message of 0x015 & 0x035  */
+// 		CAN_FilterInitStructure.CAN_FilterNumber     = 0;                     //0~13
+// 		CAN_FilterInitStructure.CAN_FilterMode       = CAN_FilterMode_IdMask; //ID MASK MODE
+// 		CAN_FilterInitStructure.CAN_FilterScale      = CAN_FilterScale_32bit; //Filter Scale 32bit
+// 		CAN_FilterInitStructure.CAN_FilterIdHigh     = (((u32)0x015<<21)&0xFFFF0000)>>16;
+// 		CAN_FilterInitStructure.CAN_FilterIdLow      = (((u32)0x015<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xFFFF;
+// 		CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x01EF;  //  FxR1: xxxx xxx0 101x xxxx xxxx xxxx xxxx x00x
+// 		CAN_FilterInitStructure.CAN_FilterMaskIdLow  = 0xFFFF;  //  FxR2: 0000 0001 1110 0000 0000 0000 0000 0110
+// 		CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_FIFO0;
+// 		CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
+// 		CAN_FilterInit(&CAN_FilterInitStructure);	
+
+		/* Recive Everything */
 		CAN_FilterInitStructure.CAN_FilterNumber     = 0;                     //0~13
 		CAN_FilterInitStructure.CAN_FilterMode       = CAN_FilterMode_IdMask; //ID MASK MODE
 		CAN_FilterInitStructure.CAN_FilterScale      = CAN_FilterScale_32bit; //Filter Scale 32bit
-		CAN_FilterInitStructure.CAN_FilterIdHigh     = (((u32)0x015<<21)&0xFFFF0000)>>16;
-		CAN_FilterInitStructure.CAN_FilterIdLow      = (((u32)0x015<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xFFFF;
-		CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x01EF;  //  FxR1: xxxx xxx0 101x xxxx xxxx xxxx xxxx x00x
-		CAN_FilterInitStructure.CAN_FilterMaskIdLow  = 0xFFFF;  //  FxR2: 0000 0001 1110 0000 0000 0000 0000 0110
+		CAN_FilterInitStructure.CAN_FilterIdHigh     = 0x0000;
+		CAN_FilterInitStructure.CAN_FilterIdLow      = 0x0000;
+		CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x0000;  //  FxR1: xxxx xxx0 101x xxxx xxxx xxxx xxxx x00x
+		CAN_FilterInitStructure.CAN_FilterMaskIdLow  = 0x0000;  //  FxR2: 0000 0001 1110 0000 0000 0000 0000 0110
 		CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_FIFO0;
 		CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
 		CAN_FilterInit(&CAN_FilterInitStructure);	
@@ -180,13 +192,25 @@ unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate)
 	//   CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
 	//   CAN_FilterInit(&CAN_FilterInitStructure);			
 		/* Only Recive CAN Message of 0x015 & 0x035  */
+// 		CAN_FilterInitStructure.CAN_FilterNumber     = 0;                     //0~13
+// 		CAN_FilterInitStructure.CAN_FilterMode       = CAN_FilterMode_IdMask; //ID MASK MODE
+// 		CAN_FilterInitStructure.CAN_FilterScale      = CAN_FilterScale_32bit; //Filter Scale 32bit
+// 		CAN_FilterInitStructure.CAN_FilterIdHigh     = (((u32)0x015<<21)&0xFFFF0000)>>16;
+// 		CAN_FilterInitStructure.CAN_FilterIdLow      = (((u32)0x015<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xFFFF;
+// 		CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x01EF;  //  FxR1: xxxx xxx0 101x xxxx xxxx xxxx xxxx x00x
+// 		CAN_FilterInitStructure.CAN_FilterMaskIdLow  = 0xFFFF;  //  FxR2: 0000 0001 1110 0000 0000 0000 0000 0110
+// 		CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_FIFO0;
+// 		CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
+// 		CAN_FilterInit(&CAN_FilterInitStructure);	
+
+		/* Recive Everything */
 		CAN_FilterInitStructure.CAN_FilterNumber     = 0;                     //0~13
 		CAN_FilterInitStructure.CAN_FilterMode       = CAN_FilterMode_IdMask; //ID MASK MODE
 		CAN_FilterInitStructure.CAN_FilterScale      = CAN_FilterScale_32bit; //Filter Scale 32bit
-		CAN_FilterInitStructure.CAN_FilterIdHigh     = (((u32)0x015<<21)&0xFFFF0000)>>16;
-		CAN_FilterInitStructure.CAN_FilterIdLow      = (((u32)0x015<<21)|CAN_ID_STD|CAN_RTR_DATA)&0xFFFF;
-		CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x01EF;  //  FxR1: xxxx xxx0 101x xxxx xxxx xxxx xxxx x00x
-		CAN_FilterInitStructure.CAN_FilterMaskIdLow  = 0xFFFF;  //  FxR2: 0000 0001 1110 0000 0000 0000 0000 0110
+		CAN_FilterInitStructure.CAN_FilterIdHigh     = 0x0000;
+		CAN_FilterInitStructure.CAN_FilterIdLow      = 0x0000;
+		CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x0000;  //  FxR1: xxxx xxx0 101x xxxx xxxx xxxx xxxx x00x
+		CAN_FilterInitStructure.CAN_FilterMaskIdLow  = 0x0000;  //  FxR2: 0000 0001 1110 0000 0000 0000 0000 0110
 		CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_FIFO0;
 		CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
 		CAN_FilterInit(&CAN_FilterInitStructure);	
