@@ -4,23 +4,23 @@ This is a demo program provide a develop platform for Robot Control under STM32F
 
 **System and software i'm using now:**
 <pre>
-Desktop OS: Windows 8.1 Professional  
+Desktop OS: Windows 8.1 Professional x64 / Windows 7 Professional x86  
 IDE:        Keil uVision V4.54.0.0
 Toolchain:  MDK-ARM Standard Version-4.54.0.0
 ------------------------------------------------
 CANOpen:        V3.0
 FreeRTOS:       V8.0.1
-STM Lib Driver: FwLib V1.0.2
+STM Lib Driver: STM32F10x_StdPeriph_Driver
 </pre> 
 
 **File Organization:**  
 <pre>
 USER:     main.c, interrupt and debug function;  
 BSP:      Borad surport packet file like bsp_led;
-Robot_Control: Robot control files, one main feature one file, e.g canopen_thread.c and lifter_control.c;
+R..ntrol: Robot control files, one main feature one file, e.g canopen_thread.c and lifter_control.c;
 CMSIS:    system_stm32f4xx.c, chip configuration especially system clock;  
 MDK-ARM:  startup_stm32f4xx.s NVIC vector table，memeory allocation;    
-FwLib:    STM32F103 firmware files;   
+S..Driver:STM32F103 firmware files;   
 FreeRTOS: FreeRTOS system files;   
 CANOpen:  CAN Festival files include drivers for STM32;  
 Objdict:  CANOpen Object Dictionary;  
@@ -31,22 +31,15 @@ Doc:      Readme and documentation;
 In order to easily test program in different board, in file `main.h`, there is a few configurations to make.
 <pre>
 #define SERIAL_DEBUG_ON  //when defined you can use printf() to serial output 
-#define ARM_CSST         //ARM_CSST means the ARM board we use on the Robot
-//#define ARM_ORIGINAL   //ARM_ORIGINAL means the development board(the ST development board with joystick)
+#define ARM_BMS         //ARM_BMS means the ARM board we use on BMS
+//#define ARM_LIFTER    //ARM_ORIGINAL means ARM board we use on LIFTER
 </pre>
-
-<table>
-<tbody>
-<tr><td><em>HHHH</em></td><td><em>JJJJ</em></td><td><em>KKKK</em></td></tr>
-<tr><td>hhhh</td><td>jjjj</td><td>kkkk</td></tr>
-<tr><td>hhhh</td><td>jjjj</td><td>kkkk</td></tr>
-<tr><td>hhhh</td><td>jjjj</td><td>kkkk</td></tr>
-</tbody>
-</table>
 
 ##Start##
 
-The project startup file for Keil is in .../PROJ/Project.uvproj. Double click to start this program. Eclipse ARM GNU support will be added later.
+The project startup file for Keil is in the root folder named 'Start.uvproj'. Double click to start this program. Eclipse ARM GNU support will be added later.  
+
+You can also find the Project.uvproj in folder: .../PROJ/
 
 ###CANOpen###
 The CANOpen communication function is developed based on canfestival(version 3), and all support files are contained in folder `CANOpen`.
@@ -80,6 +73,8 @@ When ARM get a CAN message: First of all, the system run into IRQ, in the IRQ th
 to dispatch the message with Object Dictionary.
 
 All you have to do is include the right object dictionary `.h` file at the top of the file `canopen_thread.c` and `stm32f4xx_it.c`. In this demo program, we use `LIFTER_OD`
+
+Notice: Because STM32F103C8T6 has one CAN only, you'll see that in can driver file `can_STM32.c`, the codes below `switch()` function, which is used to switch CAN1 and CAN2, are the same. 
 
 Notice: You can find explanaton about the other function in the comments. There are a lot of detailed descriptions.
 
