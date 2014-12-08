@@ -710,6 +710,11 @@
               <FileType>1</FileType>
               <FilePath>..\UTILITIES\CanFestival-3\objdict\ObjDict_CAN2.c</FilePath>
             </File>
+            <File>
+              <FileName>LIFTER_OD.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\UTILITIES\CanFestival-3\objdict\LIFTER_OD.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

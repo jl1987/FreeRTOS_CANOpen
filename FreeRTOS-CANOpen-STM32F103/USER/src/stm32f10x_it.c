@@ -24,6 +24,7 @@
 #include "canopen_thread.h"  //test
 #include "ObjDict_CAN1.h"
 #include "ObjDict_CAN2.h"
+#include "LIFTER_OD.h"
 //#include "globalstruct.h"
 
 extern xQueueHandle xQ_CAN_MSG;
