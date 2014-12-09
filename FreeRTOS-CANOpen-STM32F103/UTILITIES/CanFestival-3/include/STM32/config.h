@@ -9,6 +9,7 @@ STM32F407 Port: Jim
 #define _CONFIG_H_
 
 #include "stm32f10x.h"
+#include "main.h"
 
 
 #define WD_SLEEP
@@ -28,15 +29,29 @@ STM32F407 Port: Jim
 #define CAN_BAUD_125K  125
 #define CAN_BAUD_DEFAULT  CAN_BAUD_1M
 
+#ifdef ARM_BMS
+	#define CAN1_CLK                    RCC_APB1Periph_CAN1
+	#define CAN1_RX_PIN                 GPIO_Pin_11
+	#define CAN1_TX_PIN                 GPIO_Pin_12
+	#define CAN1_GPIO_PORT              GPIOA
+	#define CAN1_GPIO_CLK               RCC_APB2Periph_GPIOA
+	#define CAN1_AF_PORT                GPIO_AF_CAN1
+	#define CAN1_RX_SOURCE              GPIO_PinSource11
+	#define CAN1_TX_SOURCE              GPIO_PinSource12    
+#endif
 
-#define CAN1_CLK                    RCC_APB1Periph_CAN1
-#define CAN1_RX_PIN                 GPIO_Pin_11
-#define CAN1_TX_PIN                 GPIO_Pin_12
-#define CAN1_GPIO_PORT              GPIOA
-#define CAN1_GPIO_CLK               RCC_APB2Periph_GPIOA
-#define CAN1_AF_PORT                GPIO_AF_CAN1
-#define CAN1_RX_SOURCE              GPIO_PinSource11
-#define CAN1_TX_SOURCE              GPIO_PinSource12      
+#ifdef ARM_LIFTER
+	#define CAN1_CLK                    RCC_APB1Periph_CAN1
+	#define CAN1_RX_PIN                 GPIO_Pin_8
+	#define CAN1_TX_PIN                 GPIO_Pin_9
+	#define CAN1_GPIO_PORT              GPIOB
+	#define CAN1_GPIO_CLK               RCC_APB2Periph_GPIOB
+	#define CAN1_AF_PORT                GPIO_AF_CAN1
+	#define CAN1_RX_SOURCE              GPIO_PinSource8
+	#define CAN1_TX_SOURCE              GPIO_PinSource9    
+#endif
+
+
 
 
 // #define CAN_CLK                    RCC_APB1Periph_CAN2

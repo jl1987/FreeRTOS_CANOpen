@@ -73,6 +73,9 @@ unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate)
 		/* GPIO configuration ********************************************************/ 
 		/* Enable GPIO clock */
 		RCC_APB2PeriphClockCmd(CAN1_GPIO_CLK, ENABLE);
+		#ifdef ARM_LIFTER
+			GPIO_PinRemapConfig(GPIO_Remap1_CAN1, ENABLE);
+		#endif
 		/* CAN RX PIN */
 		GPIO_InitStructure.GPIO_Pin  = CAN1_RX_PIN;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
@@ -150,6 +153,9 @@ unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate)
 		/* GPIO configuration ********************************************************/ 
 		/* Enable GPIO clock */
 		RCC_APB2PeriphClockCmd(CAN1_GPIO_CLK, ENABLE);
+		#ifdef ARM_LIFTER
+			GPIO_PinRemapConfig(GPIO_Remap1_CAN1, ENABLE);
+		#endif
 		/* CAN RX PIN */
 		GPIO_InitStructure.GPIO_Pin  = CAN1_RX_PIN;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;

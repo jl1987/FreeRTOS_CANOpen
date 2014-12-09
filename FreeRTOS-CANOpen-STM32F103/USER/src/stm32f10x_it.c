@@ -151,9 +151,9 @@ void USART1_IRQHandler(void)
 			printf("Nothing Send \r\n");
 		}
 		
-		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE)==RESET);
+		while(USART_GetFlagStatus(USART3, USART_FLAG_TC)==RESET);
 		{
-		  //USART_ClearFlag(USART1,USART_FLAG_RXNE);
+		  USART_ClearFlag(USART1,USART_FLAG_RXNE);
 		}
   }	
 }
@@ -167,14 +167,14 @@ void USART2_IRQHandler(void)
 
 void USART3_IRQHandler(void)
 { 
-  	uint8_t RX_dat; 
+  uint8_t RX_dat; 
 	CanTxMsg USART2CAN;
   
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
   {	
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
 		
-		RX_dat =USART_ReceiveData(USART1);
+		RX_dat =USART_ReceiveData(USART3);
 		
 		printf("USART1 Recevie Data: %x ",RX_dat);
 				
@@ -218,9 +218,9 @@ void USART3_IRQHandler(void)
 			printf("Nothing Send \r\n");
 		}
 		
-		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE)==RESET);
+		while(USART_GetFlagStatus(USART3, USART_FLAG_TC)==RESET);
 		{
-		  //USART_ClearFlag(USART1,USART_FLAG_RXNE);
+		  USART_ClearFlag(USART3,USART_FLAG_RXNE);
 		}
   }	
 }

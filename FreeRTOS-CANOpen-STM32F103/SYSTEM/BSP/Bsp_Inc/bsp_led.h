@@ -48,6 +48,15 @@
 	#define LED_GREEN LED1
 	#define LED_RED   LED2
 	#define LED_BLUE  LED3
+	#define GREEN_ON	bsp_LedOn(1)
+	#define RED_ON		bsp_LedOn(2)
+	#define BLUE_ON		bsp_LedOn(3)
+	#define GREEN_OFF	bsp_LedOff(1)
+	#define RED_OFF		bsp_LedOff(2)
+	#define BLUE_OFF	bsp_LedOff(3)
+	#define GREEN_Toggle	bsp_LedToggle(1,100)
+	#define RED_Toggle		bsp_LedToggle(2,100)
+	#define BLUE_Toggle		bsp_LedToggle(3,100)
 #endif
 
 void bsp_InitLed(void);
