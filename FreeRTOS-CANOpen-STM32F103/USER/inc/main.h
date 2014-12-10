@@ -19,7 +19,7 @@
    
 /* Enables retarget of printf to  serial port (USART1 on STM32407 board) for debug purpose */   
 #define SERIAL_DEBUG_ON
-#define ARM_BMS
+#define ARM_LIFTER
 //#define ARM_ORIGINAL
 
 /* Exported macro ------------------------------------------------------------*/
