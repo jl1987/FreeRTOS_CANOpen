@@ -28,6 +28,8 @@
 //#define POWERA_CONTROL_THREAD_PRIO 	(configMAX_PRIORITIES-8) 	//电源控制A(上身)  
 //#define POWERB_CONTROL_THREAD_PRIO 	(configMAX_PRIORITIES-9) 	//电源控制B(下身)
 
+#define SENSOR_THREAD_PRIO      (configMAX_PRIORITIES-3)  //Sensor Priority
+
 
 /* Stack SIZE Definition */
 #define CANOPEN_THREAD_STACK          500
@@ -39,6 +41,7 @@
 #define LIFTER_CONTROL_THREAD_STACK   1000
 #define POWERA_CONTROL_THREAD_STACK   500
 #define POWERB_CONTROL_THREAD_STACK   500
+#define SENSOR_THREAD_STACK   				500
 
 /*  Thread Delay Timer (if avilable) unit:ms */
 #define CANOpen_THREAD_DELAY_TIMER           20
@@ -50,6 +53,7 @@
 #define LIFTER_CONTROL_THREAD_DELAY_TIMER    20
 //#define POWERA_CONTROL_THREAD_DELAY_TIMER  20
 //#define POWERB_CONTROL_THREAD_DELAY_TIMER  20
+#define SENSOR_CONTROL_THREAD_DELAY_TIMER		 20
 
 /*  BSP_ID : NodeID used in CANOpen */
 //#define BMS_ID     0x02
