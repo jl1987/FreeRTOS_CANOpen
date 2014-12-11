@@ -435,6 +435,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\src\canopen_thread.c</FilePath>
             </File>
+            <File>
+              <FileName>sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\src\sensor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
