@@ -43,7 +43,14 @@ void bsp_InitLed(void)
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;/* 设为推挽模式 */
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; /* 上下拉电阻不使能 */
 	GPIO_Init(LEDPORT, &GPIO_InitStructure);
-	//GPIO_WriteBit(LEDPORT, LED1|LED2|LED3|LED4, Bit_SET);
+
+	#ifdef ARM_CSST
+	GPIO_WriteBit(LEDPORT, LED1|LED2|LED3|LED4, Bit_SET);
+	#endif
+	
+	#ifdef ARM_ORIGINAL
+	GPIO_WriteBit(LEDPORT, LED1|LED2|LED3|LED4, Bit_RESET);
+	#endif
 }
 
 #ifdef ARM_CSST
