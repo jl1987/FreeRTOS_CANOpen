@@ -242,6 +242,81 @@ void USART1_IRQHandler(void)
 		  //USART_ClearFlag(USART1,USART_FLAG_RXNE);
 		}
   }	
+	
+}
+
+void UART4_IRQHandler(void)                            //串口1中?
+{
+// 	int index_dump;
+// 	if (USART_GetFlagStatus(UART4, USART_FLAG_RXNE) != RESET)   //判??生接收中?
+// 	{
+// 		USART_ClearITPendingBit(UART4,   USART_IT_RXNE);       //清除中??志
+// 		if(lidar_init_ok_P==FALSE)
+// 		{
+// 			if(lidar_offset_count<=62)
+// 			{
+// 				lidar_offset_count++;
+// 			}
+// 			if(lidar_offset_count>56)
+// 			{
+// 				if(lidar_offset_count<=63)
+// 				{
+// 					lidar_message[lidar_offset_count-57] = USART_ReceiveData(UART4);
+// 					{
+// 						if(lidar_offset_count==63)
+// 						{
+// 							if(lidar_message[0] == 0xa5 && lidar_message[1] == 0x5a && lidar_message[2] == 0x05 && lidar_message[3] == 0x00 && 
+// 							lidar_message[4] == 0x00 && lidar_message[5] == 0x40 && lidar_message[6] == 0x81)
+// 							{
+// 								lidar_init_ok_P = true;
+// 								lidar_offset_count = 0;
+// 							}
+// 						}
+// 					}
+// 				}
+// 				
+// 			}
+// 		}
+// 		else
+// 		{
+// 		   
+// 		   	if(lidar_offset_count < 5)
+// 			{
+// 				lidar_message[lidar_offset_count] = USART_ReceiveData(UART4);
+// 				lidar_offset_count++;
+// 			}
+// 			if(lidar_offset_count == 5)
+// 			{	
+// 				lidar_offset_count = 0;
+// 				
+// 				index_dump = (lidar_message[2]*256+lidar_message[1])/128;
+// 				if(index_dump<360)
+// 				{
+// 					RP_Lidar_Buf[index_dump][0] = (lidar_message[4]*256+lidar_message[3])/40-20;
+// 					if(RP_Lidar_Buf[index_dump][0]<0)
+// 					{
+// 						RP_Lidar_Buf[index_dump][0]=300;
+// 					}
+// 					if(RP_Lidar_Buf[index_dump][0]>300)
+// 					{
+// 						RP_Lidar_Buf[index_dump][0]=300;
+// 					}
+
+// 					
+// 				//	USART_SendData(USART1, RP_Lidar_Buf[index_dump][0]);                                     //?送?据
+// 				//	while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET){}//等待?送?
+// 				}
+// 				
+// 			}	
+// 			  
+// 		
+// 		//	USART_SendData(USART1, USART_ReceiveData(UART4));                                     //?送?据
+// 		//	while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET){}//等待?送?束
+// 				
+// 		}
+// 		
+// 	}
+	
 }
 
 //#ifdef USE_CAN1

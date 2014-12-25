@@ -33,6 +33,10 @@
 #define DEBUG_USART_PORT  GPIOA
 #define DEBUG_USART_TX    GPIO_Pin_9
 #define DEBUG_USART_RX    GPIO_Pin_10
+
+u8 MSG_U1_R[256];
+u8 MSG_U1_T[256];
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #ifdef __GNUC__
@@ -57,10 +61,10 @@
 void DebugComPort_Init(void)
 {
   GPIO_InitTypeDef  GPIO_InitStructure;
-  /* init structure for usart */
   USART_InitTypeDef USART_InitStructure;
-  /* init structure for NVIC */
-  NVIC_InitTypeDef NVIC_InitStructure; 
+  NVIC_InitTypeDef 	NVIC_InitStructure; 
+	DMA_InitTypeDef 	DMA_InitStruct;
+	
   /* Clock For Debug GPIOA */
   RCC_AHB1PeriphClockCmd(RCC_DEBUG_GPIO, ENABLE);
   /* Clock For Debug USART1 */
@@ -99,8 +103,55 @@ void DebugComPort_Init(void)
   USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
   /*Enable USART1*/
   USART_Cmd(USART1, ENABLE);
-
-  /*Configuration For NVIC*/
+	
+	
+	/*Configuration For DMA*/
+	DMA_DeInit(DMA2_Stream5);
+  DMA_DeInit(DMA2_Stream7);
+	
+	while (DMA_GetCmdStatus(DMA2_Stream5) != DISABLE);	
+	DMA_InitStruct.DMA_Channel = DMA_Channel_4;			   //S5C4
+	DMA_InitStruct.DMA_PeripheralBaseAddr = (u32)(&(USART1->DR));
+	DMA_InitStruct.DMA_Memory0BaseAddr = (u32)MSG_U1_R;
+	DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralToMemory;             //RX
+	DMA_InitStruct.DMA_BufferSize = (u32)0;
+	DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStruct.DMA_Priority = DMA_Priority_High;
+	DMA_InitStruct.DMA_FIFOMode = DMA_FIFOMode_Disable;
+	DMA_InitStruct.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
+	DMA_InitStruct.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	DMA_InitStruct.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	DMA_Init(DMA2_Stream5, &DMA_InitStruct);
+	//DMA_ITConfig(DMA2_Stream5, DMA_IT_TC, ENABLE);
+	DMA_Cmd(DMA2_Stream5, ENABLE);  //接收通道
+	
+	while (DMA_GetCmdStatus(DMA2_Stream7) != DISABLE);	
+	DMA_InitStruct.DMA_Channel = DMA_Channel_4;			   //S7C4
+	DMA_InitStruct.DMA_PeripheralBaseAddr = (u32)(&(USART1->DR));
+	DMA_InitStruct.DMA_Memory0BaseAddr = (u32)MSG_U1_T;
+	DMA_InitStruct.DMA_DIR = DMA_DIR_MemoryToPeripheral;            //TX
+	DMA_InitStruct.DMA_BufferSize = (u32)0;
+	DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+	DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+	DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStruct.DMA_Priority = DMA_Priority_High;
+	DMA_InitStruct.DMA_FIFOMode = DMA_FIFOMode_Disable;
+	DMA_InitStruct.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
+	DMA_InitStruct.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+	DMA_InitStruct.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+	DMA_Init(DMA2_Stream7, &DMA_InitStruct);
+	//DMA_ITConfig(DMA2_Stream7, DMA_IT_TC, ENABLE);
+	DMA_Cmd(DMA2_Stream7, ENABLE);  //接收通道
+	//U1
+	
+	
+	/*Configuration For NVIC*/
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
   NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn; 
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; 

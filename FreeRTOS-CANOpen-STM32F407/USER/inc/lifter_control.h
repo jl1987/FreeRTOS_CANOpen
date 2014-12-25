@@ -27,6 +27,70 @@
 #include "canfestival.h"
 #include "data.h"
 
+#include "math.h"
+
+
+#define ONSTACLE_DISTANCE 300	// distance for the assisted region for the robot
+#define PI 3.14159
+#define SPEED_CONSTANT 4500		// maximum speed of the chassis	1700
+#define SPEED_CONSTANT_MIN 100		// minimum avoidance speed of the chassis
+#define SPEED_STEP 10				// no of steps for acceleration / deceleration
+
+
+
+
+
+#define HALFPWMTIMERPERIOD 6980
+
+#define Channel1_U    USART2
+#define Channel2_U    UART5
+#define Channel3_U    USART3
+#define Channel1_PWM  TIM1->CCR3
+#define Channel2_PWM  TIM1->CCR4
+#define Channel3_PWM  TIM1->CCR2
+#define Channel_PWMOUTPUT(VALUE)  HALFPWMTIMERPERIOD+VALUE
+
+#define Channel1_RST  		GPIO_Pin_15
+#define Channel2_RST  		GPIO_Pin_11
+#define Channel3_RST  		GPIO_Pin_9
+#define Channel1_RSTPORT  GPIOB
+#define Channel2_RSTPORT  GPIOD
+#define Channel3_RSTPORT  GPIOD
+
+#define Channel1_FLT  		GPIO_Pin_8
+#define Channel2_FLT  		GPIO_Pin_12
+#define Channel3_FLT  		GPIO_Pin_10
+#define Channel1_FLTPORT  GPIOD
+#define Channel2_FLTPORT  GPIOD
+#define Channel3_FLTPORT  GPIOD
+
+
+#define Pi 		3.14159265358979
+#define L1O 	100
+#define L2O 	100
+#define L3O 	100
+#define Alpha1 Pi*0.166666667
+#define Alpha2 Pi*0.833333333
+#define Alpha3 Pi*1.5
+
+
+typedef struct
+{
+  s32 V_SET;
+	s32 V_GET;
+	u8 fault_msg;
+	u8 temperture;
+}DRIVE;
+
+
+
+u8 MSG_U2_R[8];
+u8 MSG_U2_T[16];
+u8 MSG_U3_R[8];
+u8 MSG_U3_T[16];
+
+
+
 /* BSP about LIFTER */
 #define RCC_LIFTER      RCC_AHB1Periph_GPIOE
 #define LIFTER_PORT     GPIOE
@@ -45,10 +109,6 @@
 
 
 
-#ifdef DEBUG_USART
-  /* Debug Message */
-  extern char lifter_thread_debugMSG[50]; //array for error message printing (for usart debugging)
-#endif /* DEBUT_USART */
 
 typedef struct _struct_lifter{
     CO_Data *p_od;
@@ -77,16 +137,19 @@ typedef struct _struct_lifter{
 
 void lifter_control_thread(void *arg);
 
-void lifter_up(void);
-
-void lifter_down(void);
-
-void lifter_stop(void);
 
 void start_lifter_control(void);
 
+void Moter_Init(void);
 
+void Lidar_Init(void);
+void Lidar_Stop(void);
+void Lidar_Reset(void);
 
+double chassis_drive(double X_out,double Y_out,double Theta_out,u8 wheel);
+void chassis_move(double wheel1, double wheel2, double wheel3);
+
+void delay(__IO uint32_t nCount);
 
 #endif
 
