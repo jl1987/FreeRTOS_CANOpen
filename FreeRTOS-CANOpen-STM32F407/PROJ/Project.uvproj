@@ -436,9 +436,9 @@
               <FilePath>..\USER\src\canopen_thread.c</FilePath>
             </File>
             <File>
-              <FileName>lifter_control.c</FileName>
+              <FileName>chassis_control.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\USER\src\lifter_control.c</FilePath>
+              <FilePath>..\USER\src\chassis_control.c</FilePath>
             </File>
             <File>
               <FileName>sensor.c</FileName>
@@ -751,19 +751,9 @@
           <GroupName>Objdict</GroupName>
           <Files>
             <File>
-              <FileName>ObjDict_CAN1.c</FileName>
+              <FileName>CHASSIS_OD.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\UTILITIES\CanFestival-3\objdict\ObjDict_CAN1.c</FilePath>
-            </File>
-            <File>
-              <FileName>ObjDict_CAN2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\UTILITIES\CanFestival-3\objdict\ObjDict_CAN2.c</FilePath>
-            </File>
-            <File>
-              <FileName>LIFTER_OD.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\UTILITIES\CanFestival-3\objdict\LIFTER_OD.c</FilePath>
+              <FilePath>..\UTILITIES\CanFestival-3\objdict\CHASSIS_OD.c</FilePath>
             </File>
           </Files>
         </Group>

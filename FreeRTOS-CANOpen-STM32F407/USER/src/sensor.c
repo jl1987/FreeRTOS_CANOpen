@@ -22,7 +22,7 @@
 #include "bsp_led.h"
 
 /* Object Dictionary */
-#include "LIFTER_OD.h"
+#include "CHASSIS_OD.h"
 
 xTaskHandle	 xT_SENSOR 	  = NULL;
 
@@ -65,8 +65,11 @@ void start_sensor(void)
 
 void SENSOR_Init(void)
 {
-		SENSOR_Force_Init();
-	
+	SENSOR_Force_Init();
+	SENSOR_Lidar_Init();
+	SENSOR_IR_Distance_Init();
+	SENSOR_IR_Autocharge_Init();
+	SENSOR_Anticollision();
 }
 
 
@@ -145,8 +148,8 @@ void SENSOR_Force_Init(void)
 
   /* ADC3 regular channelx configuration */
   ADC_RegularChannelConfig(ADC3, ADC_Channel_9,  1, ADC_SampleTime_144Cycles);		// PF3
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_14, 2, ADC_SampleTime_144Cycles);	// PF4
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_15, 3, ADC_SampleTime_144Cycles);	// PF5
+  ADC_RegularChannelConfig(ADC3, ADC_Channel_14, 2, ADC_SampleTime_144Cycles);		// PF4
+  ADC_RegularChannelConfig(ADC3, ADC_Channel_15, 3, ADC_SampleTime_144Cycles);		// PF5
   ADC_RegularChannelConfig(ADC3, ADC_Channel_4,  4, ADC_SampleTime_144Cycles);		// PF6
   ADC_RegularChannelConfig(ADC3, ADC_Channel_5,  5, ADC_SampleTime_144Cycles);		// PF7
   ADC_RegularChannelConfig(ADC3, ADC_Channel_6,  6, ADC_SampleTime_144Cycles);		// PF8
@@ -357,11 +360,12 @@ void SENSOR_IR_Autocharge_Init(void)
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
-	
-	
 }
 
-
+void SENSOR_Anticollision(void)
+{
+	
+}
 
 
 // void GetDataFromSENSOR(SENSOR_STRUCT* sensor)

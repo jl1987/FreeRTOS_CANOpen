@@ -160,7 +160,7 @@ void SENSOR_Force_Init(void);
 void SENSOR_Lidar_Init(void);
 void SENSOR_IR_Distance_Init(void);
 void SENSOR_IR_Autocharge_Init(void);
-
+void SENSOR_Anticollision(void);
 
 // void GetDataFromSENSOR(SENSOR_STRUCT* sensor);
 

@@ -29,9 +29,8 @@
 
 /*TEST*/
 #include "canopen_thread.h"  //test
-#include "ObjDict_CAN1.h"
-#include "ObjDict_CAN2.h"
-#include "LIFTER_OD.h"
+
+#include "CHASSIS_OD.h"
 #include "globalstruct.h"
 
 
@@ -339,85 +338,85 @@ void UART4_IRQHandler(void)                            //﹃1い?
 
 void CAN1_RX0_IRQHandler(void)
 { 
-  /*进入中断*/
-  
-  int i;
-  Message RxMSG;  /* 标准的CAN2.0A信息，初始化清零 */
-  CANOpen_Message CAN_Rx_m; /* CANOpen Message 包含CAN Port(CANx) */
+//   /*进入中断*/
+//   
+//   int i;
+//   Message RxMSG;  /* 标准的CAN2.0A信息，初始化清零 */
+//   CANOpen_Message CAN_Rx_m; /* CANOpen Message 包含CAN Port(CANx) */
 
-  CAN_Rx_m.CANx = 1;
+//   CAN_Rx_m.CANx = 1;
 
-  CO_D_TEST.CO_CAN1 = &ObjDict_CAN1_Data;
-  CO_D_TEST.CO_CAN1->canHandle = CAN1;
+//   CO_D_TEST.CO_CAN1 = &ObjDict_CAN1_Data;
+//   CO_D_TEST.CO_CAN1->canHandle = CAN1;
 
-  /* 挂起中断 */
-  CAN_ITConfig(CAN1,CAN_IT_FMP0, DISABLE);
-  printf("CAN_ITConfig\r\n");
+//   /* 挂起中断 */
+//   CAN_ITConfig(CAN1,CAN_IT_FMP0, DISABLE);
+//   printf("CAN_ITConfig\r\n");
 
-  /* 从CAN1 FIFO0接收数据存入CAN1_Rx_m */
-  CAN_Receive(CAN1, CAN_FIFO0, &(CAN_Rx_m.m));
-  printf("CAN_Receive\r\n");
+//   /* 从CAN1 FIFO0接收数据存入CAN1_Rx_m */
+//   CAN_Receive(CAN1, CAN_FIFO0, &(CAN_Rx_m.m));
+//   printf("CAN_Receive\r\n");
 
-  printf("Thread get a CAN packege\r\n");
-  RxMSG.cob_id = (uint16_t)(CAN_Rx_m.m.StdId);
-  RxMSG.rtr = CAN_Rx_m.m.RTR;
-  RxMSG.len = CAN_Rx_m.m.DLC;
-  for(i=0;i<RxMSG.len;i++)
-  {
-    RxMSG.data[i] = CAN_Rx_m.m.Data[i]; //Transfer data[0-7] from CAN_Rx_m to RxMSG
-  }
+//   printf("Thread get a CAN packege\r\n");
+//   RxMSG.cob_id = (uint16_t)(CAN_Rx_m.m.StdId);
+//   RxMSG.rtr = CAN_Rx_m.m.RTR;
+//   RxMSG.len = CAN_Rx_m.m.DLC;
+//   for(i=0;i<RxMSG.len;i++)
+//   {
+//     RxMSG.data[i] = CAN_Rx_m.m.Data[i]; //Transfer data[0-7] from CAN_Rx_m to RxMSG
+//   }
 
-  printf("CAN Message Receieved: %02x|%02x %02x \r\n", RxMSG.cob_id, RxMSG.data[0],RxMSG.data[1]);
+//   printf("CAN Message Receieved: %02x|%02x %02x \r\n", RxMSG.cob_id, RxMSG.data[0],RxMSG.data[1]);
 
-  printf("leaving the CAN_ITConfig\r\n");
+//   printf("leaving the CAN_ITConfig\r\n");
 
-  /*Handle The Data Receive, 此处和对象字典进行交互*/
-  printf("canDispatch\r\n");
-  //canDispatch(CO_D_TEST.CO_CAN1, &RxMSG); 
-  
-  if (RxMSG.cob_id == 0x206)
-  {
-     switch(RxMSG.data[0])
-     {
-       case  0x01:
-          /* Debug Message */
-          printf("Receieve a ARM-Linux msg : Up \r\n");
-          /* Control GPIO */
-          GPIO_SetBits(GPIOE, GPIO_Pin_11);
-          GPIO_ResetBits(GPIOE, GPIO_Pin_13);   
-          break;
-       case  0x02:
-          /* Debug Message */
-          printf("Receieve a ARM-Linux msg : Down \r\n");
-          /* Control GPIO */
-          GPIO_ResetBits(GPIOE, GPIO_Pin_11);
-          GPIO_SetBits(GPIOE, GPIO_Pin_13);
-          break;
-       case  0x03:
-          /* Debug Message */
-          printf("Receieve a ARM-Linux msg : Stop \r\n");
-          /* Control GPIO */
-          GPIO_SetBits(GPIOE, GPIO_Pin_11);
-          GPIO_SetBits(GPIOE, GPIO_Pin_13);
-          break;
-       default:
-          /* Debug Message */
-          printf("Unknown error msg : \r\n");
-     }
-  }
-  
-  
-  // if (1==canSend(CAN1,&RxMSG))
-  // {
-  //   printf("Send Succuss!\r\n" );
-  // }
+//   /*Handle The Data Receive, 此处和对象字典进行交互*/
+//   printf("canDispatch\r\n");
+//   //canDispatch(CO_D_TEST.CO_CAN1, &RxMSG); 
+//   
+//   if (RxMSG.cob_id == 0x206)
+//   {
+//      switch(RxMSG.data[0])
+//      {
+//        case  0x01:
+//           /* Debug Message */
+//           printf("Receieve a ARM-Linux msg : Up \r\n");
+//           /* Control GPIO */
+//           GPIO_SetBits(GPIOE, GPIO_Pin_11);
+//           GPIO_ResetBits(GPIOE, GPIO_Pin_13);   
+//           break;
+//        case  0x02:
+//           /* Debug Message */
+//           printf("Receieve a ARM-Linux msg : Down \r\n");
+//           /* Control GPIO */
+//           GPIO_ResetBits(GPIOE, GPIO_Pin_11);
+//           GPIO_SetBits(GPIOE, GPIO_Pin_13);
+//           break;
+//        case  0x03:
+//           /* Debug Message */
+//           printf("Receieve a ARM-Linux msg : Stop \r\n");
+//           /* Control GPIO */
+//           GPIO_SetBits(GPIOE, GPIO_Pin_11);
+//           GPIO_SetBits(GPIOE, GPIO_Pin_13);
+//           break;
+//        default:
+//           /* Debug Message */
+//           printf("Unknown error msg : \r\n");
+//      }
+//   }
+//   
+//   
+//   // if (1==canSend(CAN1,&RxMSG))
+//   // {
+//   //   printf("Send Succuss!\r\n" );
+//   // }
 
-  //printf("leaving the CAN_ITConfig\r\n");
+//   //printf("leaving the CAN_ITConfig\r\n");
 
-  /* 清除挂起中断*/ 
-  CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
-  /* 使能CAN中断*/ 
-  CAN_ITConfig(CAN1,CAN_IT_FMP0, ENABLE);
+//   /* 清除挂起中断*/ 
+//   CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
+//   /* 使能CAN中断*/ 
+//   CAN_ITConfig(CAN1,CAN_IT_FMP0, ENABLE);
 }
 /************************************************************************************/
 //#endif  /* USE_CAN1 */

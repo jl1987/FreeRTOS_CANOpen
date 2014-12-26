@@ -4,7 +4,7 @@
   * @author  Jim
   * @version V1.0
   * @date    01-Sep-2014
-  * @brief   This file provides LIFTER variable definitions. 
+  * @brief   This file provides CHASSIS variable definitions. 
   *  
   ******************************************************************************
   * @attention
@@ -15,10 +15,12 @@
   ******************************************************************************
   */
 
-#ifndef __LIFTER_CONTROL_H__
-#define __LIFTER_CONTROL_H__
+#ifndef __CHASSIS_CONTROL_H__
+#define __CHASSIS_CONTROL_H__
 
 //#include "canfestival.h"
+
+
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -26,8 +28,11 @@
 #include "can_STM32.h"
 #include "canfestival.h"
 #include "data.h"
+#include "globalstruct.h"
 
 #include "math.h"
+
+
 
 
 #define ONSTACLE_DISTANCE 300	// distance for the assisted region for the robot
@@ -135,19 +140,28 @@ typedef struct _struct_lifter{
 }LIFTER_STRUCT;
 
 
-void lifter_control_thread(void *arg);
+void chassis_control_thread(void *arg);
 
 
-void start_lifter_control(void);
+void start_chassis_control(void);
 
-void Moter_Init(void);
+void Motor_Init(void);
+
+void ChassisFault(void);
 
 void Lidar_Init(void);
 void Lidar_Stop(void);
 void Lidar_Reset(void);
 
+
+void Chassis_Init(Chassis_Data *ch);
+
 double chassis_drive(double X_out,double Y_out,double Theta_out,u8 wheel);
 void chassis_move(double wheel1, double wheel2, double wheel3);
+void StepwiseFunction(Chassis_Data *chassis);
+void ChassisMotionCtrl(Chassis_Data *ch);
+
+
 
 void delay(__IO uint32_t nCount);
 

@@ -57,9 +57,8 @@
 #include "stm32f4xx_can.h"
 #include "stm32f4xx_rcc.h"
 
-#include "ObjDict_CAN1.h"
-#include "ObjDict_CAN2.h"
-#include "LIFTER_OD.h"
+
+#include "CHASSIS_OD.h"
 
 
 /*store date CAN receive*/
@@ -88,10 +87,10 @@ static void canopen_dataprocess_thread(void * pvParameters)
 
   /* 得到BSP的ID号，这里应为NodeID */
   //setNodeId (&ObjDict_CAN2_Data, LIFTER_ID);
-	setNodeId (&LIFTER_OD_Data, LIFTER_ID);
+	setNodeId (&CHASSIS_OD_Data, CHASSIS_ID);
 	
 	//CO_D.CO_CAN2 = &ObjDict_CAN2_Data;
-	CO_D.CO_CAN2 = &LIFTER_OD_Data;
+	CO_D.CO_CAN2 = &CHASSIS_OD_Data;
   printf("CANOpen OD Get The Lifer NodeID...\r\n");
 
   ret_canInit = canInit(CAN2,CAN_BAUD_1M);
@@ -101,7 +100,7 @@ static void canopen_dataprocess_thread(void * pvParameters)
     printf("CAN init finished...\r\n");
     /* State Machine Change to Initialisation and automatic go into Pre_operational*/
     //setState(&ObjDict_CAN2_Data, Initialisation);
-		setState(&LIFTER_OD_Data, Initialisation);
+		setState(&CHASSIS_OD_Data, Initialisation);
     printf("State Machine change to Initialisation...\r\n");
     /*****************************************************************************
     * Initialisation -> Pre_operational -> StartOrStop ->
