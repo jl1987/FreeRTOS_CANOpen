@@ -211,8 +211,6 @@ void canopen_init(void)
 	}
   else
   {
-
-    bsp_LedOn(2);
     printf("CANOpen dataprocess thread created successfully!\r\n");
 
   }

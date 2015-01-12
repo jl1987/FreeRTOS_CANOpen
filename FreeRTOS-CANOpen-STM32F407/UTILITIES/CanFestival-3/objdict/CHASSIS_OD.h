@@ -12,6 +12,56 @@ const indextable * CHASSIS_OD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCa
 
 /* Master node data struct */
 extern CO_Data CHASSIS_OD_Data;
-extern UNS8 Write_Outputs_8_Bit[2];		/* Mapped at index 0x6200, subindex 0x01 - 0x02 */
+extern UNS8 motion_command;		/* Mapped at index 0x2000, subindex 0x00*/
+extern UNS16 Controlword;		/* Mapped at index 0x6040, subindex 0x00*/
+extern UNS16 Statusword;		/* Mapped at index 0x6041, subindex 0x00*/
+extern INTEGER8 Modes_of_operation;		/* Mapped at index 0x6060, subindex 0x00*/
+extern INTEGER8 Modes_of_operation_display;		/* Mapped at index 0x6061, subindex 0x00*/
+extern INTEGER32 Position_demannd_value;		/* Mapped at index 0x6062, subindex 0x00*/
+extern INTEGER32 Position_actual_value;		/* Mapped at index 0x6064, subindex 0x00*/
+extern UNS32 Maximal_following_error;		/* Mapped at index 0x6065, subindex 0x00*/
+extern UNS32 Position_window;		/* Mapped at index 0x6067, subindex 0x00*/
+extern UNS16 Position_window_time;		/* Mapped at index 0x6068, subindex 0x00*/
+extern INTEGER32 Velocity_sensor_actual_value;		/* Mapped at index 0x6069, subindex 0x00*/
+extern INTEGER32 Velocity_demand_value;		/* Mapped at index 0x606B, subindex 0x00*/
+extern INTEGER32 Velocity_actual_value;		/* Mapped at index 0x606C, subindex 0x00*/
+extern INTEGER16 Current_actual_value;		/* Mapped at index 0x6078, subindex 0x00*/
+extern INTEGER32 Target_position;		/* Mapped at index 0x607A, subindex 0x00*/
+extern INTEGER32 Home_offset;		/* Mapped at index 0x607C, subindex 0x00*/
+extern INTEGER32 Software_position_limit_Minimal_position_limit;		/* Mapped at index 0x607D, subindex 0x01 */
+extern INTEGER32 Software_position_limit_Maximal_position_limit;		/* Mapped at index 0x607D, subindex 0x02 */
+extern UNS32 Maximal_profile_velocity;		/* Mapped at index 0x607F, subindex 0x00*/
+extern UNS32 Profile_velocity;		/* Mapped at index 0x6081, subindex 0x00*/
+extern UNS32 Profile_acceleration;		/* Mapped at index 0x6083, subindex 0x00*/
+extern UNS32 Profile_deceleration;		/* Mapped at index 0x6084, subindex 0x00*/
+extern UNS32 Quick_stop_deceleration;		/* Mapped at index 0x6085, subindex 0x00*/
+extern INTEGER16 Motion_profile_type;		/* Mapped at index 0x6086, subindex 0x00*/
+extern INTEGER8 Position_notation_index;		/* Mapped at index 0x6089, subindex 0x00*/
+extern REAL32 Position_dimention_index;		/* Mapped at index 0x608A, subindex 0x00*/
+extern INTEGER8 Velocity_notation_index;		/* Mapped at index 0x608B, subindex 0x00*/
+extern REAL32 Velocity_dimention_index;		/* Mapped at index 0x608C, subindex 0x00*/
+extern INTEGER8 Acceleraion_notation_index;		/* Mapped at index 0x608D, subindex 0x00*/
+extern REAL32 Acceleraion_dimention_index;		/* Mapped at index 0x608E, subindex 0x00*/
+extern INTEGER8 Homing_method;		/* Mapped at index 0x6098, subindex 0x00*/
+extern UNS32 Homing_speeds_Speed_for_switch_search;		/* Mapped at index 0x6099, subindex 0x01 */
+extern UNS32 Homing_speeds_Speed_for_zero_search;		/* Mapped at index 0x6099, subindex 0x02 */
+extern UNS32 Homing_acceleration;		/* Mapped at index 0x609A, subindex 0x00*/
+extern INTEGER16 Current_control_parameter_set_Current_regulator_P_gain;		/* Mapped at index 0x60F6, subindex 0x01 */
+extern INTEGER16 Current_control_parameter_set_Current_regulator_I_gain;		/* Mapped at index 0x60F6, subindex 0x02 */
+extern INTEGER16 Velocity_control_parameter_set_Velocity_regulator_P_gain;		/* Mapped at index 0x60F9, subindex 0x01 */
+extern INTEGER16 Velocity_control_parameter_set_Velocity_regulator_I_gain;		/* Mapped at index 0x60F9, subindex 0x02 */
+extern INTEGER16 Position_control_parameter_set_Position_regulator_P_gain;		/* Mapped at index 0x60FB, subindex 0x01 */
+extern INTEGER16 Position_control_parameter_set_Position_regulator_I_gain;		/* Mapped at index 0x60FB, subindex 0x02 */
+extern INTEGER16 Position_control_parameter_set_Position_regulator_D_gain;		/* Mapped at index 0x60FB, subindex 0x03 */
+extern UNS16 Position_control_parameter_set_Velocity_feed_forward_factor;		/* Mapped at index 0x60FB, subindex 0x04 */
+extern UNS16 Position_control_parameter_set_Acceleration_feed_forward_factor;		/* Mapped at index 0x60FB, subindex 0x05 */
+extern INTEGER32 Target_velocity;		/* Mapped at index 0x60FF, subindex 0x00*/
+extern UNS16 Motor_type;		/* Mapped at index 0x6402, subindex 0x00*/
+extern UNS16 Motor_data_Continous_current_limit;		/* Mapped at index 0x6410, subindex 0x01 */
+extern UNS16 Motor_data_Output_current_limit;		/* Mapped at index 0x6410, subindex 0x02 */
+extern UNS8 Motor_data_Pole_pair_number;		/* Mapped at index 0x6410, subindex 0x03 */
+extern UNS16 Motor_data_Maximal_speed_in_current_mode;		/* Mapped at index 0x6410, subindex 0x04 */
+extern UNS16 Motor_data_Thermal_time_constant_winding;		/* Mapped at index 0x6410, subindex 0x05 */
+extern UNS32 Supported_drive_modes;		/* Mapped at index 0x6502, subindex 0x00*/
 
 #endif // CHASSIS_OD_H

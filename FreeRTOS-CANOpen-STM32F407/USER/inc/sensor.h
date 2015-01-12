@@ -34,6 +34,8 @@
 // extern __IO uint16_t ADC3ConvertedValue[];
 
 __IO uint16_t ADC1ConvertedValue[8] = {0,0,0,0,0,0,0,0};	// the ADC value of the infrared distance sensor
+
+
 __IO uint16_t ADC3ConvertedValue[8] = {0,0,0,0,0,0,0,0};	// the ADC value of the new force sensors
 
 

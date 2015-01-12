@@ -6,11 +6,57 @@
 /**************************************************************************/
 /* Declaration of mapped variables                                        */
 /**************************************************************************/
-UNS8 Write_Outputs_8_Bit[] =		/* Mapped at index 0x6200, subindex 0x01 - 0x02 */
-  {
-    0x0,	/* 0 */
-    0x0	/* 0 */
-  };
+UNS8 motion_command = 0x0;		/* Mapped at index 0x2000, subindex 0x00 */
+UNS16 Controlword = 0x0;		/* Mapped at index 0x6040, subindex 0x00 */
+UNS16 Statusword = 0x0;		/* Mapped at index 0x6041, subindex 0x00 */
+INTEGER8 Modes_of_operation = 0x0;		/* Mapped at index 0x6060, subindex 0x00 */
+INTEGER8 Modes_of_operation_display = 0x0;		/* Mapped at index 0x6061, subindex 0x00 */
+INTEGER32 Position_demannd_value = 0x0;		/* Mapped at index 0x6062, subindex 0x00 */
+INTEGER32 Position_actual_value = 0x0;		/* Mapped at index 0x6064, subindex 0x00 */
+UNS32 Maximal_following_error = 0x0;		/* Mapped at index 0x6065, subindex 0x00 */
+UNS32 Position_window = 0x0;		/* Mapped at index 0x6067, subindex 0x00 */
+UNS16 Position_window_time = 0x0;		/* Mapped at index 0x6068, subindex 0x00 */
+INTEGER32 Velocity_sensor_actual_value = 0x0;		/* Mapped at index 0x6069, subindex 0x00 */
+INTEGER32 Velocity_demand_value = 0x0;		/* Mapped at index 0x606B, subindex 0x00 */
+INTEGER32 Velocity_actual_value = 0x0;		/* Mapped at index 0x606C, subindex 0x00 */
+INTEGER16 Current_actual_value = 0x0;		/* Mapped at index 0x6078, subindex 0x00 */
+INTEGER32 Target_position = 0x0;		/* Mapped at index 0x607A, subindex 0x00 */
+INTEGER32 Home_offset = 0x0;		/* Mapped at index 0x607C, subindex 0x00 */
+INTEGER32 Software_position_limit_Minimal_position_limit = 0x0;		/* Mapped at index 0x607D, subindex 0x01 */
+INTEGER32 Software_position_limit_Maximal_position_limit = 0x0;		/* Mapped at index 0x607D, subindex 0x02 */
+UNS32 Maximal_profile_velocity = 0x0;		/* Mapped at index 0x607F, subindex 0x00 */
+UNS32 Profile_velocity = 0x0;		/* Mapped at index 0x6081, subindex 0x00 */
+UNS32 Profile_acceleration = 0x0;		/* Mapped at index 0x6083, subindex 0x00 */
+UNS32 Profile_deceleration = 0x0;		/* Mapped at index 0x6084, subindex 0x00 */
+UNS32 Quick_stop_deceleration = 0x0;		/* Mapped at index 0x6085, subindex 0x00 */
+INTEGER16 Motion_profile_type = 0x0;		/* Mapped at index 0x6086, subindex 0x00 */
+INTEGER8 Position_notation_index = 0x0;		/* Mapped at index 0x6089, subindex 0x00 */
+REAL32 Position_dimention_index = 0.000000;		/* Mapped at index 0x608A, subindex 0x00 */
+INTEGER8 Velocity_notation_index = 0x0;		/* Mapped at index 0x608B, subindex 0x00 */
+REAL32 Velocity_dimention_index = 0.000000;		/* Mapped at index 0x608C, subindex 0x00 */
+INTEGER8 Acceleraion_notation_index = 0x0;		/* Mapped at index 0x608D, subindex 0x00 */
+REAL32 Acceleraion_dimention_index = 0.000000;		/* Mapped at index 0x608E, subindex 0x00 */
+INTEGER8 Homing_method = 0x0;		/* Mapped at index 0x6098, subindex 0x00 */
+UNS32 Homing_speeds_Speed_for_switch_search = 0x0;		/* Mapped at index 0x6099, subindex 0x01 */
+UNS32 Homing_speeds_Speed_for_zero_search = 0x0;		/* Mapped at index 0x6099, subindex 0x02 */
+UNS32 Homing_acceleration = 0x0;		/* Mapped at index 0x609A, subindex 0x00 */
+INTEGER16 Current_control_parameter_set_Current_regulator_P_gain = 0x0;		/* Mapped at index 0x60F6, subindex 0x01 */
+INTEGER16 Current_control_parameter_set_Current_regulator_I_gain = 0x0;		/* Mapped at index 0x60F6, subindex 0x02 */
+INTEGER16 Velocity_control_parameter_set_Velocity_regulator_P_gain = 0x0;		/* Mapped at index 0x60F9, subindex 0x01 */
+INTEGER16 Velocity_control_parameter_set_Velocity_regulator_I_gain = 0x0;		/* Mapped at index 0x60F9, subindex 0x02 */
+INTEGER16 Position_control_parameter_set_Position_regulator_P_gain = 0x0;		/* Mapped at index 0x60FB, subindex 0x01 */
+INTEGER16 Position_control_parameter_set_Position_regulator_I_gain = 0x0;		/* Mapped at index 0x60FB, subindex 0x02 */
+INTEGER16 Position_control_parameter_set_Position_regulator_D_gain = 0x0;		/* Mapped at index 0x60FB, subindex 0x03 */
+UNS16 Position_control_parameter_set_Velocity_feed_forward_factor = 0x0;		/* Mapped at index 0x60FB, subindex 0x04 */
+UNS16 Position_control_parameter_set_Acceleration_feed_forward_factor = 0x0;		/* Mapped at index 0x60FB, subindex 0x05 */
+INTEGER32 Target_velocity = 0x0;		/* Mapped at index 0x60FF, subindex 0x00 */
+UNS16 Motor_type = 0x0;		/* Mapped at index 0x6402, subindex 0x00 */
+UNS16 Motor_data_Continous_current_limit = 0x0;		/* Mapped at index 0x6410, subindex 0x01 */
+UNS16 Motor_data_Output_current_limit = 0x0;		/* Mapped at index 0x6410, subindex 0x02 */
+UNS8 Motor_data_Pole_pair_number = 0x0;		/* Mapped at index 0x6410, subindex 0x03 */
+UNS16 Motor_data_Maximal_speed_in_current_mode = 0x0;		/* Mapped at index 0x6410, subindex 0x04 */
+UNS16 Motor_data_Thermal_time_constant_winding = 0x0;		/* Mapped at index 0x6410, subindex 0x05 */
+UNS32 Supported_drive_modes = 0x0;		/* Mapped at index 0x6502, subindex 0x00 */
 
 /**************************************************************************/
 /* Declaration of value range types                                       */
@@ -62,7 +108,14 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1001 }
                      };
 
-/* index 0x1003 :   Pre-defined Error Field */
+/* index 0x1002 :   Manufacturer Status Register. */
+                    UNS32 CHASSIS_OD_obj1002 = 0x0;	/* 0 */
+                    subindex CHASSIS_OD_Index1002[] = 
+                     {
+                       { RO, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1002 }
+                     };
+
+/* index 0x1003 :   Pre-defined Error Field. */
                     UNS8 CHASSIS_OD_highestSubIndex_obj1003 = 0; /* number of subindex - 1*/
                     UNS32 CHASSIS_OD_obj1003[] = 
                     {
@@ -101,11 +154,50 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1006 }
                      };
 
-/* index 0x100C :   Guard Time */ 
-                    UNS16 CHASSIS_OD_obj100C = 0x0;   /* 0 */
+/* index 0x1007 :   Synchronous Window Length. */
+                    UNS32 CHASSIS_OD_obj1007 = 0x0;	/* 0 */
+                    subindex CHASSIS_OD_Index1007[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1007 }
+                     };
+
+/* index 0x1008 :   Manufacturer Device Name. */
+                    UNS8 CHASSIS_OD_obj1008[10] = "";
+                    subindex CHASSIS_OD_Index1008[] = 
+                     {
+                       { RO, visible_string, 10, (void*)&CHASSIS_OD_obj1008 }
+                     };
+
+/* index 0x1009 :   Manufacturer Hardware Version. */
+                    UNS8 CHASSIS_OD_obj1009[10] = "";
+                    subindex CHASSIS_OD_Index1009[] = 
+                     {
+                       { RO, visible_string, 10, (void*)&CHASSIS_OD_obj1009 }
+                     };
+
+/* index 0x100A :   Manufacturer Software Version. */
+                    UNS8 CHASSIS_OD_obj100A[10] = "";
+                    subindex CHASSIS_OD_Index100A[] = 
+                     {
+                       { RO, visible_string, 10, (void*)&CHASSIS_OD_obj100A }
+                     };
+
+/* index 0x100C :   Guard Time. */
+                    UNS16 CHASSIS_OD_obj100C = 0x0;	/* 0 */
+                    subindex CHASSIS_OD_Index100C[] = 
+                     {
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj100C }
+                     };
 
 /* index 0x100D :   Life Time Factor */ 
                     UNS8 CHASSIS_OD_obj100D = 0x0;   /* 0 */
+
+/* index 0x1012 :   TIME COB ID. */
+                    UNS32 CHASSIS_OD_obj1012 = 0x0;	/* 0 */
+                    subindex CHASSIS_OD_Index1012[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1012 }
+                     };
 
 /* index 0x1014 :   Emergency COB ID. */
                     UNS32 CHASSIS_OD_obj1014 = 0x80;	/* 128 */
@@ -119,7 +211,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     UNS32 CHASSIS_OD_obj1016[]={0};
 
 /* index 0x1017 :   Producer Heartbeat Time. */
-                    UNS16 CHASSIS_OD_obj1017 = 0x1000;	/* 4096 */
+                    UNS16 CHASSIS_OD_obj1017 = 0x3E8;	/* 1000 */
                     ODCallback_t CHASSIS_OD_Index1017_callbacks[] = 
                      {
                        NULL,
@@ -174,24 +266,151 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1400_SYNC_start_value }
                      };
 
+/* index 0x1401 :   Receive PDO 2 Parameter. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1401 = 6; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1401_COB_ID_used_by_PDO = 0x300;	/* 768 */
+                    UNS8 CHASSIS_OD_obj1401_Transmission_Type = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1401_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1401_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1401_Event_Timer = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1401_SYNC_start_value = 0x0;	/* 0 */
+                    subindex CHASSIS_OD_Index1401[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1401 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1401_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1401_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1401_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1401_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1401_Event_Timer },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1401_SYNC_start_value }
+                     };
+
+/* index 0x1402 :   Receive PDO 3 Parameter. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1402 = 6; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1402_COB_ID_used_by_PDO = 0x400;	/* 1024 */
+                    UNS8 CHASSIS_OD_obj1402_Transmission_Type = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1402_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1402_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1402_Event_Timer = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1402_SYNC_start_value = 0x0;	/* 0 */
+                    subindex CHASSIS_OD_Index1402[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1402 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1402_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1402_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1402_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1402_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1402_Event_Timer },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1402_SYNC_start_value }
+                     };
+
+/* index 0x1403 :   Receive PDO 4 Parameter. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1403 = 6; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1403_COB_ID_used_by_PDO = 0x500;	/* 1280 */
+                    UNS8 CHASSIS_OD_obj1403_Transmission_Type = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1403_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1403_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1403_Event_Timer = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1403_SYNC_start_value = 0x0;	/* 0 */
+                    subindex CHASSIS_OD_Index1403[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1403 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1403_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1403_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1403_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1403_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1403_Event_Timer },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1403_SYNC_start_value }
+                     };
+
 /* index 0x1600 :   Receive PDO 1 Mapping. */
-                    UNS8 CHASSIS_OD_highestSubIndex_obj1600 = 2; /* number of subindex - 1*/
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1600 = 1; /* number of subindex - 1*/
                     UNS32 CHASSIS_OD_obj1600[] = 
                     {
-                      0x62000108,	/* 1644167432 */	//Control word
-                      0x62000208	/* 1644167688 */	//Speed word
+                      0x20000008	/* 536870920 */
                     };
-                    ODCallback_t CHASSIS_OD_Index1600_callbacks[] = 
-                     {
-                       NULL,
-                       NULL,
-                       NULL,
-                     };
                     subindex CHASSIS_OD_Index1600[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1600 },
-                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1600[0] },
-                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1600[1] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1600[0] }
+                     };
+
+/* index 0x1601 :   Receive PDO 2 Mapping. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1601 = 8; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1601[] = 
+                    {
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0	/* 0 */
+                    };
+                    subindex CHASSIS_OD_Index1601[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1601 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[2] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[3] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[4] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[5] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[6] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1601[7] }
+                     };
+
+/* index 0x1602 :   Receive PDO 3 Mapping. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1602 = 8; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1602[] = 
+                    {
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0	/* 0 */
+                    };
+                    subindex CHASSIS_OD_Index1602[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1602 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[2] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[3] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[4] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[5] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[6] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1602[7] }
+                     };
+
+/* index 0x1603 :   Receive PDO 4 Mapping. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1603 = 8; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1603[] = 
+                    {
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0	/* 0 */
+                    };
+                    subindex CHASSIS_OD_Index1603[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1603 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[2] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[3] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[4] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[5] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[6] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1603[7] }
                      };
 
 /* index 0x1800 :   Transmit PDO 1 Parameter. */
@@ -223,6 +442,93 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1800_SYNC_start_value }
                      };
 
+/* index 0x1801 :   Transmit PDO 2 Parameter. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1801 = 6; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1801_COB_ID_used_by_PDO = 0x280;	/* 640 */
+                    UNS8 CHASSIS_OD_obj1801_Transmission_Type = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1801_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1801_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1801_Event_Timer = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1801_SYNC_start_value = 0x0;	/* 0 */
+                    ODCallback_t CHASSIS_OD_Index1801_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CHASSIS_OD_Index1801[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1801 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1801_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1801_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1801_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1801_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1801_Event_Timer },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1801_SYNC_start_value }
+                     };
+
+/* index 0x1802 :   Transmit PDO 3 Parameter. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1802 = 6; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1802_COB_ID_used_by_PDO = 0x380;	/* 896 */
+                    UNS8 CHASSIS_OD_obj1802_Transmission_Type = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1802_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1802_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1802_Event_Timer = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1802_SYNC_start_value = 0x0;	/* 0 */
+                    ODCallback_t CHASSIS_OD_Index1802_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CHASSIS_OD_Index1802[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1802 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1802_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1802_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1802_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1802_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1802_Event_Timer },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1802_SYNC_start_value }
+                     };
+
+/* index 0x1803 :   Transmit PDO 4 Parameter. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1803 = 6; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1803_COB_ID_used_by_PDO = 0x480;	/* 1152 */
+                    UNS8 CHASSIS_OD_obj1803_Transmission_Type = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1803_Inhibit_Time = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1803_Compatibility_Entry = 0x0;	/* 0 */
+                    UNS16 CHASSIS_OD_obj1803_Event_Timer = 0x0;	/* 0 */
+                    UNS8 CHASSIS_OD_obj1803_SYNC_start_value = 0x0;	/* 0 */
+                    ODCallback_t CHASSIS_OD_Index1803_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
+                    subindex CHASSIS_OD_Index1803[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1803 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1803_COB_ID_used_by_PDO },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1803_Transmission_Type },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1803_Inhibit_Time },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1803_Compatibility_Entry },
+                       { RW, uint16, sizeof (UNS16), (void*)&CHASSIS_OD_obj1803_Event_Timer },
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_obj1803_SYNC_start_value }
+                     };
+
 /* index 0x1A00 :   Transmit PDO 1 Mapping. */
                     UNS8 CHASSIS_OD_highestSubIndex_obj1A00 = 8; /* number of subindex - 1*/
                     UNS32 CHASSIS_OD_obj1A00[] = 
@@ -249,19 +555,340 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                        { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A00[7] }
                      };
 
-/* index 0x6200 :   Mapped variable Write Outputs 8 Bit */
-                    UNS8 CHASSIS_OD_highestSubIndex_obj6200 = 2; /* number of subindex - 1*/
-                    ODCallback_t Write_Outputs_8_Bit_callbacks[] = 
+/* index 0x1A01 :   Transmit PDO 2 Mapping. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1A01 = 8; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1A01[] = 
+                    {
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0	/* 0 */
+                    };
+                    subindex CHASSIS_OD_Index1A01[] = 
                      {
-                       NULL,
-                       NULL,
-                       NULL,
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1A01 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[2] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[3] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[4] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[5] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[6] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A01[7] }
                      };
-                    subindex CHASSIS_OD_Index6200[] = 
+
+/* index 0x1A02 :   Transmit PDO 3 Mapping. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1A02 = 8; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1A02[] = 
+                    {
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0	/* 0 */
+                    };
+                    subindex CHASSIS_OD_Index1A02[] = 
                      {
-                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj6200 },
-                       { RW, uint8, sizeof (UNS8), (void*)&Write_Outputs_8_Bit[0] },
-                       { RW, uint8, sizeof (UNS8), (void*)&Write_Outputs_8_Bit[1] }
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1A02 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[2] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[3] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[4] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[5] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[6] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A02[7] }
+                     };
+
+/* index 0x1A03 :   Transmit PDO 4 Mapping. */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1A03 = 8; /* number of subindex - 1*/
+                    UNS32 CHASSIS_OD_obj1A03[] = 
+                    {
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0,	/* 0 */
+                      0x0	/* 0 */
+                    };
+                    subindex CHASSIS_OD_Index1A03[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1A03 },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[1] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[2] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[3] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[4] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[5] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[6] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1A03[7] }
+                     };
+
+/* index 0x2000 :   Mapped variable motion command */
+                    subindex CHASSIS_OD_Index2000[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&motion_command }
+                     };
+
+/* index 0x6040 :   Mapped variable Controlword */
+                    subindex CHASSIS_OD_Index6040[] = 
+                     {
+                       { RW, uint16, sizeof (UNS16), (void*)&Controlword }
+                     };
+
+/* index 0x6041 :   Mapped variable Statusword */
+                    subindex CHASSIS_OD_Index6041[] = 
+                     {
+                       { RO, uint16, sizeof (UNS16), (void*)&Statusword }
+                     };
+
+/* index 0x6060 :   Mapped variable Modes of operation */
+                    subindex CHASSIS_OD_Index6060[] = 
+                     {
+                       { RW, int8, sizeof (INTEGER8), (void*)&Modes_of_operation }
+                     };
+
+/* index 0x6061 :   Mapped variable Modes of operation display */
+                    subindex CHASSIS_OD_Index6061[] = 
+                     {
+                       { RO, int8, sizeof (INTEGER8), (void*)&Modes_of_operation_display }
+                     };
+
+/* index 0x6062 :   Mapped variable Position demannd value */
+                    subindex CHASSIS_OD_Index6062[] = 
+                     {
+                       { RO, int32, sizeof (INTEGER32), (void*)&Position_demannd_value }
+                     };
+
+/* index 0x6064 :   Mapped variable Position actual value */
+                    subindex CHASSIS_OD_Index6064[] = 
+                     {
+                       { RO, int32, sizeof (INTEGER32), (void*)&Position_actual_value }
+                     };
+
+/* index 0x6065 :   Mapped variable Maximal following error */
+                    subindex CHASSIS_OD_Index6065[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Maximal_following_error }
+                     };
+
+/* index 0x6067 :   Mapped variable Position window */
+                    subindex CHASSIS_OD_Index6067[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Position_window }
+                     };
+
+/* index 0x6068 :   Mapped variable Position window time */
+                    subindex CHASSIS_OD_Index6068[] = 
+                     {
+                       { RW, uint16, sizeof (UNS16), (void*)&Position_window_time }
+                     };
+
+/* index 0x6069 :   Mapped variable Velocity sensor actual value */
+                    subindex CHASSIS_OD_Index6069[] = 
+                     {
+                       { RO, int32, sizeof (INTEGER32), (void*)&Velocity_sensor_actual_value }
+                     };
+
+/* index 0x606B :   Mapped variable Velocity demand value */
+                    subindex CHASSIS_OD_Index606B[] = 
+                     {
+                       { RO, int32, sizeof (INTEGER32), (void*)&Velocity_demand_value }
+                     };
+
+/* index 0x606C :   Mapped variable Velocity actual value */
+                    subindex CHASSIS_OD_Index606C[] = 
+                     {
+                       { RO, int32, sizeof (INTEGER32), (void*)&Velocity_actual_value }
+                     };
+
+/* index 0x6078 :   Mapped variable Current actual value */
+                    subindex CHASSIS_OD_Index6078[] = 
+                     {
+                       { RO, int16, sizeof (INTEGER16), (void*)&Current_actual_value }
+                     };
+
+/* index 0x607A :   Mapped variable Target position */
+                    subindex CHASSIS_OD_Index607A[] = 
+                     {
+                       { RW, int32, sizeof (INTEGER32), (void*)&Target_position }
+                     };
+
+/* index 0x607C :   Mapped variable Home offset */
+                    subindex CHASSIS_OD_Index607C[] = 
+                     {
+                       { RW, int32, sizeof (INTEGER32), (void*)&Home_offset }
+                     };
+
+/* index 0x607D :   Mapped variable Software position limit */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj607D = 2; /* number of subindex - 1*/
+                    subindex CHASSIS_OD_Index607D[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj607D },
+                       { RW, int32, sizeof (INTEGER32), (void*)&Software_position_limit_Minimal_position_limit },
+                       { RW, int32, sizeof (INTEGER32), (void*)&Software_position_limit_Maximal_position_limit }
+                     };
+
+/* index 0x607F :   Mapped variable Maximal profile velocity */
+                    subindex CHASSIS_OD_Index607F[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Maximal_profile_velocity }
+                     };
+
+/* index 0x6081 :   Mapped variable Profile velocity */
+                    subindex CHASSIS_OD_Index6081[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Profile_velocity }
+                     };
+
+/* index 0x6083 :   Mapped variable Profile acceleration */
+                    subindex CHASSIS_OD_Index6083[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Profile_acceleration }
+                     };
+
+/* index 0x6084 :   Mapped variable Profile deceleration */
+                    subindex CHASSIS_OD_Index6084[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Profile_deceleration }
+                     };
+
+/* index 0x6085 :   Mapped variable Quick stop deceleration */
+                    subindex CHASSIS_OD_Index6085[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Quick_stop_deceleration }
+                     };
+
+/* index 0x6086 :   Mapped variable Motion profile type */
+                    subindex CHASSIS_OD_Index6086[] = 
+                     {
+                       { RW, int16, sizeof (INTEGER16), (void*)&Motion_profile_type }
+                     };
+
+/* index 0x6089 :   Mapped variable Position notation index */
+                    subindex CHASSIS_OD_Index6089[] = 
+                     {
+                       { RW, int8, sizeof (INTEGER8), (void*)&Position_notation_index }
+                     };
+
+/* index 0x608A :   Mapped variable Position dimention index */
+                    subindex CHASSIS_OD_Index608A[] = 
+                     {
+                       { RW, real32, sizeof (REAL32), (void*)&Position_dimention_index }
+                     };
+
+/* index 0x608B :   Mapped variable Velocity notation index */
+                    subindex CHASSIS_OD_Index608B[] = 
+                     {
+                       { RW, int8, sizeof (INTEGER8), (void*)&Velocity_notation_index }
+                     };
+
+/* index 0x608C :   Mapped variable Velocity dimention index */
+                    subindex CHASSIS_OD_Index608C[] = 
+                     {
+                       { RW, real32, sizeof (REAL32), (void*)&Velocity_dimention_index }
+                     };
+
+/* index 0x608D :   Mapped variable Acceleraion notation index */
+                    subindex CHASSIS_OD_Index608D[] = 
+                     {
+                       { RW, int8, sizeof (INTEGER8), (void*)&Acceleraion_notation_index }
+                     };
+
+/* index 0x608E :   Mapped variable Acceleraion dimention index */
+                    subindex CHASSIS_OD_Index608E[] = 
+                     {
+                       { RW, real32, sizeof (REAL32), (void*)&Acceleraion_dimention_index }
+                     };
+
+/* index 0x6098 :   Mapped variable Homing method */
+                    subindex CHASSIS_OD_Index6098[] = 
+                     {
+                       { RW, int8, sizeof (INTEGER8), (void*)&Homing_method }
+                     };
+
+/* index 0x6099 :   Mapped variable Homing speeds */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj6099 = 2; /* number of subindex - 1*/
+                    subindex CHASSIS_OD_Index6099[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj6099 },
+                       { RW, uint32, sizeof (UNS32), (void*)&Homing_speeds_Speed_for_switch_search },
+                       { RW, uint32, sizeof (UNS32), (void*)&Homing_speeds_Speed_for_zero_search }
+                     };
+
+/* index 0x609A :   Mapped variable Homing acceleration */
+                    subindex CHASSIS_OD_Index609A[] = 
+                     {
+                       { RW, uint32, sizeof (UNS32), (void*)&Homing_acceleration }
+                     };
+
+/* index 0x60F6 :   Mapped variable Current control parameter set */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj60F6 = 2; /* number of subindex - 1*/
+                    subindex CHASSIS_OD_Index60F6[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj60F6 },
+                       { RW, int16, sizeof (INTEGER16), (void*)&Current_control_parameter_set_Current_regulator_P_gain },
+                       { RW, int16, sizeof (INTEGER16), (void*)&Current_control_parameter_set_Current_regulator_I_gain }
+                     };
+
+/* index 0x60F9 :   Mapped variable Velocity control parameter set */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj60F9 = 2; /* number of subindex - 1*/
+                    subindex CHASSIS_OD_Index60F9[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj60F9 },
+                       { RW, int16, sizeof (INTEGER16), (void*)&Velocity_control_parameter_set_Velocity_regulator_P_gain },
+                       { RW, int16, sizeof (INTEGER16), (void*)&Velocity_control_parameter_set_Velocity_regulator_I_gain }
+                     };
+
+/* index 0x60FB :   Mapped variable Position control parameter set */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj60FB = 5; /* number of subindex - 1*/
+                    subindex CHASSIS_OD_Index60FB[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj60FB },
+                       { RW, int16, sizeof (INTEGER16), (void*)&Position_control_parameter_set_Position_regulator_P_gain },
+                       { RW, int16, sizeof (INTEGER16), (void*)&Position_control_parameter_set_Position_regulator_I_gain },
+                       { RW, int16, sizeof (INTEGER16), (void*)&Position_control_parameter_set_Position_regulator_D_gain },
+                       { RW, uint16, sizeof (UNS16), (void*)&Position_control_parameter_set_Velocity_feed_forward_factor },
+                       { RW, uint16, sizeof (UNS16), (void*)&Position_control_parameter_set_Acceleration_feed_forward_factor }
+                     };
+
+/* index 0x60FF :   Mapped variable Target velocity */
+                    subindex CHASSIS_OD_Index60FF[] = 
+                     {
+                       { RW, int32, sizeof (INTEGER32), (void*)&Target_velocity }
+                     };
+
+/* index 0x6402 :   Mapped variable Motor type */
+                    subindex CHASSIS_OD_Index6402[] = 
+                     {
+                       { RW, uint16, sizeof (UNS16), (void*)&Motor_type }
+                     };
+
+/* index 0x6410 :   Mapped variable Motor data */
+                    UNS8 CHASSIS_OD_highestSubIndex_obj6410 = 5; /* number of subindex - 1*/
+                    subindex CHASSIS_OD_Index6410[] = 
+                     {
+                       { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj6410 },
+                       { RW, uint16, sizeof (UNS16), (void*)&Motor_data_Continous_current_limit },
+                       { RW, uint16, sizeof (UNS16), (void*)&Motor_data_Output_current_limit },
+                       { RW, uint8, sizeof (UNS8), (void*)&Motor_data_Pole_pair_number },
+                       { RW, uint16, sizeof (UNS16), (void*)&Motor_data_Maximal_speed_in_current_mode },
+                       { RW, uint16, sizeof (UNS16), (void*)&Motor_data_Thermal_time_constant_winding }
+                     };
+
+/* index 0x6502 :   Mapped variable Supported drive modes */
+                    subindex CHASSIS_OD_Index6502[] = 
+                     {
+                       { RO, uint32, sizeof (UNS32), (void*)&Supported_drive_modes }
                      };
 
 /**************************************************************************/
@@ -272,17 +899,75 @@ const indextable CHASSIS_OD_objdict[] =
 {
   { (subindex*)CHASSIS_OD_Index1000,sizeof(CHASSIS_OD_Index1000)/sizeof(CHASSIS_OD_Index1000[0]), 0x1000},
   { (subindex*)CHASSIS_OD_Index1001,sizeof(CHASSIS_OD_Index1001)/sizeof(CHASSIS_OD_Index1001[0]), 0x1001},
+  { (subindex*)CHASSIS_OD_Index1002,sizeof(CHASSIS_OD_Index1002)/sizeof(CHASSIS_OD_Index1002[0]), 0x1002},
+  { (subindex*)CHASSIS_OD_Index1003,sizeof(CHASSIS_OD_Index1003)/sizeof(CHASSIS_OD_Index1003[0]), 0x1003},
   { (subindex*)CHASSIS_OD_Index1005,sizeof(CHASSIS_OD_Index1005)/sizeof(CHASSIS_OD_Index1005[0]), 0x1005},
   { (subindex*)CHASSIS_OD_Index1006,sizeof(CHASSIS_OD_Index1006)/sizeof(CHASSIS_OD_Index1006[0]), 0x1006},
+  { (subindex*)CHASSIS_OD_Index1007,sizeof(CHASSIS_OD_Index1007)/sizeof(CHASSIS_OD_Index1007[0]), 0x1007},
+  { (subindex*)CHASSIS_OD_Index1008,sizeof(CHASSIS_OD_Index1008)/sizeof(CHASSIS_OD_Index1008[0]), 0x1008},
+  { (subindex*)CHASSIS_OD_Index1009,sizeof(CHASSIS_OD_Index1009)/sizeof(CHASSIS_OD_Index1009[0]), 0x1009},
+  { (subindex*)CHASSIS_OD_Index100A,sizeof(CHASSIS_OD_Index100A)/sizeof(CHASSIS_OD_Index100A[0]), 0x100A},
+  { (subindex*)CHASSIS_OD_Index100C,sizeof(CHASSIS_OD_Index100C)/sizeof(CHASSIS_OD_Index100C[0]), 0x100C},
+  { (subindex*)CHASSIS_OD_Index1012,sizeof(CHASSIS_OD_Index1012)/sizeof(CHASSIS_OD_Index1012[0]), 0x1012},
   { (subindex*)CHASSIS_OD_Index1014,sizeof(CHASSIS_OD_Index1014)/sizeof(CHASSIS_OD_Index1014[0]), 0x1014},
   { (subindex*)CHASSIS_OD_Index1017,sizeof(CHASSIS_OD_Index1017)/sizeof(CHASSIS_OD_Index1017[0]), 0x1017},
   { (subindex*)CHASSIS_OD_Index1018,sizeof(CHASSIS_OD_Index1018)/sizeof(CHASSIS_OD_Index1018[0]), 0x1018},
   { (subindex*)CHASSIS_OD_Index1200,sizeof(CHASSIS_OD_Index1200)/sizeof(CHASSIS_OD_Index1200[0]), 0x1200},
   { (subindex*)CHASSIS_OD_Index1400,sizeof(CHASSIS_OD_Index1400)/sizeof(CHASSIS_OD_Index1400[0]), 0x1400},
+  { (subindex*)CHASSIS_OD_Index1401,sizeof(CHASSIS_OD_Index1401)/sizeof(CHASSIS_OD_Index1401[0]), 0x1401},
+  { (subindex*)CHASSIS_OD_Index1402,sizeof(CHASSIS_OD_Index1402)/sizeof(CHASSIS_OD_Index1402[0]), 0x1402},
+  { (subindex*)CHASSIS_OD_Index1403,sizeof(CHASSIS_OD_Index1403)/sizeof(CHASSIS_OD_Index1403[0]), 0x1403},
   { (subindex*)CHASSIS_OD_Index1600,sizeof(CHASSIS_OD_Index1600)/sizeof(CHASSIS_OD_Index1600[0]), 0x1600},
+  { (subindex*)CHASSIS_OD_Index1601,sizeof(CHASSIS_OD_Index1601)/sizeof(CHASSIS_OD_Index1601[0]), 0x1601},
+  { (subindex*)CHASSIS_OD_Index1602,sizeof(CHASSIS_OD_Index1602)/sizeof(CHASSIS_OD_Index1602[0]), 0x1602},
+  { (subindex*)CHASSIS_OD_Index1603,sizeof(CHASSIS_OD_Index1603)/sizeof(CHASSIS_OD_Index1603[0]), 0x1603},
   { (subindex*)CHASSIS_OD_Index1800,sizeof(CHASSIS_OD_Index1800)/sizeof(CHASSIS_OD_Index1800[0]), 0x1800},
+  { (subindex*)CHASSIS_OD_Index1801,sizeof(CHASSIS_OD_Index1801)/sizeof(CHASSIS_OD_Index1801[0]), 0x1801},
+  { (subindex*)CHASSIS_OD_Index1802,sizeof(CHASSIS_OD_Index1802)/sizeof(CHASSIS_OD_Index1802[0]), 0x1802},
+  { (subindex*)CHASSIS_OD_Index1803,sizeof(CHASSIS_OD_Index1803)/sizeof(CHASSIS_OD_Index1803[0]), 0x1803},
   { (subindex*)CHASSIS_OD_Index1A00,sizeof(CHASSIS_OD_Index1A00)/sizeof(CHASSIS_OD_Index1A00[0]), 0x1A00},
-  { (subindex*)CHASSIS_OD_Index6200,sizeof(CHASSIS_OD_Index6200)/sizeof(CHASSIS_OD_Index6200[0]), 0x6200},
+  { (subindex*)CHASSIS_OD_Index1A01,sizeof(CHASSIS_OD_Index1A01)/sizeof(CHASSIS_OD_Index1A01[0]), 0x1A01},
+  { (subindex*)CHASSIS_OD_Index1A02,sizeof(CHASSIS_OD_Index1A02)/sizeof(CHASSIS_OD_Index1A02[0]), 0x1A02},
+  { (subindex*)CHASSIS_OD_Index1A03,sizeof(CHASSIS_OD_Index1A03)/sizeof(CHASSIS_OD_Index1A03[0]), 0x1A03},
+  { (subindex*)CHASSIS_OD_Index2000,sizeof(CHASSIS_OD_Index2000)/sizeof(CHASSIS_OD_Index2000[0]), 0x2000},
+  { (subindex*)CHASSIS_OD_Index6040,sizeof(CHASSIS_OD_Index6040)/sizeof(CHASSIS_OD_Index6040[0]), 0x6040},
+  { (subindex*)CHASSIS_OD_Index6041,sizeof(CHASSIS_OD_Index6041)/sizeof(CHASSIS_OD_Index6041[0]), 0x6041},
+  { (subindex*)CHASSIS_OD_Index6060,sizeof(CHASSIS_OD_Index6060)/sizeof(CHASSIS_OD_Index6060[0]), 0x6060},
+  { (subindex*)CHASSIS_OD_Index6061,sizeof(CHASSIS_OD_Index6061)/sizeof(CHASSIS_OD_Index6061[0]), 0x6061},
+  { (subindex*)CHASSIS_OD_Index6062,sizeof(CHASSIS_OD_Index6062)/sizeof(CHASSIS_OD_Index6062[0]), 0x6062},
+  { (subindex*)CHASSIS_OD_Index6064,sizeof(CHASSIS_OD_Index6064)/sizeof(CHASSIS_OD_Index6064[0]), 0x6064},
+  { (subindex*)CHASSIS_OD_Index6065,sizeof(CHASSIS_OD_Index6065)/sizeof(CHASSIS_OD_Index6065[0]), 0x6065},
+  { (subindex*)CHASSIS_OD_Index6067,sizeof(CHASSIS_OD_Index6067)/sizeof(CHASSIS_OD_Index6067[0]), 0x6067},
+  { (subindex*)CHASSIS_OD_Index6068,sizeof(CHASSIS_OD_Index6068)/sizeof(CHASSIS_OD_Index6068[0]), 0x6068},
+  { (subindex*)CHASSIS_OD_Index6069,sizeof(CHASSIS_OD_Index6069)/sizeof(CHASSIS_OD_Index6069[0]), 0x6069},
+  { (subindex*)CHASSIS_OD_Index606B,sizeof(CHASSIS_OD_Index606B)/sizeof(CHASSIS_OD_Index606B[0]), 0x606B},
+  { (subindex*)CHASSIS_OD_Index606C,sizeof(CHASSIS_OD_Index606C)/sizeof(CHASSIS_OD_Index606C[0]), 0x606C},
+  { (subindex*)CHASSIS_OD_Index6078,sizeof(CHASSIS_OD_Index6078)/sizeof(CHASSIS_OD_Index6078[0]), 0x6078},
+  { (subindex*)CHASSIS_OD_Index607A,sizeof(CHASSIS_OD_Index607A)/sizeof(CHASSIS_OD_Index607A[0]), 0x607A},
+  { (subindex*)CHASSIS_OD_Index607C,sizeof(CHASSIS_OD_Index607C)/sizeof(CHASSIS_OD_Index607C[0]), 0x607C},
+  { (subindex*)CHASSIS_OD_Index607D,sizeof(CHASSIS_OD_Index607D)/sizeof(CHASSIS_OD_Index607D[0]), 0x607D},
+  { (subindex*)CHASSIS_OD_Index607F,sizeof(CHASSIS_OD_Index607F)/sizeof(CHASSIS_OD_Index607F[0]), 0x607F},
+  { (subindex*)CHASSIS_OD_Index6081,sizeof(CHASSIS_OD_Index6081)/sizeof(CHASSIS_OD_Index6081[0]), 0x6081},
+  { (subindex*)CHASSIS_OD_Index6083,sizeof(CHASSIS_OD_Index6083)/sizeof(CHASSIS_OD_Index6083[0]), 0x6083},
+  { (subindex*)CHASSIS_OD_Index6084,sizeof(CHASSIS_OD_Index6084)/sizeof(CHASSIS_OD_Index6084[0]), 0x6084},
+  { (subindex*)CHASSIS_OD_Index6085,sizeof(CHASSIS_OD_Index6085)/sizeof(CHASSIS_OD_Index6085[0]), 0x6085},
+  { (subindex*)CHASSIS_OD_Index6086,sizeof(CHASSIS_OD_Index6086)/sizeof(CHASSIS_OD_Index6086[0]), 0x6086},
+  { (subindex*)CHASSIS_OD_Index6089,sizeof(CHASSIS_OD_Index6089)/sizeof(CHASSIS_OD_Index6089[0]), 0x6089},
+  { (subindex*)CHASSIS_OD_Index608A,sizeof(CHASSIS_OD_Index608A)/sizeof(CHASSIS_OD_Index608A[0]), 0x608A},
+  { (subindex*)CHASSIS_OD_Index608B,sizeof(CHASSIS_OD_Index608B)/sizeof(CHASSIS_OD_Index608B[0]), 0x608B},
+  { (subindex*)CHASSIS_OD_Index608C,sizeof(CHASSIS_OD_Index608C)/sizeof(CHASSIS_OD_Index608C[0]), 0x608C},
+  { (subindex*)CHASSIS_OD_Index608D,sizeof(CHASSIS_OD_Index608D)/sizeof(CHASSIS_OD_Index608D[0]), 0x608D},
+  { (subindex*)CHASSIS_OD_Index608E,sizeof(CHASSIS_OD_Index608E)/sizeof(CHASSIS_OD_Index608E[0]), 0x608E},
+  { (subindex*)CHASSIS_OD_Index6098,sizeof(CHASSIS_OD_Index6098)/sizeof(CHASSIS_OD_Index6098[0]), 0x6098},
+  { (subindex*)CHASSIS_OD_Index6099,sizeof(CHASSIS_OD_Index6099)/sizeof(CHASSIS_OD_Index6099[0]), 0x6099},
+  { (subindex*)CHASSIS_OD_Index609A,sizeof(CHASSIS_OD_Index609A)/sizeof(CHASSIS_OD_Index609A[0]), 0x609A},
+  { (subindex*)CHASSIS_OD_Index60F6,sizeof(CHASSIS_OD_Index60F6)/sizeof(CHASSIS_OD_Index60F6[0]), 0x60F6},
+  { (subindex*)CHASSIS_OD_Index60F9,sizeof(CHASSIS_OD_Index60F9)/sizeof(CHASSIS_OD_Index60F9[0]), 0x60F9},
+  { (subindex*)CHASSIS_OD_Index60FB,sizeof(CHASSIS_OD_Index60FB)/sizeof(CHASSIS_OD_Index60FB[0]), 0x60FB},
+  { (subindex*)CHASSIS_OD_Index60FF,sizeof(CHASSIS_OD_Index60FF)/sizeof(CHASSIS_OD_Index60FF[0]), 0x60FF},
+  { (subindex*)CHASSIS_OD_Index6402,sizeof(CHASSIS_OD_Index6402)/sizeof(CHASSIS_OD_Index6402[0]), 0x6402},
+  { (subindex*)CHASSIS_OD_Index6410,sizeof(CHASSIS_OD_Index6410)/sizeof(CHASSIS_OD_Index6410[0]), 0x6410},
+  { (subindex*)CHASSIS_OD_Index6502,sizeof(CHASSIS_OD_Index6502)/sizeof(CHASSIS_OD_Index6502[0]), 0x6502},
 };
 
 const indextable * CHASSIS_OD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCallback_t **callbacks)
@@ -292,17 +977,75 @@ const indextable * CHASSIS_OD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCa
 	switch(wIndex){
 		case 0x1000: i = 0;break;
 		case 0x1001: i = 1;break;
-		case 0x1005: i = 2;*callbacks = CHASSIS_OD_Index1005_callbacks; break;
-		case 0x1006: i = 3;*callbacks = CHASSIS_OD_Index1006_callbacks; break;
-		case 0x1014: i = 4;break;
-		case 0x1017: i = 5;*callbacks = CHASSIS_OD_Index1017_callbacks; break;
-		case 0x1018: i = 6;break;
-		case 0x1200: i = 7;break;
-		case 0x1400: i = 8;break;
-		case 0x1600: i = 9;*callbacks = CHASSIS_OD_Index1600_callbacks; break;
-		case 0x1800: i = 10;*callbacks = CHASSIS_OD_Index1800_callbacks; break;
-		case 0x1A00: i = 11;break;
-		case 0x6200: i = 12;*callbacks = Write_Outputs_8_Bit_callbacks; break;
+		case 0x1002: i = 2;break;
+		case 0x1003: i = 3;*callbacks = CHASSIS_OD_Index1003_callbacks; break;
+		case 0x1005: i = 4;*callbacks = CHASSIS_OD_Index1005_callbacks; break;
+		case 0x1006: i = 5;*callbacks = CHASSIS_OD_Index1006_callbacks; break;
+		case 0x1007: i = 6;break;
+		case 0x1008: i = 7;break;
+		case 0x1009: i = 8;break;
+		case 0x100A: i = 9;break;
+		case 0x100C: i = 10;break;
+		case 0x1012: i = 11;break;
+		case 0x1014: i = 12;break;
+		case 0x1017: i = 13;*callbacks = CHASSIS_OD_Index1017_callbacks; break;
+		case 0x1018: i = 14;break;
+		case 0x1200: i = 15;break;
+		case 0x1400: i = 16;break;
+		case 0x1401: i = 17;break;
+		case 0x1402: i = 18;break;
+		case 0x1403: i = 19;break;
+		case 0x1600: i = 20;break;
+		case 0x1601: i = 21;break;
+		case 0x1602: i = 22;break;
+		case 0x1603: i = 23;break;
+		case 0x1800: i = 24;*callbacks = CHASSIS_OD_Index1800_callbacks; break;
+		case 0x1801: i = 25;*callbacks = CHASSIS_OD_Index1801_callbacks; break;
+		case 0x1802: i = 26;*callbacks = CHASSIS_OD_Index1802_callbacks; break;
+		case 0x1803: i = 27;*callbacks = CHASSIS_OD_Index1803_callbacks; break;
+		case 0x1A00: i = 28;break;
+		case 0x1A01: i = 29;break;
+		case 0x1A02: i = 30;break;
+		case 0x1A03: i = 31;break;
+		case 0x2000: i = 32;break;
+		case 0x6040: i = 33;break;
+		case 0x6041: i = 34;break;
+		case 0x6060: i = 35;break;
+		case 0x6061: i = 36;break;
+		case 0x6062: i = 37;break;
+		case 0x6064: i = 38;break;
+		case 0x6065: i = 39;break;
+		case 0x6067: i = 40;break;
+		case 0x6068: i = 41;break;
+		case 0x6069: i = 42;break;
+		case 0x606B: i = 43;break;
+		case 0x606C: i = 44;break;
+		case 0x6078: i = 45;break;
+		case 0x607A: i = 46;break;
+		case 0x607C: i = 47;break;
+		case 0x607D: i = 48;break;
+		case 0x607F: i = 49;break;
+		case 0x6081: i = 50;break;
+		case 0x6083: i = 51;break;
+		case 0x6084: i = 52;break;
+		case 0x6085: i = 53;break;
+		case 0x6086: i = 54;break;
+		case 0x6089: i = 55;break;
+		case 0x608A: i = 56;break;
+		case 0x608B: i = 57;break;
+		case 0x608C: i = 58;break;
+		case 0x608D: i = 59;break;
+		case 0x608E: i = 60;break;
+		case 0x6098: i = 61;break;
+		case 0x6099: i = 62;break;
+		case 0x609A: i = 63;break;
+		case 0x60F6: i = 64;break;
+		case 0x60F9: i = 65;break;
+		case 0x60FB: i = 66;break;
+		case 0x60FF: i = 67;break;
+		case 0x6402: i = 68;break;
+		case 0x6410: i = 69;break;
+		case 0x6502: i = 70;break;
 		default:
 			*errorCode = OD_NO_SUCH_OBJECT;
 			return NULL;
@@ -316,24 +1059,24 @@ const indextable * CHASSIS_OD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCa
  * Even if no pdoTransmit are defined, at least one entry is computed
  * for compilations issues.
  */
-s_PDO_status CHASSIS_OD_PDO_status[1] = {s_PDO_status_Initializer};
+s_PDO_status CHASSIS_OD_PDO_status[4] = {s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer,s_PDO_status_Initializer};
 
 const quick_index CHASSIS_OD_firstIndex = {
-  7, /* SDO_SVR */
+  15, /* SDO_SVR */
   0, /* SDO_CLT */
-  8, /* PDO_RCV */
-  9, /* PDO_RCV_MAP */
-  10, /* PDO_TRS */
-  11 /* PDO_TRS_MAP */
+  16, /* PDO_RCV */
+  20, /* PDO_RCV_MAP */
+  24, /* PDO_TRS */
+  28 /* PDO_TRS_MAP */
 };
 
 const quick_index CHASSIS_OD_lastIndex = {
-  7, /* SDO_SVR */
+  15, /* SDO_SVR */
   0, /* SDO_CLT */
-  8, /* PDO_RCV */
-  9, /* PDO_RCV_MAP */
-  10, /* PDO_TRS */
-  11 /* PDO_TRS_MAP */
+  19, /* PDO_RCV */
+  23, /* PDO_RCV_MAP */
+  27, /* PDO_TRS */
+  31 /* PDO_TRS_MAP */
 };
 
 const UNS16 CHASSIS_OD_ObjdictSize = sizeof(CHASSIS_OD_objdict)/sizeof(CHASSIS_OD_objdict[0]); 

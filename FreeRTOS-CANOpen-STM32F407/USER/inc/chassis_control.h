@@ -161,6 +161,7 @@ void chassis_move(double wheel1, double wheel2, double wheel3);
 void StepwiseFunction(Chassis_Data *chassis);
 void ChassisMotionCtrl(Chassis_Data *ch);
 
+UNS32 OnChassisControlWordUpdate(CO_Data* d, const indextable * unsused_indextable, UNS8 unsused_bSubindex);
 
 
 void delay(__IO uint32_t nCount);
