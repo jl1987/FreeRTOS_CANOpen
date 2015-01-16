@@ -405,7 +405,7 @@ proceedPDO (CO_Data * d, Message * m)
                     }
                   canSend (d->canHandle, &pdo);
                   return 0;
-                }
+                }	
               }                 /* end switch status */
           }                     /* end while */
     }                           /* end if Requete */

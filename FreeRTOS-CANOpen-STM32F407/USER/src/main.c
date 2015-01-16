@@ -12,15 +12,30 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 CSST Robot Research Center</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 CSST Robot Research Center</center></h2>
   *
   ******************************************************************************
   */
 
-#include "bsp.h"
+//#include "bsp.h"  ////////////////////
+
+#include "stm32f4xx.h"
+#include <string.h>
+#include "main.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "serial_debug.h"
+
+#include "bsp_led.h"
+
+#include "canopen_thread.h"
+#include "chassis_control.h"
+#include "sensor.h"
+
+#include "stm32f4xx_conf.h"
 
 /*--------------- Tasks Priority -------------*/     
-#define LED_TASK_PRIO    ( tskIDLE_PRIORITY + 1 )
+//#define LED_TASK_PRIO    ( tskIDLE_PRIORITY + 1 )
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -39,7 +54,7 @@ int main(void)
 {
  
   /*Initialize ARM BSP (LED) */ 
-  bsp_Init();
+  bsp_InitLed();
 
 	/* SERIAL_DEBUG */
   #ifdef SERIAL_DEBUG_ON
@@ -53,13 +68,15 @@ int main(void)
 //              uxPriority,   /*指定任务执行的优先级，0到最高优先级(configMAX_PRIORITIES–1)*/
 //              pxCreatedTask /*用于传出任务的句柄，不用则NULL代替。*/)
   /* Start toogleLed4 task : Toggle LED4  every 1s */
-  xTaskCreate(ToggleLed1, "LED1", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
+ // xTaskCreate(ToggleLed1, "LED1", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
 
   /* Start The CANOpen Communication */
   canopen_init();
 
   /* Start The Lifter Control */
- // start_lifter_control();
+  start_chassis_control();
+	
+	start_sensor();
 
   /* Start scheduler */
   vTaskStartScheduler();
@@ -74,16 +91,16 @@ int main(void)
   * @param  None
   * @retval None
   */
-void ToggleLed1(void * pvParameters)
-{
-	/* Toggle LED1 each 500s */
-  for( ;; )
-  {
-		//printf("I'm the LED1 blinking");
-		bsp_LedToggle(1,1000);
-  }
-	
-}
+// void ToggleLed1(void * pvParameters)
+// {
+// 	/* Toggle LED1 each 500s */
+//   for( ;; )
+//   {
+// 		//printf("I'm the LED1 blinking");
+// 		bsp_LedToggle(1,1000);
+//   }
+// 	
+// }
 
 
 

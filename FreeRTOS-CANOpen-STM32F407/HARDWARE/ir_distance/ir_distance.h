@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    sensor.c
+  * @file    ir_distance.c
   * @author  Jim
   * @version V1.0
-  * @date    01-Sep-2014
-  * @brief   This file provides sensor variable definitions. 
+  * @date    16-Jan-2015
+  * @brief   This file provides ir_distance variable definitions. 
   *  
   ******************************************************************************
   * @attention
@@ -15,27 +15,16 @@
   ******************************************************************************
   */
 
-#ifndef __SENSOR_H__
-#define __SENSOR_H__
+#ifndef __IR_DISSTANCE_H__
+#define __IR_DISSTANCE_H__
 
 #include "globalstruct.h"
-#include "canfestival.h"
+#include "data.h"
 
-#include "lidar.h"
-#include "anticollision.h"
-#include "force_sensor.h"
-#include "ir_autocharge.h"
-#include "ir_distance.h"
+#define ADC1_DR_Address  ((uint32_t)0X4001204C)
 
-void sensor_thread(void * pvParameters);
-void start_sensor(void);
 
-void SENSOR_Init(void);
-
-// void GetDataFromSENSOR(SENSOR_STRUCT* sensor);
-
-//UNS32 StoreSENSORDataToOD(SENSOR_STRUCT *sensor,CO_Data *d);
-
+void SENSOR_IR_Distance_Init(void);
 
 #endif
 

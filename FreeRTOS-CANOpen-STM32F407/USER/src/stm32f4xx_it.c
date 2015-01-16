@@ -16,22 +16,25 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
-//#include "main.h"  //comment on 23/10/2014
 
 /* FreeRTOS includes */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 
+/* Program Variable includes */
+#include "globalstruct.h"
+
 /* CANOpen includes */
 #include "canfestival.h"
 #include "can_STM32.h"
 
-/*TEST*/
-#include "canopen_thread.h"  //test
+/* Hardware includes */
+#include "ir_autocharge.h"
 
+/* Object Dictionary includes */
 #include "CHASSIS_OD.h"
-#include "globalstruct.h"
+
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -39,7 +42,18 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern xQueueHandle xQ_CAN_MSG;
-CO_DATA_STRUCT  CO_D_TEST = {NULL,NULL};  //test
+
+extern AUTO_CHARGE Auto_charge;
+
+//extern Chassis_Data CHASSIS_D;
+u8 msgfromU2[8],msgfromU3[8],msgfromU5[8],buf_msgfromU5[8]; // messages from usart
+extern u8 MSG_U2_R[8];
+extern u8 MSG_U2_T[16];
+extern u8 MSG_U3_R[8];
+extern u8 MSG_U3_T[16];
+
+//extern Chassis_Data CHASSIS_D;
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -185,71 +199,28 @@ void UsageFault_Handler(void)
 
 void USART1_IRQHandler(void)
 {  
-	uint8_t RX_dat; 
-	CanTxMsg USART2CAN;
-  
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-  {	
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-		
-		RX_dat =USART_ReceiveData(USART1);
-		
-		printf("USART1 Recevie Data: %x ",RX_dat);
-				
-		if(RX_dat == 0x01)
-		{
-			printf("Send a SDO Message: \r\n");
-			
-			USART2CAN.StdId = 0x206;
-			USART2CAN.ExtId = 0x00;
-			/* 是否远程帧 */
-			USART2CAN.RTR = 0x00;
-			/* CAN 2.0A 若用B需更改 */
-			USART2CAN.IDE = CAN_ID_STD;
-			/* 数据长度 */
-			USART2CAN.DLC = 1;
-			/* 为数据赋值 */                 
+	
+	uint8_t U1RX_dat;  
 
-			USART2CAN.Data[0] = 0xFF;
+	if (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) != RESET)
+	{
+		USART_ClearITPendingBit(USART1,   USART_IT_RXNE); 
+		U1RX_dat=USART_ReceiveData(USART1);// & 0x7F; 
+		printf("USART1 Get a Message: %d", U1RX_dat);
+		motion_command = U1RX_dat;
+		USART_SendData(USART1, U1RX_dat); 
+		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET){}
+	}
 
-			CAN_Transmit(CAN2, &USART2CAN);
-			
-		}
-		else if(RX_dat == 0x02)
-		{
-			printf("Send a PDO Message: \r\n");
-			
-			USART2CAN.StdId = 0x206;
-			USART2CAN.ExtId = 0x00;
-			/* 是否远程帧 */
-			USART2CAN.RTR = 0x00;
-			/* CAN 2.0A 若用B需更改 */
-			USART2CAN.IDE = CAN_ID_STD;
-			/* 数据长度 */
-			USART2CAN.DLC = 1;
-			/* 为数据赋值 */                 
-
-			USART2CAN.Data[0] = 0xEE;
-
-			CAN_Transmit(CAN2, &USART2CAN);
-		}else{
-			printf("Nothing Send \r\n");
-		}
-		
-		while(USART_GetFlagStatus(USART1, USART_FLAG_TXE)==RESET);
-		{
-		  //USART_ClearFlag(USART1,USART_FLAG_RXNE);
-		}
-  }	
 	
 }
 
-void UART4_IRQHandler(void)                            //﹃1い?
+void UART4_IRQHandler(void) 
 {
 // 	int index_dump;
-// 	if (USART_GetFlagStatus(UART4, USART_FLAG_RXNE) != RESET)   //??ネ钡Μい?
+// 	if (USART_GetFlagStatus(UART4, USART_FLAG_RXNE) != RESET)
 // 	{
-// 		USART_ClearITPendingBit(UART4,   USART_IT_RXNE);       //睲埃い??в
+// 		USART_ClearITPendingBit(UART4,   USART_IT_RXNE);
 // 		if(lidar_init_ok_P==FALSE)
 // 		{
 // 			if(lidar_offset_count<=62)
@@ -302,15 +273,15 @@ void UART4_IRQHandler(void)                            //﹃1い?
 // 					}
 
 // 					
-// 				//	USART_SendData(USART1, RP_Lidar_Buf[index_dump][0]);                                     //?癳?誹
-// 				//	while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET){}//单?癳?
+// 				//	USART_SendData(USART1, RP_Lidar_Buf[index_dump][0]);   
+// 				//	while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET){}
 // 				}
 // 				
 // 			}	
 // 			  
 // 		
-// 		//	USART_SendData(USART1, USART_ReceiveData(UART4));                                     //?癳?誹
-// 		//	while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET){}//单?癳?
+// 		//	USART_SendData(USART1, USART_ReceiveData(UART4));
+// 		//	while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET){}
 // 				
 // 		}
 // 		
@@ -338,88 +309,8 @@ void UART4_IRQHandler(void)                            //﹃1い?
 
 void CAN1_RX0_IRQHandler(void)
 { 
-//   /*进入中断*/
-//   
-//   int i;
-//   Message RxMSG;  /* 标准的CAN2.0A信息，初始化清零 */
-//   CANOpen_Message CAN_Rx_m; /* CANOpen Message 包含CAN Port(CANx) */
 
-//   CAN_Rx_m.CANx = 1;
-
-//   CO_D_TEST.CO_CAN1 = &ObjDict_CAN1_Data;
-//   CO_D_TEST.CO_CAN1->canHandle = CAN1;
-
-//   /* 挂起中断 */
-//   CAN_ITConfig(CAN1,CAN_IT_FMP0, DISABLE);
-//   printf("CAN_ITConfig\r\n");
-
-//   /* 从CAN1 FIFO0接收数据存入CAN1_Rx_m */
-//   CAN_Receive(CAN1, CAN_FIFO0, &(CAN_Rx_m.m));
-//   printf("CAN_Receive\r\n");
-
-//   printf("Thread get a CAN packege\r\n");
-//   RxMSG.cob_id = (uint16_t)(CAN_Rx_m.m.StdId);
-//   RxMSG.rtr = CAN_Rx_m.m.RTR;
-//   RxMSG.len = CAN_Rx_m.m.DLC;
-//   for(i=0;i<RxMSG.len;i++)
-//   {
-//     RxMSG.data[i] = CAN_Rx_m.m.Data[i]; //Transfer data[0-7] from CAN_Rx_m to RxMSG
-//   }
-
-//   printf("CAN Message Receieved: %02x|%02x %02x \r\n", RxMSG.cob_id, RxMSG.data[0],RxMSG.data[1]);
-
-//   printf("leaving the CAN_ITConfig\r\n");
-
-//   /*Handle The Data Receive, 此处和对象字典进行交互*/
-//   printf("canDispatch\r\n");
-//   //canDispatch(CO_D_TEST.CO_CAN1, &RxMSG); 
-//   
-//   if (RxMSG.cob_id == 0x206)
-//   {
-//      switch(RxMSG.data[0])
-//      {
-//        case  0x01:
-//           /* Debug Message */
-//           printf("Receieve a ARM-Linux msg : Up \r\n");
-//           /* Control GPIO */
-//           GPIO_SetBits(GPIOE, GPIO_Pin_11);
-//           GPIO_ResetBits(GPIOE, GPIO_Pin_13);   
-//           break;
-//        case  0x02:
-//           /* Debug Message */
-//           printf("Receieve a ARM-Linux msg : Down \r\n");
-//           /* Control GPIO */
-//           GPIO_ResetBits(GPIOE, GPIO_Pin_11);
-//           GPIO_SetBits(GPIOE, GPIO_Pin_13);
-//           break;
-//        case  0x03:
-//           /* Debug Message */
-//           printf("Receieve a ARM-Linux msg : Stop \r\n");
-//           /* Control GPIO */
-//           GPIO_SetBits(GPIOE, GPIO_Pin_11);
-//           GPIO_SetBits(GPIOE, GPIO_Pin_13);
-//           break;
-//        default:
-//           /* Debug Message */
-//           printf("Unknown error msg : \r\n");
-//      }
-//   }
-//   
-//   
-//   // if (1==canSend(CAN1,&RxMSG))
-//   // {
-//   //   printf("Send Succuss!\r\n" );
-//   // }
-
-//   //printf("leaving the CAN_ITConfig\r\n");
-
-//   /* 清除挂起中断*/ 
-//   CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
-//   /* 使能CAN中断*/ 
-//   CAN_ITConfig(CAN1,CAN_IT_FMP0, ENABLE);
 }
-/************************************************************************************/
-//#endif  /* USE_CAN1 */
 
 
 /**
@@ -458,31 +349,142 @@ void CAN2_RX0_IRQHandler(void)
 
 void EXTI0_IRQHandler(void)
 {
-//     if(!GPIO_ReadInputDataBit(GPIOG, GPIO_Pin_0))
-// 	{
-// 		Infared0_time_end=Infared0_time;
-//     Infared0_time=0;		
-// 		//GPIO_SetBits(GPIOA, GPIO_Pin_4);
-// 		
-// 		XXXXX++;
-// 		
-// 		//sprintf(message_ADC,"%d\r\n",ADC3ConvertedValue*5000/0xFFF);
-// 		
-// 		//USART6_Puts(message_ADC);
-// 	}
-//     EXTI_ClearITPendingBit(EXTI_Line0);
+	
+  Auto_charge.Infared0_time_end=Auto_charge.Infared0_time;
+	Auto_charge.Infared0_time=0;
+    
+	EXTI_ClearITPendingBit(EXTI_Line0);
 }
 
 void EXTI1_IRQHandler(void)
 {
-//     if(!GPIO_ReadInputDataBit(GPIOG, GPIO_Pin_1))	
-// 	{
-// 		Infared1_time_end=Infared1_time;
-// 		Infared1_time=0;
-// 		//GPIO_SetBits(GPIOA, GPIO_Pin_4);
-// 	}
-//     EXTI_ClearITPendingBit(EXTI_Line1);
+    Auto_charge.Infared1_time_end=Auto_charge.Infared1_time;
+
+		Auto_charge.Infared1_time=0;
+
+    EXTI_ClearITPendingBit(EXTI_Line1);
 }
+
+
+void USART2_IRQHandler(void)//channel1
+{
+	u8 n;
+// 	USART2->CR1&=0XFFFFFFEF; //禁止产生中断
+// 	USART3->DR = USART2->DR;
+// 	//USART_ClearFlag(USART2, USART_FLAG_RXNE);
+// 	USART2->CR1|=0X00000010;  //开启中断 
+	
+  USART2->CR1&=0XFFFFFFEF; //禁止产生中断
+	//GPIO_WriteBit(GPIOE, GPIO_Pin_5, Bit_RESET);
+	DMA_Cmd(DMA1_Stream5, DISABLE);	//失能
+	
+  for(n=0;n<8;n++)
+	{
+   msgfromU2[n]=MSG_U2_R[n];
+  }
+  
+	DMA1_Stream5->NDTR = 8;
+	DMA_ClearFlag(DMA1_Stream5,DMA_FLAG_TCIF5);//清除标志
+ 	DMA_Cmd(DMA1_Stream5, ENABLE);	//使能
+	
+	//访问一次
+	  USART2->SR;
+	  USART2->DR;
+	//访问一次
+	delay(200);
+  //GPIO_WriteBit(GPIOE, GPIO_Pin_5, Bit_SET);
+	USART2->CR1|=0X00000010;  //开启中断 
+}
+
+void USART3_IRQHandler(void)//channel3
+{
+	u8 n;
+// 	USART2->CR1&=0XFFFFFFEF; //禁止产生中断
+// 	USART3->DR = USART2->DR;
+// 	//USART_ClearFlag(USART2, USART_FLAG_RXNE);
+// 	USART2->CR1|=0X00000010;  //开启中断 
+	
+  USART3->CR1&=0XFFFFFFEF; //禁止产生中断
+	//GPIO_WriteBit(GPIOE, GPIO_Pin_5, Bit_RESET);
+	DMA_Cmd(DMA1_Stream1, DISABLE);	//失能
+	
+  for(n=0;n<8;n++)
+	{
+   msgfromU3[n]=MSG_U3_R[n];
+  }
+  
+	DMA1_Stream1->NDTR = 8;
+	DMA_ClearFlag(DMA1_Stream1,DMA_FLAG_TCIF1);//清除标志
+ 	DMA_Cmd(DMA1_Stream1, ENABLE);	//使能
+	
+	//访问一次
+	  USART3->SR;
+	  USART3->DR;
+	//访问一次
+	delay(200);
+  //GPIO_WriteBit(GPIOE, GPIO_Pin_5, Bit_SET);
+	USART3->CR1|=0X00000010;  //开启中断 
+}
+
+
+// void UART5_IRQHandler(void)//channel2
+// {
+// 	u8  n=0,rec_count=0;
+// 	u16 tiny_timeout=0,big_timeout=0;
+// 	
+// 	UART5->CR1&=0XFFFFFFEF; //禁止产生中断
+// 	GPIO_WriteBit(LEDPORT, LED4, Bit_RESET);
+//   	
+// // 	msgfromU5[rec_count]=UART5->DR;
+// // 	if ((msgfromU5[rec_count]==0x0A)||(rec_count>=8))
+// // 		rec_count=0;
+// // 	else
+// // 		rec_count++;
+// 	
+//   while ((UART5->DR!=0X0A)&&(big_timeout++<10000))
+// 	{
+// 	 tiny_timeout=0;
+// 		while((!USART_GetFlagStatus(Channel2_U,USART_FLAG_RXNE))&&(tiny_timeout++<1000));
+// 	 
+//    msgfromU5[n]=UART5->DR;
+
+// 	 n++;
+//   }
+// 	
+// 	
+// 	GPIO_WriteBit(LEDPORT, LED4, Bit_SET);
+// 	//USART_ClearITPendingBit(UART5,USART_IT_RXNE);
+// 	UART5->CR1|=0X00000010;  //开启中断 
+// }
+
+u8  n=0,ifcanberead=0;
+//u16 timeout=0;
+void UART5_IRQHandler(void)//channel2
+{
+	u8 m;
+	UART5->CR1&=0XFFFFFFEF; //禁止产生中断
+	
+
+// 	while((!USART_GetFlagStatus(Channel2_U,USART_FLAG_RXNE))&&
+// 		    (timeout++<1000));
+	 
+  buf_msgfromU5[n]=UART5->DR;
+	
+	if (buf_msgfromU5[n]==0X23)//0X0D就是回车，0x23就是“#” 
+	{
+		n=0;
+		for (m=0;m<8;m++)
+		{
+     msgfromU5[m]=buf_msgfromU5[m];
+    }
+  }
+	n++;
+
+
+	//USART_ClearITPendingBit(Channel2_U,USART_IT_RXNE);
+	UART5->CR1|=0X00000010;  //开启中断 
+}
+
 
 
 

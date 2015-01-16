@@ -13,12 +13,12 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 CSST Robot Research Center</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 CSST Robot Research Center</center></h2>
   *
   ******************************************************************************
   */
 
-#include "bsp.h"
+#include "bsp_led.h"
 
 /**
  * LED Init
@@ -29,8 +29,12 @@ void bsp_InitLed(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
+	/* Enable CRC clock */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_CRC, ENABLE);
+	
 	/* ´ò¿ªGPIOÊ±ÖÓ */
 	RCC_AHB1PeriphClockCmd(RCC_LED, ENABLE);
+
 
 	bsp_LedOff(1);
 	bsp_LedOff(2);

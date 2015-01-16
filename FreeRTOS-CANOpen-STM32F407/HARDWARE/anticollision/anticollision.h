@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    sensor.c
+  * @file    anticollision.h
   * @author  Jim
   * @version V1.0
-  * @date    01-Sep-2014
-  * @brief   This file provides sensor variable definitions. 
+  * @date    16-Jan-2015
+  * @brief   This file provides anticollision variable definitions. 
   *  
   ******************************************************************************
   * @attention
@@ -15,27 +15,14 @@
   ******************************************************************************
   */
 
-#ifndef __SENSOR_H__
-#define __SENSOR_H__
+#ifndef __ANTICOLLISION_H__
+#define __ANTICOLLISION_H__
 
 #include "globalstruct.h"
-#include "canfestival.h"
+#include "data.h"
 
-#include "lidar.h"
-#include "anticollision.h"
-#include "force_sensor.h"
-#include "ir_autocharge.h"
-#include "ir_distance.h"
 
-void sensor_thread(void * pvParameters);
-void start_sensor(void);
-
-void SENSOR_Init(void);
-
-// void GetDataFromSENSOR(SENSOR_STRUCT* sensor);
-
-//UNS32 StoreSENSORDataToOD(SENSOR_STRUCT *sensor,CO_Data *d);
-
+void SENSOR_Anticollision(void);
 
 #endif
 

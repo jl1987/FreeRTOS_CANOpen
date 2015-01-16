@@ -634,96 +634,160 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x2000 :   Mapped variable motion command */
+                    ODCallback_t motion_command_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index2000[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&motion_command }
                      };
 
 /* index 0x6040 :   Mapped variable Controlword */
+                    ODCallback_t Controlword_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6040[] = 
                      {
                        { RW, uint16, sizeof (UNS16), (void*)&Controlword }
                      };
 
 /* index 0x6041 :   Mapped variable Statusword */
+                    ODCallback_t Statusword_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6041[] = 
                      {
                        { RO, uint16, sizeof (UNS16), (void*)&Statusword }
                      };
 
 /* index 0x6060 :   Mapped variable Modes of operation */
+                    ODCallback_t Modes_of_operation_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6060[] = 
                      {
                        { RW, int8, sizeof (INTEGER8), (void*)&Modes_of_operation }
                      };
 
 /* index 0x6061 :   Mapped variable Modes of operation display */
+                    ODCallback_t Modes_of_operation_display_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6061[] = 
                      {
                        { RO, int8, sizeof (INTEGER8), (void*)&Modes_of_operation_display }
                      };
 
 /* index 0x6062 :   Mapped variable Position demannd value */
+                    ODCallback_t Position_demannd_value_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6062[] = 
                      {
                        { RO, int32, sizeof (INTEGER32), (void*)&Position_demannd_value }
                      };
 
 /* index 0x6064 :   Mapped variable Position actual value */
+                    ODCallback_t Position_actual_value_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6064[] = 
                      {
                        { RO, int32, sizeof (INTEGER32), (void*)&Position_actual_value }
                      };
 
 /* index 0x6065 :   Mapped variable Maximal following error */
+                    ODCallback_t Maximal_following_error_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6065[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Maximal_following_error }
                      };
 
 /* index 0x6067 :   Mapped variable Position window */
+                    ODCallback_t Position_window_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6067[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Position_window }
                      };
 
 /* index 0x6068 :   Mapped variable Position window time */
+                    ODCallback_t Position_window_time_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6068[] = 
                      {
                        { RW, uint16, sizeof (UNS16), (void*)&Position_window_time }
                      };
 
 /* index 0x6069 :   Mapped variable Velocity sensor actual value */
+                    ODCallback_t Velocity_sensor_actual_value_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6069[] = 
                      {
                        { RO, int32, sizeof (INTEGER32), (void*)&Velocity_sensor_actual_value }
                      };
 
 /* index 0x606B :   Mapped variable Velocity demand value */
+                    ODCallback_t Velocity_demand_value_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index606B[] = 
                      {
                        { RO, int32, sizeof (INTEGER32), (void*)&Velocity_demand_value }
                      };
 
 /* index 0x606C :   Mapped variable Velocity actual value */
+                    ODCallback_t Velocity_actual_value_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index606C[] = 
                      {
                        { RO, int32, sizeof (INTEGER32), (void*)&Velocity_actual_value }
                      };
 
 /* index 0x6078 :   Mapped variable Current actual value */
+                    ODCallback_t Current_actual_value_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6078[] = 
                      {
                        { RO, int16, sizeof (INTEGER16), (void*)&Current_actual_value }
                      };
 
 /* index 0x607A :   Mapped variable Target position */
+                    ODCallback_t Target_position_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index607A[] = 
                      {
                        { RW, int32, sizeof (INTEGER32), (void*)&Target_position }
                      };
 
 /* index 0x607C :   Mapped variable Home offset */
+                    ODCallback_t Home_offset_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index607C[] = 
                      {
                        { RW, int32, sizeof (INTEGER32), (void*)&Home_offset }
@@ -731,6 +795,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x607D :   Mapped variable Software position limit */
                     UNS8 CHASSIS_OD_highestSubIndex_obj607D = 2; /* number of subindex - 1*/
+                    ODCallback_t Software_position_limit_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index607D[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj607D },
@@ -739,78 +809,130 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x607F :   Mapped variable Maximal profile velocity */
+                    ODCallback_t Maximal_profile_velocity_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index607F[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Maximal_profile_velocity }
                      };
 
 /* index 0x6081 :   Mapped variable Profile velocity */
+                    ODCallback_t Profile_velocity_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6081[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Profile_velocity }
                      };
 
 /* index 0x6083 :   Mapped variable Profile acceleration */
+                    ODCallback_t Profile_acceleration_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6083[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Profile_acceleration }
                      };
 
 /* index 0x6084 :   Mapped variable Profile deceleration */
+                    ODCallback_t Profile_deceleration_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6084[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Profile_deceleration }
                      };
 
 /* index 0x6085 :   Mapped variable Quick stop deceleration */
+                    ODCallback_t Quick_stop_deceleration_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6085[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Quick_stop_deceleration }
                      };
 
 /* index 0x6086 :   Mapped variable Motion profile type */
+                    ODCallback_t Motion_profile_type_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6086[] = 
                      {
                        { RW, int16, sizeof (INTEGER16), (void*)&Motion_profile_type }
                      };
 
 /* index 0x6089 :   Mapped variable Position notation index */
+                    ODCallback_t Position_notation_index_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6089[] = 
                      {
                        { RW, int8, sizeof (INTEGER8), (void*)&Position_notation_index }
                      };
 
 /* index 0x608A :   Mapped variable Position dimention index */
+                    ODCallback_t Position_dimention_index_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index608A[] = 
                      {
                        { RW, real32, sizeof (REAL32), (void*)&Position_dimention_index }
                      };
 
 /* index 0x608B :   Mapped variable Velocity notation index */
+                    ODCallback_t Velocity_notation_index_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index608B[] = 
                      {
                        { RW, int8, sizeof (INTEGER8), (void*)&Velocity_notation_index }
                      };
 
 /* index 0x608C :   Mapped variable Velocity dimention index */
+                    ODCallback_t Velocity_dimention_index_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index608C[] = 
                      {
                        { RW, real32, sizeof (REAL32), (void*)&Velocity_dimention_index }
                      };
 
 /* index 0x608D :   Mapped variable Acceleraion notation index */
+                    ODCallback_t Acceleraion_notation_index_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index608D[] = 
                      {
                        { RW, int8, sizeof (INTEGER8), (void*)&Acceleraion_notation_index }
                      };
 
 /* index 0x608E :   Mapped variable Acceleraion dimention index */
+                    ODCallback_t Acceleraion_dimention_index_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index608E[] = 
                      {
                        { RW, real32, sizeof (REAL32), (void*)&Acceleraion_dimention_index }
                      };
 
 /* index 0x6098 :   Mapped variable Homing method */
+                    ODCallback_t Homing_method_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6098[] = 
                      {
                        { RW, int8, sizeof (INTEGER8), (void*)&Homing_method }
@@ -818,6 +940,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x6099 :   Mapped variable Homing speeds */
                     UNS8 CHASSIS_OD_highestSubIndex_obj6099 = 2; /* number of subindex - 1*/
+                    ODCallback_t Homing_speeds_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6099[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj6099 },
@@ -826,6 +954,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x609A :   Mapped variable Homing acceleration */
+                    ODCallback_t Homing_acceleration_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index609A[] = 
                      {
                        { RW, uint32, sizeof (UNS32), (void*)&Homing_acceleration }
@@ -833,6 +965,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x60F6 :   Mapped variable Current control parameter set */
                     UNS8 CHASSIS_OD_highestSubIndex_obj60F6 = 2; /* number of subindex - 1*/
+                    ODCallback_t Current_control_parameter_set_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index60F6[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj60F6 },
@@ -842,6 +980,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x60F9 :   Mapped variable Velocity control parameter set */
                     UNS8 CHASSIS_OD_highestSubIndex_obj60F9 = 2; /* number of subindex - 1*/
+                    ODCallback_t Velocity_control_parameter_set_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index60F9[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj60F9 },
@@ -851,6 +995,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x60FB :   Mapped variable Position control parameter set */
                     UNS8 CHASSIS_OD_highestSubIndex_obj60FB = 5; /* number of subindex - 1*/
+                    ODCallback_t Position_control_parameter_set_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index60FB[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj60FB },
@@ -862,12 +1015,20 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x60FF :   Mapped variable Target velocity */
+                    ODCallback_t Target_velocity_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index60FF[] = 
                      {
                        { RW, int32, sizeof (INTEGER32), (void*)&Target_velocity }
                      };
 
 /* index 0x6402 :   Mapped variable Motor type */
+                    ODCallback_t Motor_type_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6402[] = 
                      {
                        { RW, uint16, sizeof (UNS16), (void*)&Motor_type }
@@ -875,6 +1036,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 /* index 0x6410 :   Mapped variable Motor data */
                     UNS8 CHASSIS_OD_highestSubIndex_obj6410 = 5; /* number of subindex - 1*/
+                    ODCallback_t Motor_data_callbacks[] = 
+                     {
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6410[] = 
                      {
                        { RO, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj6410 },
@@ -886,6 +1056,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x6502 :   Mapped variable Supported drive modes */
+                    ODCallback_t Supported_drive_modes_callbacks[] = 
+                     {
+                       NULL,
+                     };
                     subindex CHASSIS_OD_Index6502[] = 
                      {
                        { RO, uint32, sizeof (UNS32), (void*)&Supported_drive_modes }
@@ -1007,45 +1181,45 @@ const indextable * CHASSIS_OD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCa
 		case 0x1A01: i = 29;break;
 		case 0x1A02: i = 30;break;
 		case 0x1A03: i = 31;break;
-		case 0x2000: i = 32;break;
-		case 0x6040: i = 33;break;
-		case 0x6041: i = 34;break;
-		case 0x6060: i = 35;break;
-		case 0x6061: i = 36;break;
-		case 0x6062: i = 37;break;
-		case 0x6064: i = 38;break;
-		case 0x6065: i = 39;break;
-		case 0x6067: i = 40;break;
-		case 0x6068: i = 41;break;
-		case 0x6069: i = 42;break;
-		case 0x606B: i = 43;break;
-		case 0x606C: i = 44;break;
-		case 0x6078: i = 45;break;
-		case 0x607A: i = 46;break;
-		case 0x607C: i = 47;break;
-		case 0x607D: i = 48;break;
-		case 0x607F: i = 49;break;
-		case 0x6081: i = 50;break;
-		case 0x6083: i = 51;break;
-		case 0x6084: i = 52;break;
-		case 0x6085: i = 53;break;
-		case 0x6086: i = 54;break;
-		case 0x6089: i = 55;break;
-		case 0x608A: i = 56;break;
-		case 0x608B: i = 57;break;
-		case 0x608C: i = 58;break;
-		case 0x608D: i = 59;break;
-		case 0x608E: i = 60;break;
-		case 0x6098: i = 61;break;
-		case 0x6099: i = 62;break;
-		case 0x609A: i = 63;break;
-		case 0x60F6: i = 64;break;
-		case 0x60F9: i = 65;break;
-		case 0x60FB: i = 66;break;
-		case 0x60FF: i = 67;break;
-		case 0x6402: i = 68;break;
-		case 0x6410: i = 69;break;
-		case 0x6502: i = 70;break;
+		case 0x2000: i = 32;*callbacks = motion_command_callbacks; break;
+		case 0x6040: i = 33;*callbacks = Controlword_callbacks; break;
+		case 0x6041: i = 34;*callbacks = Statusword_callbacks; break;
+		case 0x6060: i = 35;*callbacks = Modes_of_operation_callbacks; break;
+		case 0x6061: i = 36;*callbacks = Modes_of_operation_display_callbacks; break;
+		case 0x6062: i = 37;*callbacks = Position_demannd_value_callbacks; break;
+		case 0x6064: i = 38;*callbacks = Position_actual_value_callbacks; break;
+		case 0x6065: i = 39;*callbacks = Maximal_following_error_callbacks; break;
+		case 0x6067: i = 40;*callbacks = Position_window_callbacks; break;
+		case 0x6068: i = 41;*callbacks = Position_window_time_callbacks; break;
+		case 0x6069: i = 42;*callbacks = Velocity_sensor_actual_value_callbacks; break;
+		case 0x606B: i = 43;*callbacks = Velocity_demand_value_callbacks; break;
+		case 0x606C: i = 44;*callbacks = Velocity_actual_value_callbacks; break;
+		case 0x6078: i = 45;*callbacks = Current_actual_value_callbacks; break;
+		case 0x607A: i = 46;*callbacks = Target_position_callbacks; break;
+		case 0x607C: i = 47;*callbacks = Home_offset_callbacks; break;
+		case 0x607D: i = 48;*callbacks = Software_position_limit_callbacks; break;
+		case 0x607F: i = 49;*callbacks = Maximal_profile_velocity_callbacks; break;
+		case 0x6081: i = 50;*callbacks = Profile_velocity_callbacks; break;
+		case 0x6083: i = 51;*callbacks = Profile_acceleration_callbacks; break;
+		case 0x6084: i = 52;*callbacks = Profile_deceleration_callbacks; break;
+		case 0x6085: i = 53;*callbacks = Quick_stop_deceleration_callbacks; break;
+		case 0x6086: i = 54;*callbacks = Motion_profile_type_callbacks; break;
+		case 0x6089: i = 55;*callbacks = Position_notation_index_callbacks; break;
+		case 0x608A: i = 56;*callbacks = Position_dimention_index_callbacks; break;
+		case 0x608B: i = 57;*callbacks = Velocity_notation_index_callbacks; break;
+		case 0x608C: i = 58;*callbacks = Velocity_dimention_index_callbacks; break;
+		case 0x608D: i = 59;*callbacks = Acceleraion_notation_index_callbacks; break;
+		case 0x608E: i = 60;*callbacks = Acceleraion_dimention_index_callbacks; break;
+		case 0x6098: i = 61;*callbacks = Homing_method_callbacks; break;
+		case 0x6099: i = 62;*callbacks = Homing_speeds_callbacks; break;
+		case 0x609A: i = 63;*callbacks = Homing_acceleration_callbacks; break;
+		case 0x60F6: i = 64;*callbacks = Current_control_parameter_set_callbacks; break;
+		case 0x60F9: i = 65;*callbacks = Velocity_control_parameter_set_callbacks; break;
+		case 0x60FB: i = 66;*callbacks = Position_control_parameter_set_callbacks; break;
+		case 0x60FF: i = 67;*callbacks = Target_velocity_callbacks; break;
+		case 0x6402: i = 68;*callbacks = Motor_type_callbacks; break;
+		case 0x6410: i = 69;*callbacks = Motor_data_callbacks; break;
+		case 0x6502: i = 70;*callbacks = Supported_drive_modes_callbacks; break;
 		default:
 			*errorCode = OD_NO_SUCH_OBJECT;
 			return NULL;

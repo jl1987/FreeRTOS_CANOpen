@@ -349,7 +349,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F4XX,USE_STDPERIPH_DRIVER,HSE_VALUE=8000000</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\BSP;..\SYSTEM\BSP\Bsp_Inc;..\USER\inc;..\USER\src;..\HARDWARE\LED;..\HARDWARE\ultrasonic_sensor;..\UTILITIES\STM32F40x_FWLib\inc;..\UTILITIES\STM32F40x_FWLib\src;..\UTILITIES\CanFestival-3\include;..\UTILITIES\CanFestival-3\include\STM32;..\UTILITIES\CanFestival-3\objdict;..\UTILITIES\FreeRTOSv8.0.1\include;..\UTILITIES\FreeRTOSv8.0.1\portable\RVDS\ARM_CM4F</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\BSP;..\SYSTEM\BSP\Bsp_Inc;..\USER\inc;..\USER\src;..\HARDWARE\LED;..\HARDWARE\ultrasonic_sensor;..\UTILITIES\STM32F40x_FWLib\inc;..\UTILITIES\STM32F40x_FWLib\src;..\UTILITIES\CanFestival-3\include;..\UTILITIES\CanFestival-3\include\STM32;..\UTILITIES\CanFestival-3\objdict;..\UTILITIES\FreeRTOSv8.0.1\include;..\UTILITIES\FreeRTOSv8.0.1\portable\RVDS\ARM_CM4F;..\HARDWARE;..\HARDWARE\motor;..\HARDWARE\anticollision;..\HARDWARE\force_sensor;..\HARDWARE\ir_autocharge;..\HARDWARE\ir_distance;..\HARDWARE\lidar</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -416,11 +416,6 @@
           <GroupName>BSP</GroupName>
           <Files>
             <File>
-              <FileName>bsp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\SYSTEM\BSP\bsp.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SYSTEM\BSP\Bsp_Src\bsp_led.c</FilePath>
@@ -444,6 +439,41 @@
               <FileName>sensor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\src\sensor.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Hardware</GroupName>
+          <Files>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\motor\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>lidar.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\lidar\lidar.c</FilePath>
+            </File>
+            <File>
+              <FileName>anticollision.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\anticollision\anticollision.c</FilePath>
+            </File>
+            <File>
+              <FileName>force_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\force_sensor\force_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>ir_autocharge.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\ir_autocharge\ir_autocharge.c</FilePath>
+            </File>
+            <File>
+              <FileName>ir_distance.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\ir_distance\ir_distance.c</FilePath>
             </File>
           </Files>
         </Group>

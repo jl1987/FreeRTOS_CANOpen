@@ -1,22 +1,24 @@
 /**
   ******************************************************************************
-  * @file    bms_control.c
+  * @file    sensor.c
   * @author  Jim
   * @version V1.0
-  * @date    01-Sep-2014
-  * @brief   This file provides BMS control thread functions 
+  * @date    16-Jan-2015
+  * @brief   This file provides sensor control thread functions 
   *  
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 CSST Robot Research Center</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 CSST Robot Research Center</center></h2>
   *
   ******************************************************************************
   */
-
 #include "sensor.h"
-#include "stdio.h"
-#include "globalstruct.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "canfestival.h"
+#include "can_STM32.h"
 
 /* BSP */
 #include "bsp_led.h"
@@ -26,24 +28,26 @@
 
 xTaskHandle	 xT_SENSOR 	  = NULL;
 
-//SENSOR_STRUCT 	SENSOR;  //make it your own sensor struct
+u8 MSG_U5_R[8];
+u8 MSG_U5_T[16];
+u32 mask=0;
+
 
 void sensor_thread(void * pvParameters)
 {
-	UNS32 ret_store;
 	
 	SENSOR_Init();
 	
 	printf("start the sensor \r\n");
 	
 	while(1)
-	{ 
+	{
 		/* Get Data From SENSOR using XXX */
 		//GetDataFromSENSOR(&SENSOR);  //make it your own sensor function
 		
 		/* Copy Data to Object Dictionary */
 		//ret_store = StoreSENSORDataToOD(&SENSOR,&SENSOR_OD_Data);  //make it your own sensor store function
-		
+		//printf("Sensor is working...");
 	  vTaskDelay(SENSOR_CONTROL_THREAD_DELAY_TIMER);
 		bsp_LedToggle(3,100);
 		
@@ -65,307 +69,473 @@ void start_sensor(void)
 
 void SENSOR_Init(void)
 {
-	SENSOR_Force_Init();
-	SENSOR_Lidar_Init();
-	SENSOR_IR_Distance_Init();
-	SENSOR_IR_Autocharge_Init();
-	SENSOR_Anticollision();
+ 	SENSOR_Force_Init();
+ 	SENSOR_Lidar_Init();
+ 	SENSOR_IR_Distance_Init();
+ 	SENSOR_IR_Autocharge_Init();
+ 	SENSOR_Anticollision();
 }
 
+// void GetDataFromForceSensor(void *force)
+// {
+// 	int ii;	 
+// 	int x_value, y_value;
+// 	double angle = 0;
+// 	double angle_diff = 0;
+// 	double prev_angle = 0;
+// 	double prev_angle_diff = 0;
+// 	double magnitude = 0;
+// 	double magnitude_diff = 0;
+// 	double prev_magnitude = 0;
+// 	double prev_magnitude_diff = 0;
+// 	double Kp = 60;
+// 	double Kd = 1;
+// 	while(1)
+// 	{
+// 		if(force_calibration_count<FORCE_SENSOR_CALIBRATION_LEN)
+// 		{
+// 			for(ii=0;ii<8;ii++)
+// 			{
+// 				force_sensor_offset[ii]+=ADC3ConvertedValue[ii];
+// 			}
+// 			force_calibration_count++;
+// 		}									 
+// 		else if(force_calibration_count == FORCE_SENSOR_CALIBRATION_LEN)
+// 		{
+// 			for(ii=0;ii<8;ii++)
+// 			{
+// 				force_sensor_offset[ii] = force_sensor_offset[ii]/FORCE_SENSOR_CALIBRATION_LEN;
+// 			}
+// 			force_calibration_count++;
+// 			USART1_Puts("OK");
+// 		}	
+// 		else
+// 		{
+// 			for(ii=0;ii<8;ii++)
+// 	
+// 			{
+// 				force_temp[ii] = ADC3ConvertedValue[ii]-force_sensor_offset[ii];
+// 				if(abs(force_temp[ii])<=30)
+// 				{
+// 					 force_temp[ii] = 0;
+// 				}
+// 			}
+// 			for(ii=0;ii<4;ii++)
+// 			{
+// 				if(abs(force_temp[ii*2+1]-force_temp[ii*2])>50)
+// 				{
+// 					force_value[ii] = -1*force_temp[ii*2+1];
+// 				}
+// 				else
+// 				{
+// 					force_value[ii] = force_temp[ii*2];
+// 				}
+// 			}
+// 		}
+// 		
+// 		
+// 		if(force_value[0]<force_value[2])
+// 		{
+// 			y_value = (abs(force_value[0])+force_value[2]);
+// 		}
+// 		else
+// 		{
+// 			y_value = -1*(force_value[0]+abs(force_value[2]));
+// 		}
+// 		if(force_value[1]<force_value[3])
+// 		{
+// 			x_value = (abs(force_value[1])+force_value[3]);
+// 		}
+// 		else
+// 		{
+// 			x_value = -1*(force_value[1]+abs(force_value[3]));
+// 		}
+// 		
+// 		angle = atan2(y_value,x_value);
+// 		angle_diff = angle - prev_angle;
+// 		magnitude = FORCE_SENSOR_CENDIST*sqrt(pow(x_value,2)+pow(y_value,2))/Height;
+// 		magnitude_diff = magnitude - prev_magnitude;
+// 		result_speed = -Kp*magnitude - Kd*(magnitude_diff - prev_magnitude_diff);
+// 		prev_angle = angle;
+// 		prev_magnitude = magnitude;
+// 		prev_angle_diff = angle_diff;
+// 		prev_magnitude_diff = magnitude_diff;
+// 		
+// 		if(result_speed>SPEED_CONSTANT)
+// 		{
+// 			result_speed = SPEED_CONSTANT;
+// 		}
+// 		else if(result_speed<-SPEED_CONSTANT)
+// 		{
+// 			result_speed = -SPEED_CONSTANT;
+// 		}
+// 		result_speed_x = result_speed*sin(angle);
+// 		result_speed_y = -result_speed*cos(angle);
+// 		target_speed1 = result_speed_x;
+// 		target_speed2 = result_speed_y;
+// 	
+// 		DRIVE1.V_SET=chassis_drive(drive_speed1,drive_speed2,0,1);
+// 		DRIVE2.V_SET=chassis_drive(drive_speed1,drive_speed2,0,2);
+// 		DRIVE3.V_SET=chassis_drive(drive_speed1,drive_speed2,0,3);
+// 		chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+// 		OSTimeDly(25);
+//  	}
+// 	
+// }	
 
-void SENSOR_Force_Init(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	
-	ADC_InitTypeDef ADC_InitStructure;
-	ADC_CommonInitTypeDef ADC_CommonInitStructure;
-	
-	DMA_InitTypeDef DMA_InitStructure;
-	
-	/* GPIO Config ------------------------------------------------------------------*/
-	/* Enable GPIOF Clock */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
-	
-  // Configure ADC3 Channel13 pin as analog input for New Force sensors' (1,2,3,4) I/Os 
-  GPIO_StructInit(&GPIO_InitStructure); // Reset init structure, if not it can cause issues...
-	//ADC3 														CH9  			CH14			CH15				CH4					CH5				CH6					CH7				CH8
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9|GPIO_Pin_10;		
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;
-  GPIO_Init(GPIOF, &GPIO_InitStructure);	
-	
-	/* DMA2 Config ------------------------------------------------------------------*/
-	/* Enable DMA2 Clock */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
-	/* DMA2 Stream0 channel0 configuration */ 
-	
-	DMA_DeInit(DMA2_Stream1);
-	
-	DMA_InitStructure.DMA_Channel = DMA_Channel_2;      
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC3_DR_ADDRESS;   
-	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&ADC3ConvertedValue;    
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory; 
-	DMA_InitStructure.DMA_BufferSize = 8;
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;    
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;   
-	
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High;    
-	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;            
-	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;   
-	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;   
-	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;   
-	DMA_Init(DMA2_Stream1, &DMA_InitStructure);    
-	DMA_Cmd(DMA2_Stream1, ENABLE); 
+// void Infrared_Distance_task (void *pdata)
+// {
+// 	int pp;
+// 	double AD_value_temp;
+// //	float AD_value_temp_actual;
+// 	double V_5v;
 
-	/* ADC Config -------------------------------------------------------------------*/
-	/* Enable ADC3 Clock */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3,ENABLE);
-  /* ADC Common Init */
-  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
-  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;
-  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_1;    //
-  //ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled; 
-  ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_15Cycles;
-  ADC_CommonInit(&ADC_CommonInitStructure);
+// 	while(1)
+// 	{	
+// 		/*	 		 
+// 		for(pp=0;pp<SHARP_DISTANCE_SENSOR_NUM;pp++)
+// 		{
+// 			AD_value_temp = ADC1ConvertedValue[pp];
+// 	
+// 			// transfer for GP2D120 IR sensor
+// 			// original 1024 <->5V for PIC18C521
+// 			// current 4096 <->3.3V for STM32F407 
+// 			//V_5v=AD_value_1*3.3/20;	
+// 			V_5v=AD_value_temp*0.165;		            
+// 			sharp_ir_distance[pp] = 2914/(V_5v+5)-1; //for DP2D120
+// 			sharp_ir_distance[pp] = sharp_ir_distance[pp]*10;
+// 		//	printf("%4.2f mm\r\n", distance);    	 
+// 		}
+// 		*/
 
-  /* ADC1 Init */
-  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
-  //ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
-  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-// gtz02nov  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConvEdge_None;
-  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;   //gtz01nov 
-  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
-  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  //ADC_InitStructure.ADC_NbrOfConversion = 1;
-  ADC_InitStructure.ADC_NbrOfConversion = 8;
-  ADC_Init(ADC3, &ADC_InitStructure);
+// 		if(sharp_calibration_count<SHARP_SENSOR_CALIBRATION_LEN)
+// 		{
+// 			for(pp=0;pp<SHARP_DISTANCE_SENSOR_NUM;pp++)
+// 			{
+// 				AD_value_temp = ADC1ConvertedValue[pp];	
+// 				V_5v=AD_value_temp*0.165;		            
+// 				sharp_ir_distance[pp] = 2914/(V_5v+5)-1; //for DP2D120
+// 				sharp_ir_distance[pp] = sharp_ir_distance[pp]*10;
+// 				sharp_sensor_offset[pp]+=sharp_ir_distance[pp];
+// 			}
+// 			sharp_calibration_count++;
+// 		}									 
+// 		else if(sharp_calibration_count == SHARP_SENSOR_CALIBRATION_LEN)
+// 		{
+// 			for(pp=0;pp<SHARP_DISTANCE_SENSOR_NUM;pp++)
+// 			{
+// 				sharp_sensor_offset[pp] = sharp_sensor_offset[pp]/SHARP_SENSOR_CALIBRATION_LEN;
+// 			}
+// 			sharp_calibration_count++;
+// 			USART1_Puts("OK");
+// 		}	
+// 		else
+// 		{
+// 			for(pp=0;pp<SHARP_DISTANCE_SENSOR_NUM;pp++)
+// 			{
+// 				AD_value_temp = ADC1ConvertedValue[pp];	
+// 				V_5v=AD_value_temp*0.165;		            
+// 				sharp_ir_distance[pp] = 2914/(V_5v+5)-1; //for DP2D120
+// 				sharp_ir_distance[pp] = sharp_ir_distance[pp]*10;
+// 				sharp_value[pp] = sharp_ir_distance[pp]-sharp_sensor_offset[pp];
+// 				if(abs(sharp_value[pp])<=50)
+// 				{
+// 					 sharp_fall_value[pp] = 0;
+// 				}
+// 				else
+// 				{
+// 					sharp_fall_value[pp] = 1;
+// 				}
+// 			}
+// 		}
 
-  /* ADC3 regular channelx configuration */
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_9,  1, ADC_SampleTime_144Cycles);		// PF3
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_14, 2, ADC_SampleTime_144Cycles);		// PF4
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_15, 3, ADC_SampleTime_144Cycles);		// PF5
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_4,  4, ADC_SampleTime_144Cycles);		// PF6
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_5,  5, ADC_SampleTime_144Cycles);		// PF7
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_6,  6, ADC_SampleTime_144Cycles);		// PF8
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_7,  7, ADC_SampleTime_144Cycles);		// PF9
-  ADC_RegularChannelConfig(ADC3, ADC_Channel_8,  8, ADC_SampleTime_144Cycles);		// PF10
+// 		switch(motion_command)
+// 		{
+// 			case 0:		// No keys is pressed --> stop the chassis
+// 				break;
+// 			case 1:		// Key D is pressed	--> right turning
+// 				break;
+// 			case 2:		// Key S is pressed	--> move backward
+// 				if(IR_Switch_enable_P)
+// 				{
+// 					// if there exist at least one sensor on each size of the moving direction detected a falling risk
+// 					if(sharp_fall_value[2]&&sharp_fall_value[3])
+// 					{
+// 						// stop the chassis
+// 					   	DRIVE1.V_SET=chassis_drive(0,0,0,1); DRIVE2.V_SET=chassis_drive(0,0,0,2); DRIVE3.V_SET=chassis_drive(0,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[2])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(-SPEED_CONSTANT,0,0,1); DRIVE2.V_SET=chassis_drive(-SPEED_CONSTANT,0,0,2); DRIVE3.V_SET=chassis_drive(-SPEED_CONSTANT,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[3])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(SPEED_CONSTANT,0,0,1); DRIVE2.V_SET=chassis_drive(SPEED_CONSTANT,0,0,2); DRIVE3.V_SET=chassis_drive(SPEED_CONSTANT,0,0,3);
+// 					}
+// 				}
+// 				break;
+// 			case 4:		// Key A is pressed	--> left turning
+// 				break;
+// 			case 8:		// Key E is pressed	--> move to right
+// 				if(IR_Switch_enable_P)
+// 				{
+// 					// if there exist at least one sensor on each size of the moving direction detected a falling risk
+// 					if( sharp_fall_value[1])
+// 					{
+// 					   	// stop the chassis
+// 					   	DRIVE1.V_SET=chassis_drive(0,0,0,1); DRIVE2.V_SET=chassis_drive(0,0,0,2); DRIVE3.V_SET=chassis_drive(0,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[0])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(0,-SPEED_CONSTANT,0,1); DRIVE2.V_SET=chassis_drive(0,-SPEED_CONSTANT,0,2); DRIVE3.V_SET=chassis_drive(0,-SPEED_CONSTANT,0,3);
+// 					}
+// 					else if	(sharp_fall_value[2])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(0,SPEED_CONSTANT,0,1); DRIVE2.V_SET=chassis_drive(0,SPEED_CONSTANT,0,2); DRIVE3.V_SET=chassis_drive(0,SPEED_CONSTANT,0,3);
+// 					}
+// 				}
+// 				break;
+// 			case 16:		// Key W is pressed	--> move forward
+// 				if(IR_Switch_enable_P)
+// 				{
+// 					// if there exist at least one sensor on each size of the moving direction 
+// 					if(sharp_fall_value[0]&&sharp_fall_value[5])
+// 					{
+// 					   	// stop the chassis
+// 						DRIVE1.V_SET=chassis_drive(0,0,0,1); DRIVE2.V_SET=chassis_drive(0,0,0,2); DRIVE3.V_SET=chassis_drive(0,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[0])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(-SPEED_CONSTANT,0,0,1); DRIVE2.V_SET=chassis_drive(-SPEED_CONSTANT,0,0,2); DRIVE3.V_SET=chassis_drive(-SPEED_CONSTANT,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[5])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(SPEED_CONSTANT,0,0,1); DRIVE2.V_SET=chassis_drive(SPEED_CONSTANT,0,0,2); DRIVE3.V_SET=chassis_drive(SPEED_CONSTANT,0,0,3);
+// 					}
+// 				}
+// 				break;
+// 			case 17:		// Keys W + D are pressed --> turn right [forward]
+// 				if(IR_Switch_enable_P)	// if the obstacle avoidance function is in used
+// 				{
+// 				}
+// 				break;
+// 			case 20:		// Keys W + A are pressed --> turn left [forward]
+// 				if(IR_Switch_enable_P)	// if the obstacle avoidance function is in used
+// 				{	
+// 				}
+// 				break;
+// 			case 24:		  // Keys W + E are pressed	--> move to right [forward]
+// 				if(IR_Switch_enable_P)
+// 				{
+// 					// if there exist at least one sensor on each size of the moving direction 
+// 					if(sharp_fall_value[0]&&sharp_fall_value[1])
+// 					{
+// 					   	// stop the chassis
+// 						DRIVE1.V_SET=chassis_drive(0,0,0,1); DRIVE2.V_SET=chassis_drive(0,0,0,2); DRIVE3.V_SET=chassis_drive(0,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[0])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(SPEED_CONSTANT*COS_45,-SPEED_CONSTANT*SIN_45,0,1); DRIVE2.V_SET=chassis_drive(SPEED_CONSTANT*COS_45,-SPEED_CONSTANT*SIN_45,0,2); DRIVE3.V_SET=chassis_drive(SPEED_CONSTANT*COS_45,-SPEED_CONSTANT*SIN_45,0,3);
+// 					}
+// 					else if	(sharp_fall_value[1])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(-SPEED_CONSTANT*COS_45,SPEED_CONSTANT*SIN_45,0,1); DRIVE2.V_SET=chassis_drive(-SPEED_CONSTANT*COS_45,SPEED_CONSTANT*SIN_45,0,2); DRIVE3.V_SET=chassis_drive(-SPEED_CONSTANT*COS_45,SPEED_CONSTANT*SIN_45,0,3);
+// 					}
+// 				}
+// 				break;
+// 			case 32:		// Key Q is pressed --> move to left
+// 				if(IR_Switch_enable_P)
+// 				{
+// 					// if there exist at least one sensor on each size of the moving direction 
+// 					if( sharp_fall_value[4])
+// 					{
+// 					   	// stop the chassis
+// 						DRIVE1.V_SET=chassis_drive(0,0,0,1); DRIVE2.V_SET=chassis_drive(0,0,0,2); DRIVE3.V_SET=chassis_drive(0,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[3])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(0,SPEED_CONSTANT,0,1); DRIVE2.V_SET=chassis_drive(0,SPEED_CONSTANT,0,2); DRIVE3.V_SET=chassis_drive(0,SPEED_CONSTANT,0,3);
+// 					}
+// 					else if	(sharp_fall_value[5])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(0,-SPEED_CONSTANT,0,1); DRIVE2.V_SET=chassis_drive(0,-SPEED_CONSTANT,0,2); DRIVE3.V_SET=chassis_drive(0,-SPEED_CONSTANT,0,3);
+// 					}
+// 				}
+// 				break;
+// 			case 48:		// Keys W + Q are pressed --> move to left [forward]
+// 				if(IR_Switch_enable_P)
+// 				{
+// 					// if there exist at least one sensor on each size of the moving direction 
+// 					if(sharp_fall_value[4]&&sharp_fall_value[5])
+// 					{
+// 					   	// stop the chassis
+// 						DRIVE1.V_SET=chassis_drive(0,0,0,1); DRIVE2.V_SET=chassis_drive(0,0,0,2); DRIVE3.V_SET=chassis_drive(0,0,0,3);
+// 					}
+// 					else if	(sharp_fall_value[4])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(SPEED_CONSTANT*COS_45,SPEED_CONSTANT*SIN_45,0,1); DRIVE2.V_SET=chassis_drive(SPEED_CONSTANT*COS_45,SPEED_CONSTANT*SIN_45,0,2); DRIVE3.V_SET=chassis_drive(SPEED_CONSTANT*COS_45,SPEED_CONSTANT*SIN_45,0,3);
+// 					}
+// 					else if	(sharp_fall_value[5])
+// 					{
+// 						//move to the other side
+// 						DRIVE1.V_SET=chassis_drive(-SPEED_CONSTANT*COS_45,-SPEED_CONSTANT*SIN_45,0,1); DRIVE2.V_SET=chassis_drive(-SPEED_CONSTANT*COS_45,-SPEED_CONSTANT*SIN_45,0,2); DRIVE3.V_SET=chassis_drive(-SPEED_CONSTANT*COS_45,-SPEED_CONSTANT*SIN_45,0,3);
+// 					}
+// 				}
+// 				break;
+// 			default:
+// 			break;
+// 		}
 
- /* Enable DMA request after last transfer (Single-ADC mode) */
- 	ADC_DMARequestAfterLastTransferCmd(ADC3, ENABLE);//gtz01nov 
+// 		OSTimeDly(50);
+// 	}
+// }
+// void AUTOCHARGE_task(void* pdata)
+// {
+// 	char message[100];
+// 	while(1)
+// 	 {		 
+// 	   ///检测第1个传感器是否收到
+// 		 if (Auto_charge.Infared0_time<100)Auto_charge.Infared0_time++;
+// 		
+// 		 if ((Auto_charge.Infared0_time_end>=Auto_charge_Infared0_time_MIN)&&(Auto_charge.Infared0_time_end<=Auto_charge_Infared0_time_MAX))
+// 		 {
+// 		 	if (Auto_charge.Infared0_collected<50)Auto_charge.Infared0_collected++;	 
+// 	   	 }
+// 		 else
+// 		 {
+// 		 	Auto_charge.Infared0_collected=0;
+// 		 }
+// 		 
+// 		 ///检测第2个传感器是否收到
+// 		 if (Auto_charge.Infared1_time<100)Auto_charge.Infared1_time++;
+// 		
+// 		 if ((Auto_charge.Infared1_time_end>=Auto_charge_Infared1_time_MIN)&&(Auto_charge.Infared1_time_end<=Auto_charge_Infared1_time_MAX))
+// 		 {
+// 	     	if (Auto_charge.Infared1_collected<50)Auto_charge.Infared1_collected++;	 
+// 	   	 }
+// 		 else
+// 		 {
+// 		 	Auto_charge.Infared1_collected=0; 
+// 		 }
+// 		 //防止误入中断
+// 		 if(Auto_charge.Infared0_time>=10)Auto_charge.Infared0_collected=0;
+// 		 if(Auto_charge.Infared1_time>=10)Auto_charge.Infared1_collected=0;	 
+// 		 
+// 		 //判断何去何从
+// 		 if ((Auto_charge.Infared0_collected>Auto_charge_Infared_collected_valve)&&(Auto_charge.Infared1_collected==0))
+// 		 {
+// 		 	if(previous_charge_status!=101)
+// 	     	{
+// 				Auto_charge.receive_status=49;
+// 			 	//MSG_U1_T[0]=0x01;  //向左转
+// 			 	GPIO_WriteBit(LEDPORT, LED2, Bit_RESET);
+// 			 	GPIO_WriteBit(LEDPORT, LED3, Bit_SET);
+// 			 	GPIO_WriteBit(LEDPORT, LED4, Bit_SET);
+// 			}
+// 	   	}
+// 		else
+// 		{
+// 			if ((Auto_charge.Infared1_collected>Auto_charge_Infared_collected_valve)&&(Auto_charge.Infared0_collected==0))
+// 		 	{
+// 	     		if(previous_charge_status!=101)
+// 	     		{
+// 					 Auto_charge.receive_status=51;
+// 					 //MSG_U1_T[0]=0x04;  //向右转
+// 					 GPIO_WriteBit(LEDPORT, LED4, Bit_RESET);
+// 					 GPIO_WriteBit(LEDPORT, LED2, Bit_SET);
+// 					 GPIO_WriteBit(LEDPORT, LED3, Bit_SET);
+// 				}
+// 	   		}
+// 			else
+// 			{
+// 				if ((Auto_charge.Infared0_collected>Auto_charge_Infared_collected_valve)&&(Auto_charge.Infared1_collected>Auto_charge_Infared_collected_valve))
+// 		 		{
+// 	     		Auto_charge.receive_status=50;
+// 				previous_charge_status=50;
+// 				 //MSG_U1_T[0]=0x10;  //向前走
+// 				 GPIO_WriteBit(LEDPORT, LED3, Bit_RESET);
+// 				 GPIO_WriteBit(LEDPORT, LED2, Bit_SET);
+// 				 GPIO_WriteBit(LEDPORT, LED4, Bit_SET);
+// 	   			}
+// 				else
+// 		 		{
+// 					if ((Auto_charge.Infared0_collected==0)&&(Auto_charge.Infared1_collected==0))
+// 			 		{
+// 					     Auto_charge.receive_status=101;
+// 						 previous_charge_status=101;
+// 						 GPIO_WriteBit(LEDPORT, LED2, Bit_SET);
+// 						 GPIO_WriteBit(LEDPORT, LED3, Bit_SET);
+// 						 GPIO_WriteBit(LEDPORT, LED4, Bit_SET);
+// 		   			}
+// 				}
+// 			}
+// 		}
+// 		
+// 		// The force sensors based anti-tilting algorithm
+// 		if(auto_charge_P && motion_command!=0)	 
+// 		{
+// 		 ///状态机
+// 		 	switch(Auto_charge.receive_status)
+// 		 	{
+// 				case 101: 
+// 				{
+// 					MSG_U1_T[0]=0x04;
+// 					Auto_charge.nosignal_counting++;
+// 					DRIVE1.V_SET=chassis_drive(0,0,1000,1);
+// 					DRIVE2.V_SET=chassis_drive(0,0,1000,2);
+// 					DRIVE3.V_SET=chassis_drive(0,0,1000,3);
+// 					sprintf(message,"Searching %d %d \r\n", Auto_charge.Infared0_collected, Auto_charge.Infared1_collected);
+// 					USART1_Puts(message);
+// 					chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);	 
+// 					break;  //向右转
+// 				}
+// 				case 49:  
+// 				 {
+// 				 	DRIVE1.V_SET=chassis_drive(0,1500,0,1);
+// 					DRIVE2.V_SET=chassis_drive(0,300,0,2);
+// 					DRIVE3.V_SET=chassis_drive(0,1500,0,3);
+// 					sprintf(message,"Right turing\r\n");
+// 					USART1_Puts(message);
+// 					chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+// 					MSG_U1_T[0]=0x01;break;  //向右转
+// 				 }
+// 				case 51:  
+// 				{
+// 					DRIVE1.V_SET=chassis_drive(0,300,0,1);
+// 					DRIVE2.V_SET=chassis_drive(0,1500,0,2);
+// 					DRIVE3.V_SET=chassis_drive(0,1500,0,3);
+// 					sprintf(message,"Left turing\r\n");
+// 					USART1_Puts(message);
+// 					chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+// 					MSG_U1_T[0]=0x04;break;  //向左转
+// 				} 
+// 				case 50:  
+// 				{
+// 					DRIVE1.V_SET=chassis_drive(0,1500,0,1);
+// 					DRIVE2.V_SET=chassis_drive(0,1500,0,2);
+// 					DRIVE3.V_SET=chassis_drive(0,1500,0,3);
+// 					sprintf(message,"Forward\r\n");
+// 					USART1_Puts(message);
+// 					chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+// 					MSG_U1_T[0]=0x10;break;  //向前走
+// 				}
+// 			}
+// 		}
+// 		OSTimeDly(20);
+// 	}
+// }
 
-	ADC_ContinuousModeCmd(ADC3, ENABLE);
-
-  /* Enable ADC3 DMA */
-  ADC_DMACmd(ADC3, ENABLE);
-
-  /* Enable ADC3 */
-  ADC_Cmd(ADC3, ENABLE);
-
-  /* Start ADC3 Software Conversion */ 
-  ADC_SoftwareStartConv(ADC3);
-}
-
-void SENSOR_Lidar_Init(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef 	NVIC_InitStructure; 
-	
-	/* GPIO Config ------------------------------------------------------------------*/
-	/* Enable GPIOF Clock */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	/* Connect USART pins to AF7 */
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_UART4);
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_UART4);
-
-	/* Configure USART Tx and Rx as alternate function push-pull */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);	
-	
-	/* UART4 Config -----------------------------------------------------------------*/
-	/* Enable UART4 Clock */
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4,ENABLE);
-	/* Config USAR4 Detail */
-  USART_InitStructure.USART_BaudRate = 115200;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	USART_Init(UART4, &USART_InitStructure);
-	/* Enable USART */
-	/* Enable USART4 Receive Data Read To Be Read Interrupt */
-	USART_Cmd(UART4, ENABLE);
-	USART_ITConfig(UART4, USART_IT_RXNE, ENABLE);
-	
-	/* NVIC Config ------------------------------------------------------------------*/
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	
-	NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-}
-	
-
-
-void SENSOR_IR_Distance_Init(void)
-{	
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	ADC_InitTypeDef ADC_InitStructure;
-	ADC_CommonInitTypeDef ADC_CommonInitStructure;
-	DMA_InitTypeDef DMA_InitStructure;
-	
-	/* GPIO Config ------------------------------------------------------------------*/
-	/* Enable GPIOA Clock */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	// Configure ADC1 Channel 0, 1, 4, 5, 6, 7, 12, 13 pins as analog input for infrared distance sensors 1-6 respectively
-  GPIO_StructInit(&GPIO_InitStructure); // Reset init structure, if not it can cause issues...
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-
-	/* DMA Config ------------------------------------------------------------------*/
-	/* Enable DMA2 Clock */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);    //DMA2,GPIO use AHB1 BUS
-  
-	DMA_DeInit(DMA2_Stream0);
-	
-	DMA_InitStructure.DMA_Channel = DMA_Channel_0;      
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_Address;  
-	//ADC1 DATA ADDRESS    
-	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&ADC1ConvertedValue;    
-	//DMA memory base address    
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;    
-	DMA_InitStructure.DMA_BufferSize = 8;    
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;   
-	//periphera inc mode: when have multi peripheras need to use DMA    
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;      
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;   
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;   
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;  
-	//need  continue visit   
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High;    
-	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;            
-	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;   
-	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;   
-	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;   
-	DMA_Init(DMA2_Stream0, &DMA_InitStructure);   
-	DMA_Cmd(DMA2_Stream0, ENABLE); 
-
-	/* ADC Config ------------------------------------------------------------------*/
-	/* Enable ADC1 Clock */ 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE); 	//ADC1 in DMA2 channel_0 , Stream0 
-  /* ADC Common Init */
-  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent; 
-  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;
-  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_1;
-  //ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled; 
-  ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_15Cycles;
-  ADC_CommonInit(&ADC_CommonInitStructure);
-
-  /* ADC1 Init ****************************************************************/
-  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
-  //ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-  ADC_InitStructure.ADC_ScanConvMode = ENABLE; 
-  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-  //gtz02nov  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConvEdge_None;
-  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;   //gtz01nov 
-  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
-  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right; 
-  //ADC_InitStructure.ADC_NbrOfConversion = 1;
-  ADC_InitStructure.ADC_NbrOfConversion = 8;
-  ADC_Init(ADC1, &ADC_InitStructure);
-
-  /* ADC1 regular channel12 configuration *************************************/
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 2, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 3, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 4, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 5, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 6, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_12,7, ADC_SampleTime_144Cycles);
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_13,8, ADC_SampleTime_144Cycles);
-
-  /* Enable DMA request after last transfer (Single-ADC mode) */
- 	ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);//gtz01nov 
-	ADC_ContinuousModeCmd(ADC1, ENABLE);
-  /* Enable ADC1 DMA */
-  ADC_DMACmd(ADC1, ENABLE);
-  /* Enable ADC1 */
-  ADC_Cmd(ADC1, ENABLE);
-  /* Start ADC1 Software Conversion */ 
-  ADC_SoftwareStartConv(ADC1);
-}
-
-
-void SENSOR_IR_Autocharge_Init(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	NVIC_InitTypeDef 	NVIC_InitStructure; 
-	EXTI_InitTypeDef	EXTI_InitStructure;
-	
-	/* GPIO Config ------------------------------------------------------------------*/
-	/* Enable GPIOG Clock */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
-	//EXTI 
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;       //输入模式
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;   //上拉
-  GPIO_Init(GPIOG, &GPIO_InitStructure);           
-  //EXTI
-	
-
-	/* NVIC Config ------------------------------------------------------------------*/
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn; 
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; 
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0; 
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn; 
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; 
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1; 
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	  
-	/* EXTI Config ------------------------------------------------------------------*/
-  SYSCFG_EXTILineConfig(IRPORT,IRPIN0);
-  SYSCFG_EXTILineConfig(IRPORT,IRPIN1);
-	
-	EXTI_InitStructure.EXTI_Line = EXTI_Line0|EXTI_Line1;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
-}
-
-void SENSOR_Anticollision(void)
-{
-	
-}
 
 
 // void GetDataFromSENSOR(SENSOR_STRUCT* sensor)

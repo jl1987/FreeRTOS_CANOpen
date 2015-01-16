@@ -123,18 +123,10 @@ unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate)
 		CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;	//使能过滤器
 		CAN_FilterInit(&CAN_FilterInitStructure);
 		  
-		  /* Transmit Structure preparation */
-//		  TxMessage.StdId = 0x321;
-//		  TxMessage.ExtId = 0x01;
-//		  TxMessage.RTR = CAN_RTR_DATA;
-//		  TxMessage.IDE = CAN_ID_STD;                         //CAN 2.0A
-//		  TxMessage.DLC = 1;
-		  
 		/* Enable FIFO 0 message pending Interrupt */
 		/* 打开FIFO0中断请求 */
 		CAN_ITConfig(CANx, CAN_IT_FMP0, ENABLE);
 		/* 配置NVIC */
-		//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);  //Original 
 		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//Test- Fix the Queue Problem 2014.-09.22
 
 		NVIC_InitStructure.NVIC_IRQChannel = CAN1_RX0_IRQn;
@@ -166,9 +158,9 @@ unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate)
 		CAN_StructInit(&CAN_InitStructure);
 		/* CAN cell init */
 		CAN_InitStructure.CAN_TTCM=DISABLE;  				//禁止时间触发通信方式
-		CAN_InitStructure.CAN_ABOM=DISABLE;   				//启动CAN总线自动关闭管理
+		CAN_InitStructure.CAN_ABOM=ENABLE;   			//启动CAN总线自动关闭管理
 		CAN_InitStructure.CAN_AWUM=DISABLE;  				//禁止自动唤醒模式
-		CAN_InitStructure.CAN_NART=DISABLE;   				//禁止非自动重传模式
+		CAN_InitStructure.CAN_NART=ENABLE;   			//禁止非自动重传模式
 		CAN_InitStructure.CAN_RFLM=DISABLE;	 				//FIFO 锁定模式关
 		CAN_InitStructure.CAN_TXFP=DISABLE;  				//禁止发送FIFO优先级
 		CAN_InitStructure.CAN_Mode=CAN_Mode_Normal;	//CAN 工作于正常模式   
@@ -220,89 +212,9 @@ unsigned char canInit(CAN_TypeDef* CANx,unsigned int bitrate)
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
-		
-			
-		
-// 		
-// 		/* Enable GPIO clock */
-// 		RCC_AHB1PeriphClockCmd(CAN2_GPIO_CLK, ENABLE);
-
-// 		/* Configure CAN RX and TX pins */
-// 		GPIO_InitStructure.GPIO_Pin   = CAN2_RX_PIN | CAN2_TX_PIN;
-// 		GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-// 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-// 		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-// 		GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
-// 		GPIO_Init(CAN2_GPIO_PORT, &GPIO_InitStructure);
-// 		
-// 		/* Connect CAN pins to AF9 */
-// 		GPIO_PinAFConfig(CAN2_GPIO_PORT, CAN2_RX_SOURCE, CAN2_AF_PORT);
-// 		GPIO_PinAFConfig(CAN2_GPIO_PORT, CAN2_TX_SOURCE, CAN2_AF_PORT); 
-// 		
-// 		/* CAN configuration ********************************************************/  
-// 		/* Enable CAN clock */
-// 		RCC_APB1PeriphClockCmd(CAN2_CLK, ENABLE);
-// 		
-// 		/* CAN register init */
-// 		CAN_ITConfig(CAN2,CAN_IT_FMP0, DISABLE);    //CAN 接收中断禁能
-// 		CAN_ITConfig(CAN2,CAN_IT_TME,	 DISABLE);
-// 		CAN_DeInit(CAN2);
-// 		CAN_StructInit(&CAN_InitStructure);
-// 		/* CAN cell init */
-// 		CAN_InitStructure.CAN_TTCM=DISABLE;  				//禁止时间触发通信方式
-// 		CAN_InitStructure.CAN_ABOM=ENABLE;   				//启动CAN总线自动关闭管理
-// 		CAN_InitStructure.CAN_ABOM=DISABLE;					//禁用CAN总线自动关闭管理
-// 		CAN_InitStructure.CAN_AWUM=DISABLE;  				//禁止自动唤醒模式
-// 		CAN_InitStructure.CAN_NART=ENABLE;   				//禁止非自动重传模式
-// 		CAN_InitStructure.CAN_RFLM=DISABLE;	 				//FIFO 锁定模式关
-// 		CAN_InitStructure.CAN_TXFP=DISABLE;  				//禁止发送FIFO优先级
-// 		CAN_InitStructure.CAN_Mode=CAN_Mode_Normal;	//CAN 工作于正常模式 
-// 		CAN_InitStructure.CAN_SJW  = CAN_SJW_1tq;		//重新同步跳跃宽度1个时间单位
-// 		  
-// 		/* CAN Baudrate = 1MBps (CAN clocked at 42 MHz) */
-// 		/* CAN 使用APB1时钟，APB1时钟分频系数是4，,42M，见system_stm32f2xx.c*/
-// 		/* CAN 频率 = APB1时钟/(CAN分频系数*(1+BS1+BS2))*/
-// 		CAN_InitStructure.CAN_BS1 = CAN_BS1_7tq;
-// 		CAN_InitStructure.CAN_BS2 = CAN_BS2_6tq;
-// 		CAN_InitStructure.CAN_Prescaler = prescaler;	//预分频系数
-// 		CAN_Init(CAN2, &CAN_InitStructure);
-// 		
-// 		/* 设置从CAN的起始Filter */
-// 		//CAN_SlaveStartBank(14);
-// 		CAN_FilterInitStructure.CAN_FilterNumber = 14;	  //指定了待初始化的过滤器14
-// 		/* 指定了过滤器将被初始化到的模式为标识符屏蔽位模式 */
-// 		CAN_FilterInitStructure.CAN_FilterMode           = CAN_FilterMode_IdMask;
-// 		CAN_FilterInitStructure.CAN_FilterScale          = CAN_FilterScale_32bit;
-// 		CAN_FilterInitStructure.CAN_FilterIdHigh         = 0x0000;
-// 		CAN_FilterInitStructure.CAN_FilterIdLow          = 0x0000;
-// 		CAN_FilterInitStructure.CAN_FilterMaskIdHigh     = 0x0000;
-// 		CAN_FilterInitStructure.CAN_FilterMaskIdLow      = 0x0000;
-// 		CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_FIFO0;        //设定了指向过滤器的FIFO0
-// 		CAN_FilterInitStructure.CAN_FilterActivation     = ENABLE;   //使能过滤
-// 		CAN_FilterInit(&CAN_FilterInitStructure);
-// 		  
-// 		  /* Transmit Structure preparation */
-// //		  TxMessage.StdId = 0x321;
-// //		  TxMessage.ExtId = 0x01;
-// //		  TxMessage.RTR = CAN_RTR_DATA;
-// //		  TxMessage.IDE = CAN_ID_STD;                           //CAN 2.0A
-// //		  TxMessage.DLC = 1;
-// //        CAN_Transmit(CANx, &TxMessage);
-
-// 		CAN_SlaveStartBank(14);
-// 		  
-// 		/* Enable FIFO 0 message pending Interrupt */
-// 		CAN_ITConfig(CAN2, CAN_IT_FMP0, ENABLE);	            //打开FIFO 0 中断请求
-// 		CAN_ITConfig(CAN2 ,CAN_IT_TME, ENABLE);
-// 		
-// 		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);//Test- Fix the Queue Problem 2014.-09.22
-// 		
-// 		NVIC_InitStructure.NVIC_IRQChannel = CAN2_RX0_IRQn;	//配置NVIC
-// 		NVIC_Init(&NVIC_InitStructure);                       //打开CAN2中断	
-  }
-
+  }	
+	
   return 1;
-
 }
 
 /**

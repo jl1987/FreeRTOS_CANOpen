@@ -42,7 +42,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 CSST Robot Research Center</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 CSST Robot Research Center</center></h2>
   *
   ******************************************************************************
   */
@@ -53,9 +53,6 @@
 
 /* TEST */
 #include "bsp_led.h"
-
-#include "stm32f4xx_can.h"
-#include "stm32f4xx_rcc.h"
 
 
 #include "CHASSIS_OD.h"
@@ -91,6 +88,7 @@ static void canopen_dataprocess_thread(void * pvParameters)
 	
 	//CO_D.CO_CAN2 = &ObjDict_CAN2_Data;
 	CO_D.CO_CAN2 = &CHASSIS_OD_Data;
+	CO_D.CO_CAN2->canHandle = CAN2;  //Config CANOpen Port CAN1
   printf("CANOpen OD Get The Lifer NodeID...\r\n");
 
   ret_canInit = canInit(CAN2,CAN_BAUD_1M);
@@ -180,11 +178,11 @@ static void canopen_dataprocess_thread(void * pvParameters)
 		  }
 		}else
     {
-      printf("Waiting for a CAN message!\r\n");
+     // printf("Waiting for a CAN message!\r\n");
    
 			vTaskDelay(100);
     }
-		
+		bsp_LedToggle(1,100);
     vTaskDelay(CANOpen_THREAD_DELAY_TIMER);
 	}
 

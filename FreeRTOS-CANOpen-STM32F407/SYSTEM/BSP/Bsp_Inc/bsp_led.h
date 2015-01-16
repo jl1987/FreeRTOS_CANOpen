@@ -13,7 +13,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 CSST Robot Research Center</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 CSST Robot Research Center</center></h2>
   *
   ******************************************************************************
   */
@@ -22,7 +22,18 @@
 #ifndef __BSP_LED_H
 #define __BSP_LED_H
 
-#include "bsp.h"
+#include "main.h"
+
+#include "stm32f4xx.h"
+
+#include "serial_debug.h"
+
+/* FreeRTOS includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
+
 
 #ifdef ARM_CSST
 	/* 定义ARM_CSST对应的RCC时钟及端口 */

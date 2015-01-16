@@ -40,6 +40,8 @@
 
 #include "main.h"
 
+
+
 /* FreeRTOS includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -52,7 +54,8 @@
 #include "canopen_thread.h"
 
 /* Robot Control includes. */
-//#include "lifter_control.h"
+#include "chassis_control.h"
+#include "sensor.h"
 
 
 #ifndef TRUE
@@ -63,15 +66,14 @@
 	#define FALSE 0
 #endif
 
-/* 通过取消注释或者添加注释的方式控制是否包含底层驱动模块 */
+
+/* BSP Driver includes */
 #include "bsp_led.h"
 // #include "bsp_can.h"
 // #include "bsp_usart.h"
 // #include "bsp_tim.h"
 // #include "bsp_exti.h"
 // #include "bsp_adc.h"
-
-
 
 
 /* 提供给其他C文件调用的函数 */

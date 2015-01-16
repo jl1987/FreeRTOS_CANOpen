@@ -9,7 +9,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 CSST Robot Research Center</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 CSST Robot Research Center</center></h2>
   *
   *
   ******************************************************************************
@@ -19,21 +19,35 @@
 #define __CHASSIS_CONTROL_H__
 
 //#include "canfestival.h"
-
-
-
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include "can_STM32.h"
 #include "canfestival.h"
 #include "data.h"
+
+#include "string.h"
+#include "stdio.h"
 #include "globalstruct.h"
 
-#include "math.h"
 
 
+#include "canopen_thread.h"
+#include "bsp_led.h"
+#include "motor.h"
 
+
+// #include "FreeRTOS.h"
+// #include "task.h"
+// #include "queue.h"
+// #include "can_STM32.h"
+// #include "canfestival.h"
+
+// //#include "globalstruct.h"
+ #include "data.h"
+
+
+typedef enum {false = 0, true = !false}bool;
 
 #define ONSTACLE_DISTANCE 300	// distance for the assisted region for the robot
 #define PI 3.14159
@@ -45,29 +59,7 @@
 
 
 
-#define HALFPWMTIMERPERIOD 6980
 
-#define Channel1_U    USART2
-#define Channel2_U    UART5
-#define Channel3_U    USART3
-#define Channel1_PWM  TIM1->CCR3
-#define Channel2_PWM  TIM1->CCR4
-#define Channel3_PWM  TIM1->CCR2
-#define Channel_PWMOUTPUT(VALUE)  HALFPWMTIMERPERIOD+VALUE
-
-#define Channel1_RST  		GPIO_Pin_15
-#define Channel2_RST  		GPIO_Pin_11
-#define Channel3_RST  		GPIO_Pin_9
-#define Channel1_RSTPORT  GPIOB
-#define Channel2_RSTPORT  GPIOD
-#define Channel3_RSTPORT  GPIOD
-
-#define Channel1_FLT  		GPIO_Pin_8
-#define Channel2_FLT  		GPIO_Pin_12
-#define Channel3_FLT  		GPIO_Pin_10
-#define Channel1_FLTPORT  GPIOD
-#define Channel2_FLTPORT  GPIOD
-#define Channel3_FLTPORT  GPIOD
 
 
 #define Pi 		3.14159265358979
@@ -89,10 +81,7 @@ typedef struct
 
 
 
-u8 MSG_U2_R[8];
-u8 MSG_U2_T[16];
-u8 MSG_U3_R[8];
-u8 MSG_U3_T[16];
+
 
 
 
@@ -113,31 +102,54 @@ u8 MSG_U3_T[16];
 #define STATUSWORD_SPEED_LOW        0x03 //ÂýËÙ
 
 
+typedef struct struct_Chassis_Data Chassis_Data;
 
 
-typedef struct _struct_lifter{
-    CO_Data *p_od;
-    UNS8 canBus;
-    UNS8 nodeId;
-    UNS16 controlword;
-    UNS16 statusword;
-    // INTEGER8 mode_setting;
-    // INTEGER8 mode_actual;
-    // INTEGER8 polarity;
-    // INTEGER16 current_setting;
-    // INTEGER16 current_actual;
-    // INTEGER32 velocity_setting;
-    // INTEGER32 velocity_actual;
-    // INTEGER32 position_setting;
-    // INTEGER32 position_actual;
-    // UNS16 current_max;
-    // UNS16 velocity_max;
-    // UNS16 supple_voltage;
-    // e_nodeState operate_state;
-    UNS16 ErrorCode;
-    UNS8 ErrorReg;
-    char ErrorFlag;
-}LIFTER_STRUCT;
+struct struct_Chassis_Data {
+	/* Drive Par */
+	u8 motion_command;						// the motion command of the chassis
+	
+	s32 V_SET;
+	s32 V_GET;
+	u8 fault_msg;
+	u8 temperture;
+	
+	long double result_speed, result_speed_x, result_speed_y, result_direction;	// resltant speed and direction of the chassis [obstacle avoidance]
+	int target_speed1;					// Angular speed of wheel 1 [target]
+	int target_speed2;
+	int target_speed3;
+	int drive_speed1;					// Angular speed of wheel 1 [driving]
+	int drive_speed2;
+	int drive_speed3;
+	int drive_diff1;
+	int drive_diff2;
+	int drive_diff3;
+	
+	/* Lidar Par */
+	int Lidar_delay;  
+	bool lidar_init_P;
+	bool lidar_init_ok_P;
+	
+	
+	
+	
+	
+	
+	/* Force Sensor Par */
+	int x_value, y_value;
+	double angle;
+	double angle_diff;
+	double prev_angle;
+	double prev_angle_diff;
+	double magnitude;
+	double magnitude_diff;
+	double prev_magnitude;
+	double prev_magnitude_diff;
+	double Kp;
+	double Kd;
+
+};
+
 
 
 void chassis_control_thread(void *arg);
@@ -145,9 +157,7 @@ void chassis_control_thread(void *arg);
 
 void start_chassis_control(void);
 
-void Motor_Init(void);
 
-void ChassisFault(void);
 
 void Lidar_Init(void);
 void Lidar_Stop(void);
@@ -157,14 +167,14 @@ void Lidar_Reset(void);
 void Chassis_Init(Chassis_Data *ch);
 
 double chassis_drive(double X_out,double Y_out,double Theta_out,u8 wheel);
-void chassis_move(double wheel1, double wheel2, double wheel3);
+
 void StepwiseFunction(Chassis_Data *chassis);
 void ChassisMotionCtrl(Chassis_Data *ch);
 
 UNS32 OnChassisControlWordUpdate(CO_Data* d, const indextable * unsused_indextable, UNS8 unsused_bSubindex);
 
 
-void delay(__IO uint32_t nCount);
+
 
 #endif
 
