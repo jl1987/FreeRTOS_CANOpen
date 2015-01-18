@@ -47,7 +47,7 @@ void chassis_control_thread(void * pvParameters)
 	
 	Chassis_Init(&CHASSIS_D);
 	
-	RegisterSetODentryCallBack(CO_D.CO_CAN2, 0x2000, 0x00, &OnChassisControlWordUpdate);	//Control word 
+	RegisterSetODentryCallBack(CO_D.CO_CAN2, 0x2000, 0x00, &OnChassisCommandWordUpdate);	//Control word 
 	
 	while(1)
 	{
@@ -101,8 +101,6 @@ void chassis_control_thread(void * pvParameters)
 // }
 
 
-
-
 void start_chassis_control(void)
 {
 	xTaskCreate(chassis_control_thread, "lifter_control", CHASSIS_CONTROL_THREAD_STACK, NULL,CHASSIS_CONTROL_THREAD_PRIO, &xT_CHASSIS);
@@ -114,7 +112,6 @@ void start_chassis_control(void)
 		printf("chassis control thread creat successfully!\r\n");
 	}
 }
-
 
 
 
@@ -133,8 +130,6 @@ void Chassis_Init(Chassis_Data *ch)
 	ch->drive_speed2 = 0;
 	ch->drive_speed3 = 0;
 	ch->motion_command = 30;						// the motion command of the chassis
-	
-	
 	
 	ch->angle = 0;
 	ch->angle_diff = 0;
@@ -514,7 +509,7 @@ void ChassisMotionCtrl(Chassis_Data *ch)
 
 
 
-UNS32 OnChassisControlWordUpdate(CO_Data* d, const indextable * unsused_indextable, UNS8 unsused_bSubindex)
+UNS32 OnChassisCommandWordUpdate(CO_Data* d, const indextable * unsused_indextable, UNS8 unsused_bSubindex)
 {
 	printf("Chassis Control Word Update @2000|00...\r\n");
 	

@@ -35,6 +35,7 @@
 #include "canopen_thread.h"
 #include "bsp_led.h"
 #include "motor.h"
+#include "sensor.h"
 
 
 // #include "FreeRTOS.h"
@@ -56,12 +57,6 @@ typedef enum {false = 0, true = !false}bool;
 #define SPEED_STEP 10				// no of steps for acceleration / deceleration
 
 
-
-
-
-
-
-
 #define Pi 		3.14159265358979
 #define L1O 	100
 #define L2O 	100
@@ -80,30 +75,22 @@ typedef struct
 }DRIVE;
 
 
+/* Control Command Word */
+#define COMMANDWORD_OPERATION_STOP 								0   //NO Key
+#define COMMANDWORD_OPERATION_MOVE_FORWARD 				16	//W
+#define COMMANDWORD_OPERATION_MOVE_BACKWARD 			2		//S
+#define COMMANDWORD_OPERATION_MOVE_RIGHT	 				8		//E
+#define COMMANDWORD_OPERATION_MOVE_RIGHT_FORWARD	24	//W+E
+#define COMMANDWORD_OPERATION_MOVE_LEFT		 				32	//Q
+#define COMMANDWORD_OPERATION_MOVE_LEFT_FORWARD		48	//W+Q
 
-
-
-
-
-/* BSP about LIFTER */
-#define RCC_LIFTER      RCC_AHB1Periph_GPIOE
-#define LIFTER_PORT     GPIOE
-#define LIFTER_PIN_INA GPIO_Pin_11
-#define LIFTER_PIN_INB GPIO_Pin_13
-
-/* Control word */
-#define CONTROLWORD_OPERATION_UP 		0x01 //上升
-#define CONTROLWORD_OPERATION_DOWM 	0x02 //下降
-#define CONTROLWORD_OPERATION_STOP 	0x03 //停止
-
-/* Status word */
-#define STATUSWORD_SPEED_DEFAULT    0x01 //默认速度
-#define STATUSWORD_SPEED_HIGH       0x02 //快速
-#define STATUSWORD_SPEED_LOW        0x03 //慢速
+#define COMMANDWORD_OPERATION_TURN_RIGHT 					1		//D
+#define COMMANDWORD_OPERATION_TURN_RIGHT_FORWARD 	17	//W+D
+#define COMMANDWORD_OPERATION_TURN_LEFT						4		//A
+#define COMMANDWORD_OPERATION_TURN_LEFT_FORWARD		20	//W+A
 
 
 typedef struct struct_Chassis_Data Chassis_Data;
-
 
 struct struct_Chassis_Data {
 	/* Drive Par */
@@ -130,11 +117,6 @@ struct struct_Chassis_Data {
 	bool lidar_init_P;
 	bool lidar_init_ok_P;
 	
-	
-	
-	
-	
-	
 	/* Force Sensor Par */
 	int x_value, y_value;
 	double angle;
@@ -147,22 +129,13 @@ struct struct_Chassis_Data {
 	double prev_magnitude_diff;
 	double Kp;
 	double Kd;
-
 };
 
 
 
 void chassis_control_thread(void *arg);
 
-
 void start_chassis_control(void);
-
-
-
-void Lidar_Init(void);
-void Lidar_Stop(void);
-void Lidar_Reset(void);
-
 
 void Chassis_Init(Chassis_Data *ch);
 
@@ -171,9 +144,7 @@ double chassis_drive(double X_out,double Y_out,double Theta_out,u8 wheel);
 void StepwiseFunction(Chassis_Data *chassis);
 void ChassisMotionCtrl(Chassis_Data *ch);
 
-UNS32 OnChassisControlWordUpdate(CO_Data* d, const indextable * unsused_indextable, UNS8 unsused_bSubindex);
-
-
+UNS32 OnChassisCommandWordUpdate(CO_Data* d, const indextable * unsused_indextable, UNS8 unsused_bSubindex);
 
 
 #endif
