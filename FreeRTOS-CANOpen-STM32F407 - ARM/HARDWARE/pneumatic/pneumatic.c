@@ -212,8 +212,6 @@ void ADC3_CH6_DMA_Config(void)
   DMA_InitStructure.DMA_FIFOThreshold 			= DMA_FIFOThreshold_HalfFull;
   DMA_InitStructure.DMA_MemoryBurst 				= DMA_MemoryBurst_Single;
   DMA_InitStructure.DMA_PeripheralBurst 		= DMA_PeripheralBurst_Single;
-  //DMA_Init(DMA2_Stream0, &DMA_InitStructure);	  // used for adc1
-  //DMA_Cmd(DMA2_Stream0, ENABLE);				  			// used for adc1
   DMA_Init(DMA2_Stream1, &DMA_InitStructure);
   DMA_Cmd(DMA2_Stream1, ENABLE);
 

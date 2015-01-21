@@ -266,16 +266,6 @@ void TIM5_Configuration(void)
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef TIM_OCInitStructure;
 	
-	// Simplify the math here so TIM_Pulse has 1 us units 
-	// Use (24-1) for VL @ 24 MHz
-	// Use (72-1) for STM32 @ 72 MHz
-	//TIM_TimeBaseStructure.TIM_Prescaler = 24 - 1;  // 24 MHz / 24 = 1 MHz, original  
-	//TIM_TimeBaseStructure.TIM_Prescaler = 16 - 1;  // 24 MHz / 24 = 1 MHz, used		 
-	//TIM_TimeBaseStructure.TIM_Period = 20000 - 1; // 1 MHz / 20000 = 50 Hz (20 ms)  
-
-	/*TIM_TimeBaseStructure.TIM_Prescaler = 3;  // 24 MHz / 24 = 1 MHz, used	
-	TIM_TimeBaseStructure.TIM_Period = 1049; // 1 MHz / 50 = 20 kHz , for pump*/	
-	
 	TIM_TimeBaseStructure.TIM_Prescaler = 0;  
 	TIM_TimeBaseStructure.TIM_Period = (SystemCoreClock / 40000 ) - 1 - 1; //20 kHz , for pump	
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;	  
@@ -284,9 +274,7 @@ void TIM5_Configuration(void)
 	
 	// Set up 4 channel servo 
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;  
-	//TIM_OCInitStructure.TIM_Pulse = 600 + 900; // 1500 us - Servo Top Centre 
-	//TIM_OCInitStructure.TIM_Pulse = 1049; //  
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;   
 	TIM_OCInitStructure.TIM_Pulse = (SystemCoreClock / 40000 ) - 1 - 1;       
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; 	
 	TIM_OC1Init(TIM5, &TIM_OCInitStructure);    // Channel 1 configuration = PA0 TIM5_CH1
@@ -316,7 +304,6 @@ void TIM2_Config(void)
 
   /* Enable the TIM2 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;	//error  TIM1_IRQn
-  //NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -330,38 +317,6 @@ void TIM2_Config(void)
   */
 void TIM2_CCR_CALC(void)
 { 
-	/* -----------------------------------------------------------------------
-	TIM3 Configuration: Output Compare Timing Mode:
-	
-	In this example TIM4 input clock (TIM4CLK) is set to 2 * APB1 clock (PCLK1), 
-	since APB1 prescaler is different from 1.   
-	  TIM4CLK = 2 * PCLK1  
-	  PCLK1 = HCLK / 4 
-	  => TIM4CLK = HCLK / 2 = SystemCoreClock /2
-	      
-	To get TIM4 counter clock at 50 MHz, the prescaler is computed as follows:
-	   Prescaler = (TIM4CLK / TIM4 counter clock) - 1
-	   Prescaler = ((SystemCoreClock /2) /50 MHz) - 1
-	                                          
-	CC1 update rate = TIM4 counter clock / CCR1_Val = 9.154 Hz
-	==> Toggling frequency = 4.57 Hz
-	
-	C2 update rate = TIM4 counter clock / CCR2_Val = 18.31 Hz
-	==> Toggling frequency = 9.15 Hz
-	
-	CC3 update rate = TIM4 counter clock / CCR3_Val = 36.62 Hz
-	==> Toggling frequency = 18.31 Hz
-	
-	CC4 update rate = TIM4 counter clock / CCR4_Val = 73.25 Hz
-	==> Toggling frequency = 36.62 Hz
-	
-	Note: 
-	 SystemCoreClock variable holds HCLK frequency and is defined in system_stm32f4xx.c file.
-	 Each time the core clock (HCLK) changes, user had to call SystemCoreClockUpdate()
-	 function to update SystemCoreClock variable value. Otherwise, any configuration
-	 based on this variable will be incorrect.    
-	----------------------------------------------------------------------- */  
-	
 	/* Compute the prescaler value */
 	PrescalerValue = (uint16_t) ((SystemCoreClock / 2) / 500000) - 1;
 	

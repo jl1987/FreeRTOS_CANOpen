@@ -277,26 +277,6 @@ void TIM3_IRQHandler(void)
   if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
   {
     TIM_ClearITPendingBit(TIM3, TIM_IT_Update);	
-
-
-	// 12/17/2013 new added
-	/*if (left_hand_pump_pwm_duty[0]>104)
-	{
-		left_hand_pump_pwm_duty[0] = 104;
-	}
-	if (left_hand_pump_pwm_duty[1]>104)
-	{
-		left_hand_pump_pwm_duty[1] = 104;
-	}
-	if (left_hand_pump_pwm_duty[2]>104)
-	{
-		left_hand_pump_pwm_duty[2] = 104;
-	}
-	if (right_hand_pump_pwm_duty[2]>104)
-	{
-		right_hand_pump_pwm_duty[2] = 104;
-	}	*/
-		
 		
 	/*01/23/2014 added*/	
 	if (left_hand_pump_pwm_duty[0]<10)
@@ -315,17 +295,6 @@ void TIM3_IRQHandler(void)
 	{
 		right_hand_pump_pwm_duty[2] = 0;
 	}	
-		
-
-	/*	 
-	// 12/19/2013 update
-	TIM3->CCR2 = 1049 - right_hand_pump_pwm_duty[0]*10; // 0- 1049, duty = [0 100]. // 右大拇指
-
-	// 12162013 new version
-	TIM3->CCR1 = 1049 - left_hand_pump_pwm_duty[1]*10; // 0- 1049, duty = [0 100]. // 左食指	
-	TIM3->CCR3 = 1049 - left_hand_pump_pwm_duty[2]*10; // 0- 1049, duty = [0 100]. // 左中指
-	TIM3->CCR4 = 1049 - right_hand_pump_pwm_duty[2]*10; // 0- 1049, duty = [0 100]. // 右中指	
-	*/	
 
 
 	/*01/23/2014 new version*/
@@ -348,17 +317,6 @@ void TIM4_IRQHandler(void)
   if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
   {
     TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
-
-
-	/*// 12/17/2013 new added
-	if (right_hand_pump_pwm_duty[0]>104)
-	{
-		right_hand_pump_pwm_duty[0] = 104;
-	}
-	if (right_hand_pump_pwm_duty[1]>104)
-	{
-		right_hand_pump_pwm_duty[1] = 104;
-	}*/
 	
 		
 	/*01/23/2014 new version*/
@@ -370,13 +328,6 @@ void TIM4_IRQHandler(void)
 	{
 		right_hand_pump_pwm_duty[1] = 0;
 	}
-
-
-	/*// 12/16/2013 based on new pcb config	
-	TIM4->CCR3 = 1049 - left_hand_pump_pwm_duty[0]*10; // 0- 1049, duty = [0 100]. // 左大拇指
-  TIM4->CCR4 = 1049 - right_hand_pump_pwm_duty[1]*10; // 0- 1049, duty = [0 100]. // 右食指 
-  */
-	
 	
 	/*01/23/2014 new version*/
 	TIM4->CCR3 = 4198 - left_hand_pump_pwm_duty[0]*41; // 0- 4198, duty = [0 100]. // 左大拇指
@@ -394,27 +345,7 @@ void TIM5_IRQHandler(void)
   if (TIM_GetITStatus(TIM5, TIM_IT_Update) != RESET)
   {
     TIM_ClearITPendingBit(TIM5, TIM_IT_Update);	
-
-
-	/*// 12/17/2013 new added
-	if (left_hand_pump_pwm_duty[3]>104)
-	{
-		left_hand_pump_pwm_duty[3] = 104;
-	}
-	if (left_hand_pump_pwm_duty[4]>104)
-	{
-		left_hand_pump_pwm_duty[4] = 104;
-	}
-	if (right_hand_pump_pwm_duty[3]>104)
-	{
-		right_hand_pump_pwm_duty[3] = 104;
-	}
-	if (right_hand_pump_pwm_duty[4]>104)
-	{
-		right_hand_pump_pwm_duty[4] = 104;
-	}*/
 		
-	
 	/*01/23/2014 new version*/
 	if (left_hand_pump_pwm_duty[3]<10)
 	{
@@ -432,14 +363,6 @@ void TIM5_IRQHandler(void)
 	{
 		right_hand_pump_pwm_duty[4] = 0;
 	}
-
-	
-	/*// 12162013 based on new pcb config														  
-	TIM5->CCR1 = 1049 - left_hand_pump_pwm_duty[3]*10; // 0- 1049, duty = [0 100]. // 左无名指
-	TIM5->CCR2 = 1049 - right_hand_pump_pwm_duty[3]*10; // 0- 1049, duty = [0 100]. // 右无名指 
-	TIM5->CCR3 = 1049 - left_hand_pump_pwm_duty[4]*10; // 0- 1049, duty = [0 100]. // 左小指
-	TIM5->CCR4 = 1049 - right_hand_pump_pwm_duty[4]*10; // 0- 1049, duty = [0 100]. // 右小?
-	*/
 	
 	
 	/*01/23/2014 new version*/										  

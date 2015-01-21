@@ -25,6 +25,8 @@
 #define ADC3_DR_Address    ((u32)0x4001224C)  
 
 
+extern vu16 ADC1_ConvertedValue[5];
+extern vu16 ADC3_ConvertedValue[5];
 
 void Pneumatic_Init(void);
 void pneumatic_IO_initial(void);
