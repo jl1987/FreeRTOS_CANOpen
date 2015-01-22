@@ -20,19 +20,18 @@
 /* Object Dictionary */
 #include "ARM_OD.h"
 
-/* Private variables */
+/* Private variables ---------------------------------------------------------*/
 xQueueHandle xQ_ARM_MSG = NULL;
 xTaskHandle	 xT_ARM 	  = NULL;
 
 Arm_Data ARM_D;
+
 
 struct pid_t pid_per;
 int 	 pid_mv = 0;
 
 volatile uint8_t left_hand_pump_pwm_duty[5] 		= {0,0,0,0,0};	//[0 100]
 volatile uint8_t right_hand_pump_pwm_duty[5] 		= {0,0,0,0,0};	//[0 100]
-
-
 
 static __IO uint32_t TimingDelay;
 
@@ -50,13 +49,11 @@ volatile uint8_t pump_pwm_duty 	= 0;			//[0 100]
 
 uint16_t capture = 0;	
 
-uint8_t 	motor_moving_mode = 1; 					// 0 is wheel speed control, 1 is joint postion and speed control
-uint32_t 	plan2send_index 	= 0;	 				// trajectory to send data switch sign (slow -> fast, important here)
-
-
 uint8_t 	uart1_rx_index=0;
 volatile 	uint8_t uart1_rx_buffer[uart1_rx_len];  // uart buffer
 
+
+/* Private functions ---------------------------------------------------------*/
 void arm_control_thread(void * pvParameters)
 {
 	printf("start the chassis control\r\n");
@@ -1131,14 +1128,6 @@ void Homing(Arm_Data *arm)
 // 	TimingDelay --;
 // }
 
-int Hex2Dec(unsigned char Hex)
-{
-	uint8_t a;
-
-	a=(Hex/16)*10+ Hex%16;
-
-	return a;
-}
 
 
 /* Dynamixel_Moving_Mode_Swtich*/
@@ -1493,13 +1482,13 @@ void AX_12_CLEAR_ERROR(uint8_t id_index)
 	uint8_t ax12_command[clear_ax12_error_len];
 	
 	// commond
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = id_index;	ax12_command[2] = id;	
-	length = 4; ax12_command[3] = length;	
-	instruction = 3; ax12_command[4] = instruction;	
-	alarmShutdown = 18; ax12_command[5] = alarmShutdown;
-	clearErrorCmd = 127; ax12_command[6] = clearErrorCmd;	// clear all motor and all errors 	
+	head1 = 255; 					ax12_command[0] = head1;
+	head2 = 255; 					ax12_command[1] = head2;			  
+	id = id_index;				ax12_command[2] = id;	
+	length = 4; 					ax12_command[3] = length;	
+	instruction = 3;			ax12_command[4] = instruction;	
+	alarmShutdown = 18; 	ax12_command[5] = alarmShutdown;
+	clearErrorCmd = 127; 	ax12_command[6] = clearErrorCmd;	// clear all motor and all errors 	
 	
 	checksum = testNot1(id + length + instruction + alarmShutdown + clearErrorCmd);
 	ax12_command[7] = checksum;
@@ -1711,105 +1700,7 @@ void HomingFast(Arm_Data *arm)
 }
 
 
-/*infltableHandMotion, 11/06/2013*/
-void infltableHandMotionCtrl(uint8_t pneumatic_enable, uint8_t arm_index,Arm_Data *arm)
-{
-	uint8_t i;	
 
-	/*PID pump control*/
-	if (pneumatic_enable==1) 
-	{
-		/* commands */
-		switch (arm_index)
-		{
-			case 1:       // left plam
-				// 11282013 based on new pcb config
-				GPIO_SetBits(GPIOG, GPIO_Pin_2);  //left thumb pump on
-				GPIO_ResetBits(GPIOG, GPIO_Pin_5);  //left thumb valve off 
-
-				// version1
-				for(i=0;i<5;i++)
-				{
-					left_hand_pump_pwm_duty[i] = pid_update(arm->left_plam_desired_press[i],left_hand_actual_AD_value[i], 100,&pid_per); //left thumb
-				}
-								
-				break;
-			case 2:	      // left fist
-				// 11282013 based on new pcb config 
-			   	GPIO_SetBits(GPIOG, GPIO_Pin_2);  //left thumb pump on
-				GPIO_SetBits(GPIOG, GPIO_Pin_5);  //left thumb valve on 
-
-
-				for(i=0;i<5;i++)
-				{
-					left_hand_pump_pwm_duty[i] = pid_update(arm->left_fist_desired_press[i],left_hand_actual_AD_value[i], 100,&pid_per); //left thumb
-				}
-				break;
-			case 5: 	  // without left plam	
-				// 11282013 based on new pcb config
-				GPIO_ResetBits(GPIOG, GPIO_Pin_2);  //left thumb pump off
-				GPIO_ResetBits(GPIOG, GPIO_Pin_5);  //left thumb valve off
-				
-
-				for(i=0;i<5;i++)
-				{
-					left_hand_pump_pwm_duty[i]=0;// stop
-				}		
-				break;
-			case 3: 	  // right plam
-				// 11282013 based on new pcb config
-			  GPIO_SetBits(GPIOG, GPIO_Pin_3);  //right thumb pump on
-				GPIO_ResetBits(GPIOG, GPIO_Pin_4);  //right thumb valve off
-	
-				// version1
-				for(i=0;i<5;i++)
-				{
-					right_hand_pump_pwm_duty[i] = pid_update(arm->right_plam_desired_press[i],right_hand_actual_AD_value[i], 100,&pid_per); //left thumb
-				}	
-				break;
-			case 4: 	  // right fist
-				// 11282013 based on new pcb config
-				GPIO_SetBits(GPIOG, GPIO_Pin_3);  //right thumb pump on
-				GPIO_SetBits(GPIOG, GPIO_Pin_4);  //right thumb valve on					
-
-
-				for(i=0;i<5;i++)
-				{
-					right_hand_pump_pwm_duty[i] = pid_update(arm->right_fist_desired_press[i],right_hand_actual_AD_value[i], 100,&pid_per); //left thumb
-				}
-				break;
-			case 6:       // without right plam
-				// 11282013 based on new pcb config
-				GPIO_ResetBits(GPIOG, GPIO_Pin_3);  //right thumb pump off
-				GPIO_ResetBits(GPIOG, GPIO_Pin_4);  //right thumb valve off
-
-
-				for(i=0;i<5;i++)
-				{
-					right_hand_pump_pwm_duty[i]=0;// stop
-				}
-				break;				
-			default: 				
-				break;
-		} 
-	}
-	else
-	{
-		// 11282013 based on new pcb config
-		GPIO_ResetBits(GPIOG, GPIO_Pin_2);  //left thumb pump off
-		GPIO_ResetBits(GPIOG, GPIO_Pin_5);  //left thumb valve off
-
-		GPIO_ResetBits(GPIOG, GPIO_Pin_3);  //right thumb pump off
-		GPIO_ResetBits(GPIOG, GPIO_Pin_4);  //right thumb valve off
-
-
-		for(i=0;i<5;i++)
-		{
-			left_hand_pump_pwm_duty[i]=0;// stop
-			right_hand_pump_pwm_duty[i]=0;// stop
-		}
-	}
-}
 
 
 /*infltableHandMotion, 11/06/2013*/
@@ -2429,402 +2320,6 @@ uint8_t XDec2High(int32_t XDec)
 
 
 
-/*fixed theta3 inverse kinematics, by rhqi 06272013*/
-uint8_t ikine_theta3f(uint8_t arm_index, int32_t px, int32_t py, int32_t pz, float theta3f, uint8_t s_index,Arm_Data *arm)		
-{	
-	// 4dof, new added
-	float theta1,theta3;
-	float d,a,beta,psi; 
-	float px_2,pz_2,le_;
-	float temp_p1,temp_p2,temp_p3,temp_r;
-	// old 2dof used
-	float theta2_1,theta2_2,theta4_1,theta4_2;	
-	float A,B;
-	float v_temp1,v_temp2,v_temp3,v_temp4;
-	float v_temp5;
-	float v_temp6;
-	float fi,pai_1,pai_2;
-	float v_temp7_1,v_temp7_2,v_temp8_1,v_temp8_2; 	
-	// turning constraint
-	float theta1_max, theta2_max, theta3_max, theta4_max;
-	float theta1_min, theta2_min, theta3_min, theta4_min; 
-	float theta_max[4];
-	float theta_min[4]; 
-	float solution[2][4];
-	uint8_t i,j;
-	uint8_t Fsolution_check[2];	
-	uint8_t exist_s; // judge solution exist
-
-
-	// parameters
-	float l1=170.0; 	
-	float l2=210.0;	  
-	float l3=0.0; // tool
-	float le=l2+l3;
-	float theta_error = 0.01; // important vs matlab
-
-	// Max and Min limited
-	//finally used
-	theta1_max=(float)(pi/3) + theta_error;
-	theta1_min=ZERO_f - theta_error;  
-	theta2_max=ZERO_f + theta_error;
-	theta2_min=(float)(-pi/2) - theta_error;
-	theta3_max=(float)(pi/3) + theta_error;
-	theta3_min=(float)(-pi/6) - theta_error;
-	theta4_max=(float)(7*pi/18) + theta_error;	
-	theta4_min=ZERO_f - theta_error; 
-	 
-	theta_max[0]=theta1_max; theta_max[1]=theta2_max; theta_max[2]=theta3_max; theta_max[3]=theta4_max;
-    theta_min[0]=theta1_min; theta_min[1]=theta2_min; theta_min[2]=theta3_min; theta_min[3]=theta4_min;  
-	
-
-		
-	/*Initialize*/
-	exist_s = 0;  
-	Fsolution_check[0]=1; 
-	Fsolution_check[1]=1; 
-
- 
-  /*Inverse kinematics*/
-  //STEP 0: get  theta3
-  theta3 = theta3f;    
- 
- 	//STEP 1: get  theta1    
-    d = (float)sinf(theta3f); 
-    d = d*le; //d = le*sin(theta3f);
-    temp_p1 = px*px; 
-    temp_p2 = py*py;
-    temp_p3 = temp_p1+temp_p2;
-    temp_r = d*d;
-    temp_r = temp_p3 - temp_r; 
-	if(temp_r<ZERO_f) //singularity 
-	{
-	   return exist_s;
-	}
-    a = (float)my_sqrt(temp_r); //a = sqrt(px*px + py*py - d*d); 
-	
-    beta = (float)atan2f(d,a); //beta = atan(d/a); //old
-
-    psi = (float)atan2f(py,px);
-    theta1 = psi-beta;   
-    
-
-    //STEP 2: get  theta4_1,theta4_2
-    px_2 = a; //px_2 = sqrt(px_*px_ + py_*py_);
-    pz_2 = pz;
-    le_ = (float)cosf(theta3f); 
-    le_ = le_*le;//le_ = le*cos(theta3f); 
-   
-
-	/******************************************************/
-    /* the following are the same this the old 2dof ikine */
-	/******************************************************/
-	v_temp1 = l1+le_;
-	v_temp1 = v_temp1*v_temp1; 
-	v_temp2 = px_2*px_2;
-	v_temp3 = pz_2*pz_2;	 
-	v_temp4 = v_temp2+v_temp3;  
-	A = (float)(v_temp1 - v_temp4); 	
-	v_temp5 = l1-le_;
-	v_temp5 = v_temp5*v_temp5;
-	B = (float)(v_temp4-v_temp5);	
-	if(my_abs(B)<=EPSILON) //singularity
-	{
-	   return exist_s;
-	}
-	v_temp6 = (float)(A/B);	 // attention to this, may le_ad error, 04302013
-	if(v_temp6<ZERO_f) //singularity
-	{
-	   return exist_s;
-	}		
-	v_temp6 = (float)my_sqrt(v_temp6);	
-	// solution 1
-	theta4_1 = (float)atanf(v_temp6);
-	theta4_1 = theta4_1*2; 
-	// solution 2
-	theta4_2 = -(float)atanf(v_temp6); 
-	theta4_2 = theta4_2*2;
-	
-	fi=(float)atan2f(pz_2,px_2);
-	// solution 1	 
-	v_temp7_1 = (float)sinf(theta4_1);
-	v_temp7_1 = v_temp7_1*le_;
-	v_temp8_1 = (float)cosf(theta4_1);
-    v_temp8_1 =  v_temp8_1*le_;
-	v_temp8_1 = v_temp8_1 + l1;
-
-	pai_1 = (float)atan2f(v_temp7_1,v_temp8_1);
-	theta2_1 = 	fi-	pai_1;	
-	// solution 2
-	v_temp7_2 = (float)sinf(theta4_2);
-	v_temp7_2 = v_temp7_2*le_;
-	v_temp8_2= (float)cosf(theta4_2);
-    v_temp8_2 =  v_temp8_2*le_;
-	v_temp8_2 = v_temp8_2 + l1;
-
-	pai_2 = (float)atan2f(v_temp7_2,v_temp8_2);
-	theta2_2 = 	fi-	pai_2; 
-
- 
-	//all solutions 
-    solution[0][0]=theta1; solution[0][1]=theta2_1; solution[0][2]=theta3; solution[0][3]=theta4_1;
-	solution[1][0]=theta1; solution[1][1]=theta2_2; solution[1][2]=theta3; solution[1][3]=theta4_2;
-   
-	
-	// check if turning over constraint and solution exist
-	for(j=0;j<2;j++)
-	{
-	    for(i=0;i<4;i++)
-		{
-	        if ((solution[j][i]>theta_max[i])||(solution[j][i]<theta_min[i]))
-			{
-				Fsolution_check[j]=0;	
-	            break;
-	        }
-	    }		
-		if (Fsolution_check[j]==1)
-		{
-		   exist_s = exist_s + 1;		
-		}
-	}
-
-
-	/* return global values*/
-	switch (exist_s)
-	{
-		case 1: // exist one solution
-			if(Fsolution_check[0]==1)
-			{
-				arm->theta3f_solution[0]= solution[0][0];
-				arm->theta3f_solution[1]= solution[0][1];
-				arm->theta3f_solution[2]= solution[0][2];
-				arm->theta3f_solution[3]= solution[0][3]; 		
-			}
-			else
-			{
-				arm->theta3f_solution[0]= solution[1][0];
-				arm->theta3f_solution[1]= solution[1][1];
-				arm->theta3f_solution[2]= solution[1][2];
-				arm->theta3f_solution[3]= solution[1][3];		
-			}
-			break;		
-		case 2: // exist two solutions 	
-			arm->theta3f_solution[0]= solution[s_index][0];
-			arm->theta3f_solution[1]= solution[s_index][1];
-			arm->theta3f_solution[2]= solution[s_index][2];
-			arm->theta3f_solution[3]= solution[s_index][3];
-			break;	
-		default: 				
-			break;
-	}
-	return exist_s;
-}
-
-
-/*fixed theta4 inverse kinematics, by rhqi 06272013*/
-uint8_t ikine_theta4f(uint8_t arm_index, int32_t px_in, int32_t py_in, int32_t pz_in, float theta4f, uint8_t s_index,Arm_Data *arm)		
-{	
-	// 4dof, new added
-	int32_t px,py,pz;
-	float theta2, theta4;
-	float d,a,beta,psi;
-	float px_2,pz_2,le_;
-	float temp_p1,temp_p2,temp_p3,temp_r;
-	// old 2dof used
-	float theta1_1,theta1_2,theta3_1,theta3_2;	
-	float A,B;
-	float v_temp1,v_temp2,v_temp3,v_temp4;
-	float v_temp5;
-	float v_temp6;
-	float fi,pai_1,pai_2;
-	float v_temp7_1,v_temp7_2,v_temp8_1,v_temp8_2;		
-	// turning constraint
-	float theta1_max, theta2_max, theta3_max, theta4_max;
-	float theta1_min, theta2_min, theta3_min, theta4_min; 
-	float theta_max[4];
-	float theta_min[4]; 
-	float solution[2][4];
-	uint8_t i,j;
-	uint8_t Fsolution_check[2];
-	uint8_t exist_s; // judge solution exist
-	
-	
-	// parameters
-	float l1=170.0; 	
-	float l2=210.0;	 
-	float l3=0.0; // tool
-	float le=l2+l3;
-	float theta_error = 0.01; // important vs matlab
-
-	// Max and Min limited
-	//finally used
-	theta1_max=(float)(pi/3) + theta_error;
-	theta1_min=ZERO_f - theta_error;  
-	theta2_max=ZERO_f + theta_error;
-	theta2_min=(float)(-pi/2) - theta_error;
-	theta3_max=(float)(pi/3) + theta_error;
-	theta3_min=(float)(-pi/6) - theta_error;
-	theta4_max=(float)(7*pi/18) + theta_error;	
-	theta4_min=ZERO_f - theta_error;  
-	 
-	theta_max[0]=theta1_max; theta_max[1]=theta2_max; theta_max[2]=theta3_max; theta_max[3]=theta4_max;
-    theta_min[0]=theta1_min; theta_min[1]=theta2_min; theta_min[2]=theta3_min; theta_min[3]=theta4_min;  
-
-
-	/*Initialize*/
-	exist_s = 0;  
-	Fsolution_check[0]=1; 
-	Fsolution_check[1]=1; 
-
-	
-	/*transfer at the beginning*/
-	px=px_in;py=pz_in;pz=-py_in;  // in x1,y1,z1 coordinate system; px_in,py_in,pz_in are in x0,y0,z0 coordinate system
-
-	
-    /*inverse kinematics*/
-    //STEP 0: get  theta4
-    theta4 = theta4f;    
-    
-
- 	//STEP 1: get  theta2    
-    d = (float)sinf(theta4f); 
-    d = d*le; //d = le*sin(theta4f);
-    temp_p1 = px*px; 
-    temp_p2 = py*py;
-    temp_p3 = temp_p1+temp_p2;
-    //r = sqrt(temp_p3); //r = sqrt(px*px + py*py); 
-    temp_r = d*d;
-    temp_r = temp_p3 - temp_r;	
-	if(temp_r<ZERO_f) //singularity 
-	{
-	   return exist_s;
-	}	
-    a = (float)my_sqrt(temp_r); //a = sqrt(px*px + py*py - d*d);
-
-    beta = (float)atan2f(d,a); //beta = atan(d/a); //old
-
-    psi = (float)atan2f(py,px);
-    theta2 = psi-beta;   
-    
-
-    //STEP 2: get  theta3_1,theta3_2
-    px_2 = a; //px_2 = sqrt(px_*px_ + py_*py_);
-    pz_2 = pz;
-    le_ = (float)cosf(theta4f); 
-    le_ = le_*le;//le_ = le*cos(theta4f); 
-
-
-	/******************************************************/
-    /* the following are the same this the old 2dof ikine */
-	/******************************************************/
-	v_temp1 = l1+le_;
-	v_temp1 = v_temp1*v_temp1; 
-	v_temp2 = px_2*px_2;
-	v_temp3 = pz_2*pz_2;	 
-	v_temp4 = v_temp2+v_temp3;  
-	A = (float)(v_temp1 - v_temp4); 	
-	v_temp5 = l1-le_;
-	v_temp5 = v_temp5*v_temp5;
-	B = (float)(v_temp4-v_temp5);
-	if(my_abs(B)<=EPSILON) //singularity
-	{
-	   return exist_s;
-	}
-	v_temp6 = (float)(A/B);	 // attention to this, may le_ad error, 04302013 	
-	if(v_temp6<ZERO_f) //singularity
-	{
-	   return exist_s;
-	}	
-	v_temp6 = (float)my_sqrt(v_temp6);	
-	// solution 1
-	theta3_1 = (float)atanf(v_temp6);
-	theta3_1 = theta3_1*2; 
-	// solution 2
-	theta3_2 = -(float)atanf(v_temp6); 
-	theta3_2 = theta3_2*2;
-	
-
-	// STEP 2: get  theta1_1,theta1_2
-
-	fi=(float)atan2f(pz_2,px_2);
-	// solution 1	 
-	v_temp7_1 = (float)sinf(theta3_1);
-	v_temp7_1 = v_temp7_1*le_;
-	v_temp8_1 = (float)cosf(theta3_1);
-    v_temp8_1 =  v_temp8_1*le_;
-	v_temp8_1 = v_temp8_1 + l1;	
-
-	pai_1 = (float)atan2f(v_temp7_1,v_temp8_1);
-	theta1_1 = 	fi-	pai_1;	
-	// solution 2
-	v_temp7_2 = (float)sinf(theta3_2);
-	v_temp7_2 = v_temp7_2*le_;
-	v_temp8_2= (float)cosf(theta3_2);
-    v_temp8_2 =  v_temp8_2*le_;
-	v_temp8_2 = v_temp8_2 + l1;	
-
-	pai_2 = (float)atan2f(v_temp7_2,v_temp8_2);
-	theta1_2 = 	fi-	pai_2; 
-	
- 
-	//all solutions 
-    solution[0][0]=-theta1_1; solution[0][1]=theta2; solution[0][2]=-theta3_1; solution[0][3]=theta4; //note negtive, better here
-	solution[1][0]=-theta1_2; solution[1][1]=theta2; solution[1][2]=-theta3_2; solution[1][3]=theta4; //note negtive, better here
-
-	
-	// check if turning over constraint and solution exist	   
-	for(j=0;j<2;j++)
-	{
-	    for(i=0;i<4;i++)
-		{
-	        if ((solution[j][i]>theta_max[i])||(solution[j][i]<theta_min[i]))
-			{
-				Fsolution_check[j]=0;	
-	            break;
-	        }
-	    }		
-		if (Fsolution_check[j]==1)
-		{
-		   exist_s = exist_s + 1;		
-		}
-	}
-
-
-	/* return global values*/
-	switch (exist_s)
-	{
-		case 1: // exist one solution
-			if(Fsolution_check[0]==1)
-			{
-				arm->theta4f_solution[0]= solution[0][0]; // note here
-				arm->theta4f_solution[1]= solution[0][1];
-				arm->theta4f_solution[2]= solution[0][2]; // note here
-				arm->theta4f_solution[3]= solution[0][3]; 		
-			}
-			else
-			{
-				arm->theta4f_solution[0]= solution[1][0]; // note here
-				arm->theta4f_solution[1]= solution[1][1];
-				arm->theta4f_solution[2]= solution[1][2]; // note here
-				arm->theta4f_solution[3]= solution[1][3];		
-			}
-			break;		
-		case 2: // exist two solutions 	
-			arm->theta4f_solution[0]= solution[s_index][0];	// note here
-			arm->theta4f_solution[1]= solution[s_index][1];
-			arm->theta4f_solution[2]= solution[s_index][2];	// note here
-			arm->theta4f_solution[3]= solution[s_index][3];
-			break;	
-		default: 				
-			break;
-	}
-	return exist_s;
-}
-
-
-
-
-
 /**
   * @brief  This function handles TIM4 global interrupt request.
   * @param  None
@@ -2842,7 +2337,7 @@ void TIM2_IRQHandler(void)
 		/*This channel is used to monitor routine to check whether back to home and disable servo torque, 10/24/2014 added*/		
 		switch (ARM_D.gb_current_moving_mode)
 		{
-			case 0: /*Homing*/	
+			case 0: /* Homing */	
 				if(ARM_D.gb_monitor_counter <13*6) // monitor 6 seconds  
 				{
 					ARM_D.gb_monitor_counter = ARM_D.gb_monitor_counter + 1;	
@@ -3085,7 +2580,7 @@ void TIM2_IRQHandler(void)
 
 			//delay_t(100);
 			uart1_rx_index=0;
-			plan2send_index = 0; //important here, 05222013		
+			//plan2send_index = 0; //important here, 05222013		//---jim test 01222015
 	}	
 		
 	
