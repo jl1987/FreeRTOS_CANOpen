@@ -40,37 +40,37 @@
 
 /* Private define ------------------------------------------------------------*/ 
 #define SAT_FILTER(val, min, max)   val > max ? max : (val < min ? min : val)
-#define THETA3F_CALC_TIMES 				61  		// fixed theta3f calc times, 08092013 update
-#define pi 												3.14f 	//3.14159265 
-#define ANGLE_2_MOTOR_POS_RADIO 	195.37860814  	//(1023/300)*(180/pi)
-#define uart1_rx_len 							4 	// if char set 8, if Hex set 4 
-#define ctrl_mode_swtich_len 			11	// single motor or all
-#define read_motor_len 						11	// single motor
-#define single_joint_ctrl_len 		11  // single motor or all
-#define single_speed_ctrl_len 		9	  // single motor or all
-#define single_maxtorque_ctrl_len 9	  // single motor or all
-#define single_torque_enable_len 	8  	// singer motor torque on/off
-#define syn_5dof_torque_enable_len 30 // 5dof motors torque on/off
-#define syn_joint_ctrl_len 				38
-#define syn_joint_ctrl_len_5dof 	33
-#define syn_speed_ctrl_len 				26
-#define clear_ax12_error_len 			8  	// clear single or all motors errors
-#define	arm_suitable_voltage	 		335 // stop and hold on 
-#define	uart_speed_map_radio 			10 	// old 10.23f 	
+#define THETA3F_CALC_TIMES 				 61  						// fixed theta3f calc times, 08092013 update
+#define pi 												 3.14f 					//3.14159265 
+#define ANGLE_2_MOTOR_POS_RADIO 	 195.37860814  	//(1023/300)*(180/pi)
+#define uart1_rx_len 							 4 							// if char set 8, if Hex set 4 
+#define ctrl_mode_swtich_len 			 11							// single motor or all
+#define read_motor_len 						 11							// single motor
+#define single_joint_ctrl_len 		 11  						// single motor or all
+#define single_speed_ctrl_len 		 9	  					// single motor or all
+#define single_maxtorque_ctrl_len  9	  					// single motor or all
+#define single_torque_enable_len 	 8  						// singer motor torque on/off
+#define syn_5dof_torque_enable_len 30 						// 5dof motors torque on/off
+#define syn_joint_ctrl_len 				 38
+#define syn_joint_ctrl_len_5dof 	 33
+#define syn_speed_ctrl_len 				 26
+#define clear_ax12_error_len 			 8  						// clear single or all motors errors
+#define	arm_suitable_voltage	 		 335 						// stop and hold on 
+#define	uart_speed_map_radio 			 10 						// old 10.23f 	
 
 
 /* Private typedef -----------------------------------------------------------*/
 /*PID parameters*/ 
 struct pid_t {
-  float e;      /**< Error, SP(set point) - PV(process value) */
-  float i;      /**< Error Integral variable */
-  float d;      /**< Error derivative variable */   
-  float Kp;     /**< Proportional gain, a tuning parameter */
-  float Ki;     /**< Integral gain, a tuning parameter */
-  float Kd;     /**< Derivative gain, a tuning parameter */
+  float e;      			/**< Error, SP(set point) - PV(process value) */
+  float i;      			/**< Error Integral variable */
+  float d;      			/**< Error derivative variable */   
+  float Kp;     			/**< Proportional gain, a tuning parameter */
+  float Ki;     			/**< Integral gain, a tuning parameter */
+  float Kd;     			/**< Derivative gain, a tuning parameter */
 	float ScallFactor;  /**< Apply to the pwm duty region */
-	int Max_v;	/**< max filter limited value */
-	int Min_v;	/**< min filter limited value */
+	int 	Max_v;				/**< max filter limited value */
+	int 	Min_v;				/**< min filter limited value */
 };
 
 
@@ -79,31 +79,24 @@ typedef struct struct_Arm_Data Arm_Data;
 struct struct_Arm_Data {
 	/* Part: ARM */
 	uint8_t gb_arm_index;  // 1-Left, 2-Right
+	uint8_t gb_hand_index;       //choose 
+	uint8_t gb_hand_pose_index; 
 	
-	
+	uint8_t gb_hand_pose_enable;  
 	
 	u8 pneumatic_control_enable; //pneumatic ON or OFF
 	
-	uint8_t gb_left_touchsensor_switch_cmd;  // 08/12/2014 added
+	uint8_t gb_left_touchsensor_switch_cmd;   // 08/12/2014 added
 	uint8_t gb_right_touchsensor_switch_cmd; 	// 08/12/2014 added
 	
-	
-	uint8_t gb_hand_index;       //choose 
-	uint8_t gb_hand_pose_index; 
-	uint8_t gb_hand_pose_enable;  
-	
-	int8_t gb_current_moving_mode; 		 	// 0 is homing mode, 1 is teach mode, 2 is tracking mode
-	int8_t gb_previous_moving_mode;  			// 0 is homing mode, 1 is teach mode, 2 is tracking mode, added 11/06/2014
-	
+	int8_t gb_current_moving_mode; 	// 0 is homing mode, 1 is teach mode, 2 is tracking mode
+	int8_t gb_previous_moving_mode; // 0 is homing mode, 1 is teach mode, 2 is tracking mode, added 11/06/2014
 	
 	volatile uint8_t command_hand; 
 	
 	volatile uint8_t breakForLoop;  // break for loop
 	
-	
-	
 	volatile uint8_t preMoveCommand;	
-	
 	
 	volatile uint8_t gb_rx_px; //reveived positions
 	volatile uint8_t gb_rx_py;
@@ -142,25 +135,20 @@ struct struct_Arm_Data {
 	uint8_t gb_theta3f_calc_times; 	//debug
 	uint8_t gb_try_theta4f_ok; 	//debug
 	
-	
 	uint8_t gb_theta3f_exist;
 	uint8_t gb_theta4f_exist;
 	uint8_t gb_theta_s_index;
 	uint8_t gb_theta_s_index2; 
 	uint8_t gb_best_s_index; 
 	
-	
 	volatile float gb_fwd_pos[3]; // global t01 position, for selection best solution, update 08072013
 	volatile float gb_fwd_px_temp;
 	volatile float gb_fwd_px_max; 
 	
-	
 	float theta_solution[5]; 
-	
 	
 	int32_t gb_right_m_pos[5];       // target glob_motor_pos
 	int32_t gb_left_m_pos[5];       // target glob_motor_pos
-	
 	
 	uint8_t motor_pos_low[6]; // fixed;
 	uint8_t motor_pos_high[6]; 						// fixed; 
@@ -198,7 +186,7 @@ void Arm_Init(Arm_Data *ch);
 
 /* PID Functions */ 
 void pid_init(float Kp, float Ki, float Kd, float ScallFactor, int Max_v, int Min_v,struct pid_t *pid);
-int pid_update(int sp, int pv, int dt,struct pid_t *pid);
+int	 pid_update(int sp, int pv, int dt,struct pid_t *pid);
 
 /* Homing Mode Functions */ 
 void Homing(Arm_Data *arm);
@@ -228,16 +216,22 @@ void angle_2_motor_pos(uint8_t arm_index, float angle[5],Arm_Data *arm);
 
 /* AX12 Motor Control Functions */ 
 void AX_12_Syn_Ctrl_5DOF_Rigid_Arm(uint8_t arm_index, int32_t position_in[5], int32_t speed_in[5]);
+void AX_12_Syn_Ctrl(uint8_t arm_index,int32_t position_in[6], int32_t speed_in[6]);
+void AX_12_Speed_Syn_Ctrl(uint8_t arm_index, int speed_in[6]);
+void AX_12_5DOF_Syn_Torque_Enable(uint8_t arm_index, uint8_t torque_enable);
+
+
 uint8_t AX_12_Read(uint8_t id_index);
 void AX_12_CLEAR_ERROR(uint8_t id_index);
 void AX_12_Ctrl(uint8_t id_index,uint8_t posLow, uint8_t posHigh);
-void AX_12_Syn_Ctrl(uint8_t arm_index,int32_t position_in[6], int32_t speed_in[6]);
 void AX_12_Moving_Mode_Swtich(uint8_t id_index, uint8_t mode);
 void AX_12_Ctrl_Pos_and_Speed(uint8_t id_index, int position_in, int speed_in);
 void AX_12_Speed_Ctrl(uint8_t id_index, int goal_speed_in);
-void AX_12_Speed_Syn_Ctrl(uint8_t arm_index, int speed_in[6]);
+
 void AX_12_MaxTorque_Ctrl(uint8_t id_index, int max_torque);
-void AX_12_5DOF_Syn_Torque_Enable(uint8_t arm_index, uint8_t torque_enable);
+
+
+
 void AX_12_Torque_Enable(uint8_t id_index, uint8_t torque_enable);
 uint8_t testNot1(int32_t XDec);	
 uint8_t XDec2Low(int32_t XDec);	  

@@ -21,36 +21,39 @@
 #include "ARM_OD.h"
 
 /* Private variables ---------------------------------------------------------*/
+/* Thread & Queue */
 xQueueHandle xQ_ARM_MSG = NULL;
 xTaskHandle	 xT_ARM 	  = NULL;
 
+/* ARM Total */
 Arm_Data ARM_D;
 
-
+/* PID */
 struct pid_t pid_per;
 int 	 pid_mv = 0;
 
-volatile uint8_t left_hand_pump_pwm_duty[5] 		= {0,0,0,0,0};	//[0 100]
-volatile uint8_t right_hand_pump_pwm_duty[5] 		= {0,0,0,0,0};	//[0 100]
+/* PWM */
+volatile uint8_t left_hand_pump_pwm_duty[5]  = {0,0,0,0,0};	//[0 100]
+volatile uint8_t right_hand_pump_pwm_duty[5] = {0,0,0,0,0};	//[0 100]
+volatile uint8_t pump_pwm_duty 							 = 0;						//[0 100]
+uint16_t capture = 0;	
 
-static __IO uint32_t TimingDelay;
-
-__IO uint32_t left_hand_actual_AD_value[5] = {0,0,0,0,0};
+/* AD */
+__IO uint32_t left_hand_actual_AD_value[5]  = {0,0,0,0,0};
 __IO uint32_t right_hand_actual_AD_value[5] = {0,0,0,0,0}; 
-
 __IO uint32_t AD_value_1=0;	
 __IO uint32_t AD_value_2=0;
 __IO uint32_t AD_value_3=0;	
 
-volatile int32_t motor_speed_input					= 0;	   
-volatile int32_t motor_speed_percent_input	= 0;
+/* Motor Speed */
+volatile int32_t motor_speed_input				 = 0;	   
+volatile int32_t motor_speed_percent_input = 0;
 
-volatile uint8_t pump_pwm_duty 	= 0;			//[0 100]
-
-uint16_t capture = 0;	
-
+/* USART1 */
 uint8_t 	uart1_rx_index=0;
 volatile 	uint8_t uart1_rx_buffer[uart1_rx_len];  // uart buffer
+
+static __IO uint32_t TimingDelay;
 
 
 /* Private functions ---------------------------------------------------------*/
@@ -74,10 +77,6 @@ void arm_control_thread(void * pvParameters)
 	}
 }
 
-
-
-
-
 // void CAN1Master_ConfigureNode(CO_Data* d)
 // {
 // // 	  d->heartbeatError   = CAN1Master_heartbeatError;
@@ -90,7 +89,6 @@ void arm_control_thread(void * pvParameters)
 // // 	  setState(d,Initialisation);
 // }
 
-
 void start_arm_control(void)
 {
 	xTaskCreate(arm_control_thread, "arm_control", ARM_CONTROL_THREAD_STACK, NULL,ARM_CONTROL_THREAD_PRIO, &xT_ARM);
@@ -102,8 +100,6 @@ void start_arm_control(void)
 		printf("arm control thread creat successfully!\r\n");
 	}
 }
-
-
 
 void Arm_Init(Arm_Data *arm)
 {
@@ -118,7 +114,6 @@ void Arm_Init(Arm_Data *arm)
 	
 	arm->gb_current_moving_mode	 = -1; 		// 0 is homing mode, 1 is teach mode, 2 is tracking mode
 	arm->gb_previous_moving_mode = -2;  	// 0 is homing mode, 1 is teach mode, 2 is tracking mode, added 11/06/2014
-	
 	
 	arm->gb_hand_index 			= 0; 
 	arm->gb_hand_pose_index 	= 0; 
@@ -136,7 +131,6 @@ void Arm_Init(Arm_Data *arm)
 	arm->gb_pre_rx_px=0;
 	arm->gb_pre_rx_py=0;
 	arm->gb_pre_rx_pz=0;
-	
 
 	arm->gb_arm_px=0; // target px 
 	arm->gb_arm_py=0; // target py 
@@ -152,17 +146,14 @@ void Arm_Init(Arm_Data *arm)
 
 	arm->delta_arm_pos=0; // delta_arm pos
 	
-	
 	arm->gb_arm_index = 254; 
 	
 	
-
 	arm->theta3f_solution[0]=0;
 	arm->theta3f_solution[1]=0;
 	arm->theta3f_solution[2]=0;
 	arm->theta3f_solution[3]=0;
 
-	
 	arm->theta4f_solution[0]=0;
 	arm->theta4f_solution[1]=0;
 	arm->theta4f_solution[2]=0;
@@ -178,7 +169,6 @@ void Arm_Init(Arm_Data *arm)
 	arm->gb_try_theta3f_ok = 0; 			//debug
 	arm->gb_theta3f_calc_times = 0; 	//debug
 	arm->gb_try_theta4f_ok 	 = 0; 		//debug
-	
 	
 	arm->gb_theta3f_exist = 0;
 	arm->gb_theta4f_exist = 0;
@@ -199,14 +189,11 @@ void Arm_Init(Arm_Data *arm)
 	arm->theta_solution[3]=0; 
 	arm->theta_solution[4]=0; 
 	
-	
-	
 	arm->gb_right_m_pos[0] = 0;       // target glob_motor_pos
 	arm->gb_right_m_pos[1] = 0; 
 	arm->gb_right_m_pos[2] = 0; 
 	arm->gb_right_m_pos[3] = 0; 
 	arm->gb_right_m_pos[4] = 0; 
-	
 	
 	arm->gb_left_m_pos[0]  = 0;       // target glob_motor_pos
 	arm->gb_left_m_pos[1]  = 0; 
@@ -229,14 +216,11 @@ void Arm_Init(Arm_Data *arm)
 	arm->rigid_arm_init_motor_pos[3] = 512; 
 	arm->rigid_arm_init_motor_pos[4] = 512; 
 
-
-
 	arm->right_arm_home_motor_pos[0] = 205; 	// fixed, update 09052013	  // 818 should ref motor direction
 	arm->right_arm_home_motor_pos[1] = 205; 
 	arm->right_arm_home_motor_pos[2] = 512; 
 	arm->right_arm_home_motor_pos[3] = 512; 
 	arm->right_arm_home_motor_pos[4] = 512; 
-	
 	
 	arm->left_arm_init_motor_pos[0]  = 818; 	// fixed, 09172013 new, ok	test kinematis intial	
 	arm->left_arm_init_motor_pos[1]  = 818;
@@ -261,139 +245,137 @@ void Arm_Init(Arm_Data *arm)
 	}
 	
 	arm->gb_monitor_counter = 0;
-	
 }
 
 
 void ArmMotionCtrl(Arm_Data *arm)
 {
-		if (arm->pneumatic_control_enable==1)  
+	if (arm->pneumatic_control_enable==1)  
+	{
+		/* gb_current_moving_mode commands */
+		switch (arm->gb_current_moving_mode)
 		{
-			/* gb_current_moving_mode commands */
-			switch (arm->gb_current_moving_mode)
-			{
-				case 1: /* Joint space teach progam, without inverse kinematic, 05312013*/
-					if ((arm->command_hand==1)||(arm->command_hand==2)||(arm->command_hand==5))	
+			case 1: /* Joint space teach progam, without inverse kinematic, 05312013*/
+				if ((arm->command_hand==1)||(arm->command_hand==2)||(arm->command_hand==5))	
+				{
+					if((arm->gb_rx_px==0)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==1))
 					{
-					  if((arm->gb_rx_px==0)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==1))
-						{
-							Joint_Teach_DEMO_2(1,&ARM_D);		// wave hand, ok
-						}
-						else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==0))
-						{
-							 Joint_Teach_DEMO_3(1,&ARM_D);	// shake hand, ok
-						}
-						else if((arm->gb_rx_px==1)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==0))
-						{
-							 Joint_Teach_DEMO_4(1,&ARM_D); 	// go style, ok
-						}
-						else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==1))
-						{
-							 Joint_Teach_DEMO_6(1,&ARM_D); 	// dancing, ok
-						}
+						Joint_Teach_DEMO_2(1,arm);		// wave hand, ok
 					}
-					else if ((arm->command_hand==3)||(arm->command_hand==4)||(arm->command_hand==6))
+					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==0))
 					{
-						if((arm->gb_rx_px==0)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==1))
-						{
-							Joint_Teach_DEMO_2(2,&ARM_D);   // wave hand, ok
-						}
-						else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==0))
-						{
-							 Joint_Teach_DEMO_3(2,&ARM_D);	// shake hand, ok
-						}
-						else if((arm->gb_rx_px==1)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==0))
-						{
-							 Joint_Teach_DEMO_4(2,&ARM_D); 	// go style, ok
-						}
-						else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==1))
-						{
-							 Joint_Teach_DEMO_6(2,&ARM_D); 	// dancing, ok
-						}
+						Joint_Teach_DEMO_3(1,&ARM_D);	// shake hand, ok
 					}
-					break;
-
-				case 2:	  /* vision tracking mode, with inverse kinematic, 060752013*/
-					arm->gb_arm_index = 254; // initialize
-					if ((arm->command_hand==1)||(arm->command_hand==2)||(arm->command_hand==5))	
+					else if((arm->gb_rx_px==1)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==0))
 					{
-						arm->gb_arm_index = 1; // left arm
+						Joint_Teach_DEMO_4(1,&ARM_D); 	// go style, ok
 					}
-					else if ((arm->command_hand==3)||(arm->command_hand==4)||(arm->command_hand==6))
+					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==1))
 					{
-						arm->gb_arm_index = 2; // right arm
-					}					
-
-
-					/*Enable arm inverse kinematics*/
-					if ((arm->gb_arm_index ==1)||(arm->gb_arm_index ==2))
-					{
-						/*inverse kinematics*/
-						/* new version 2, 08072013*/
-						arm->gb_theta3f_exist 		 = 0; 			//initialize
-						arm->gb_theta_s_index 		 = 0; 			// solution index						
-						arm->gb_theta3f_calc_times = 0; 			//debug
-						arm->gb_theta3f_var				 = ZERO_f; 	//initialize
-						/* theta3f is variable*/
-						for(arm->gb_theta3f_t=-30;arm->gb_theta3f_t<31;arm->gb_theta3f_t++) // calc 29*2 times, scale 5 degree,08092013 update
-						{
-							arm->gb_theta3f_calc_times = arm->gb_theta3f_calc_times+1; //debug	
-							arm->gb_theta3f_var 		   = (float)(arm->gb_theta3f_t*PI_DIV_36); //pi/30, region [-150 150] degree,08092013 update								
-							arm->gb_theta3f_exist 		 = ikine_4dof_rigid_arm_theta3f(arm->gb_arm_index, arm->gb_arm_px, arm->gb_arm_py, arm->gb_arm_pz,arm->gb_theta3f_var,0,&ARM_D);		
-							if(arm->gb_theta3f_exist>=1) // when exist solution, record solution
-							{								
-								arm->theta_solution_buffer[arm->gb_theta_s_index][0]= arm->theta3f_solution[0];
-								arm->theta_solution_buffer[arm->gb_theta_s_index][1]= arm->theta3f_solution[1];
-								arm->theta_solution_buffer[arm->gb_theta_s_index][2]= arm->theta3f_solution[2];
-								arm->theta_solution_buffer[arm->gb_theta_s_index][3]= arm->theta3f_solution[3];
-								arm->theta_solution_buffer[arm->gb_theta_s_index][4]= arm->gb_fwd_pos[0]; //t01, px
-								arm->gb_theta_s_index = arm->gb_theta_s_index + 1;
-							  //break;
-							}		 
-						}
-
-						/*When exist solution, get the best solution*/
-						if(arm->gb_theta_s_index>0)
-						{							
-							/*get best solution, by max gb_fwd_pos[0] to judge solution*/					
-							arm->gb_fwd_px_temp =  arm->theta_solution_buffer[0][4];
-							arm->gb_best_s_index = 0;
-							for(arm->gb_theta_s_index2=0;arm->gb_theta_s_index2<arm->gb_theta_s_index;arm->gb_theta_s_index2++) // calc 29*2 times, scale 5 degree
-							{
-								if (arm->theta_solution_buffer[arm->gb_theta_s_index2][4]>arm->gb_fwd_px_temp)
-								{
-								   arm->gb_fwd_px_temp = arm->theta_solution_buffer[arm->gb_theta_s_index2][4];
-								   arm->gb_best_s_index = arm->gb_theta_s_index2;
-								}   
-							}
-							// choose the crospronding solution as the best solution 
-							arm->theta_solution[0] = arm->theta_solution_buffer[arm->gb_best_s_index][0];
-							arm->theta_solution[1] = arm->theta_solution_buffer[arm->gb_best_s_index][1]; // initial offset
-							arm->theta_solution[2] = arm->theta_solution_buffer[arm->gb_best_s_index][2];
-							arm->theta_solution[3] = arm->theta_solution_buffer[arm->gb_best_s_index][3]; 
-						    
-							/*calc hand rotation angle, 12/05/2013 new version*/ 
-							hand_desired_angle_crl(1,arm->gb_rx_az,&ARM_D);	
-							
-							
-							/*calc motor position*/
-							angle_2_motor_pos(arm->gb_arm_index,arm->theta_solution,&ARM_D);
-							
-							/*send positions to motor*/
-							if (arm->gb_arm_index==1) // left arm
-							{								
-							 	AX_12_Syn_Ctrl_5DOF_Rigid_Arm(arm->gb_arm_index,arm->gb_left_m_pos, arm->motor_fixed_speed); 
-							} 		
-							if (arm->gb_arm_index==2) // right arm
-							{								
-								AX_12_Syn_Ctrl_5DOF_Rigid_Arm(arm->gb_arm_index,arm->gb_right_m_pos, arm->motor_fixed_speed);
-							}										
+						Joint_Teach_DEMO_6(1,&ARM_D); 	// dancing, ok
 					}
 				}
-					break;			
-				default: 				
-					break;
+				else if ((arm->command_hand==3)||(arm->command_hand==4)||(arm->command_hand==6))
+				{
+					if((arm->gb_rx_px==0)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==1))
+					{
+						Joint_Teach_DEMO_2(2,&ARM_D);   // wave hand, ok
+					}
+					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==0))
+					{
+						Joint_Teach_DEMO_3(2,&ARM_D);	// shake hand, ok
+					}
+					else if((arm->gb_rx_px==1)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==0))
+					{
+						Joint_Teach_DEMO_4(2,&ARM_D); 	// go style, ok
+					}
+					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==1))
+					{
+						Joint_Teach_DEMO_6(2,&ARM_D); 	// dancing, ok
+					}
+				}
+				break;
+
+			case 2:	  /* vision tracking mode, with inverse kinematic, 060752013*/
+				arm->gb_arm_index = 254; // initialize
+				if ((arm->command_hand==1)||(arm->command_hand==2)||(arm->command_hand==5))	
+				{
+					arm->gb_arm_index = 1; // left arm
+				}
+				else if ((arm->command_hand==3)||(arm->command_hand==4)||(arm->command_hand==6))
+				{
+					arm->gb_arm_index = 2; // right arm
+				}					
+
+				/*Enable arm inverse kinematics*/
+				if ((arm->gb_arm_index ==1)||(arm->gb_arm_index ==2))
+				{
+					/*inverse kinematics*/
+					/* new version 2, 08072013*/
+					arm->gb_theta3f_exist 		 = 0; 			//initialize
+					arm->gb_theta_s_index 		 = 0; 			// solution index						
+					arm->gb_theta3f_calc_times = 0; 			//debug
+					arm->gb_theta3f_var				 = ZERO_f; 	//initialize
+					/* theta3f is variable*/
+					for(arm->gb_theta3f_t=-30;arm->gb_theta3f_t<31;arm->gb_theta3f_t++) // calc 29*2 times, scale 5 degree,08092013 update
+					{
+						arm->gb_theta3f_calc_times = arm->gb_theta3f_calc_times+1; //debug	
+						arm->gb_theta3f_var 		   = (float)(arm->gb_theta3f_t*PI_DIV_36); //pi/30, region [-150 150] degree,08092013 update								
+						arm->gb_theta3f_exist 		 = ikine_4dof_rigid_arm_theta3f(arm->gb_arm_index, arm->gb_arm_px, arm->gb_arm_py, arm->gb_arm_pz,arm->gb_theta3f_var,0,&ARM_D);		
+						if(arm->gb_theta3f_exist>=1) // when exist solution, record solution
+						{								
+							arm->theta_solution_buffer[arm->gb_theta_s_index][0]= arm->theta3f_solution[0];
+							arm->theta_solution_buffer[arm->gb_theta_s_index][1]= arm->theta3f_solution[1];
+							arm->theta_solution_buffer[arm->gb_theta_s_index][2]= arm->theta3f_solution[2];
+							arm->theta_solution_buffer[arm->gb_theta_s_index][3]= arm->theta3f_solution[3];
+							arm->theta_solution_buffer[arm->gb_theta_s_index][4]= arm->gb_fwd_pos[0]; //t01, px
+							arm->gb_theta_s_index = arm->gb_theta_s_index + 1;
+							//break;
+						}		 
+					}
+
+					/*When exist solution, get the best solution*/
+					if(arm->gb_theta_s_index>0)
+					{							
+						/*get best solution, by max gb_fwd_pos[0] to judge solution*/					
+						arm->gb_fwd_px_temp =  arm->theta_solution_buffer[0][4];
+						arm->gb_best_s_index = 0;
+						for(arm->gb_theta_s_index2=0;arm->gb_theta_s_index2<arm->gb_theta_s_index;arm->gb_theta_s_index2++) // calc 29*2 times, scale 5 degree
+						{
+							if (arm->theta_solution_buffer[arm->gb_theta_s_index2][4]>arm->gb_fwd_px_temp)
+							{
+								 arm->gb_fwd_px_temp = arm->theta_solution_buffer[arm->gb_theta_s_index2][4];
+								 arm->gb_best_s_index = arm->gb_theta_s_index2;
+							}   
+						}
+						// choose the crospronding solution as the best solution 
+						arm->theta_solution[0] = arm->theta_solution_buffer[arm->gb_best_s_index][0];
+						arm->theta_solution[1] = arm->theta_solution_buffer[arm->gb_best_s_index][1]; // initial offset
+						arm->theta_solution[2] = arm->theta_solution_buffer[arm->gb_best_s_index][2];
+						arm->theta_solution[3] = arm->theta_solution_buffer[arm->gb_best_s_index][3]; 
+							
+						/*calc hand rotation angle, 12/05/2013 new version*/ 
+						hand_desired_angle_crl(1,arm->gb_rx_az,&ARM_D);	
+						
+						
+						/*calc motor position*/
+						angle_2_motor_pos(arm->gb_arm_index,arm->theta_solution,&ARM_D);
+						
+						/*send positions to motor*/
+						if (arm->gb_arm_index==1) // left arm
+						{								
+							AX_12_Syn_Ctrl_5DOF_Rigid_Arm(arm->gb_arm_index,arm->gb_left_m_pos, arm->motor_fixed_speed); 
+						} 		
+						if (arm->gb_arm_index==2) // right arm
+						{								
+							AX_12_Syn_Ctrl_5DOF_Rigid_Arm(arm->gb_arm_index,arm->gb_right_m_pos, arm->motor_fixed_speed);
+						}										
+				}
 			}
+				break;			
+			default: 				
+				break;
+		}
 	}
 }
 
@@ -434,16 +416,11 @@ int pid_update(int sp, int pv, int dt,struct pid_t *pid)
     return mv;
 }
 
-/*Joint_Teach_DEMO_1, 05312013*/
 void Joint_Teach_DEMO_1(uint8_t arm_index, Arm_Data *arm)
 {	
-
 	arm->breakForLoop = 0; // release break, 06052013
 }
 
-
-
-/*Joint_Teach_DEMO_2, 08/04/2014 new version*/
 /* wave hand*/
 void Joint_Teach_DEMO_2(uint8_t arm_index,Arm_Data *arm)
 {
@@ -538,8 +515,6 @@ void Joint_Teach_DEMO_2(uint8_t arm_index,Arm_Data *arm)
 	arm->breakForLoop = 0; // release break, 06052013
 }
 
-
-/*Joint_Teach_DEMO_3, 08/12/2014 new*/
 /* shake hand*/
 void Joint_Teach_DEMO_3(uint8_t arm_index,Arm_Data *arm)
 {	
@@ -622,10 +597,6 @@ void Joint_Teach_DEMO_3(uint8_t arm_index,Arm_Data *arm)
 	arm->breakForLoop = 0; // release break, 06052013
 }
 
-
-
-
-/*Joint_Teach_DEMO_4, 05312013*/
 /* all fingers demo*/
 void Joint_Teach_DEMO_4(uint8_t arm_index,Arm_Data *arm)
 {
@@ -689,26 +660,17 @@ void Joint_Teach_DEMO_4(uint8_t arm_index,Arm_Data *arm)
 	arm->breakForLoop = 0; // release break, 06052013
 }
 
-
-/*Joint_Teach_DEMO_5, 05312013*/
 /* power*/
 void Joint_Teach_DEMO_5(uint8_t arm_index,Arm_Data *arm)
 {	 
 	arm->breakForLoop = 0; // release break, 06052013
 }
 
-
-/*Joint_Teach_DEMO_6, 05312013*/
 /* dancing*/
 void Joint_Teach_DEMO_6(uint8_t arm_index,Arm_Data *arm)
 { 		
 	arm->breakForLoop = 0; // release break, 06052013													
 }
-
-
-
-
-
 
 /*fixed theta3 inverse kinematics for 4dof rigid arm, by rhqi 08072013*/
 uint8_t ikine_4dof_rigid_arm_theta3f(uint8_t arm_index, int32_t px, int32_t py, int32_t pz, float theta3f, uint8_t s_index, Arm_Data *arm)		
@@ -745,7 +707,6 @@ uint8_t ikine_4dof_rigid_arm_theta3f(uint8_t arm_index, int32_t px, int32_t py, 
 	float le=l2+l3;
 	float theta_error = 0.01; // important vs matlab 	
 	float theta3_init_offset = 0;
-
 
 	//right arm region, update 09/06/2013, latest used, test
 	theta1_max = (float)(4*pi/3) + theta_error;  //max 240 degree, NOTE: RX64 may diff with ax12, update latter<=> motor 1 inital pos: 205 
@@ -795,7 +756,6 @@ uint8_t ikine_4dof_rigid_arm_theta3f(uint8_t arm_index, int32_t px, int32_t py, 
 	{
 	  theta1 = theta1 + (float)(2*pi);	
 	}
-
 
 	//STEP 2: get  theta4_1,theta4_2
 	px_2 = a; //px_2 = sqrt(px_*px_ + py_*py_);
@@ -878,12 +838,10 @@ uint8_t ikine_4dof_rigid_arm_theta3f(uint8_t arm_index, int32_t px, int32_t py, 
 	theta4_2 = (float)atan2f(t_z_,t_z);   
 	theta3_2 = -t_fi; //update as new solution, note: negtive here  
 
- 
 	//all solutions 
   solution[0][0]=theta1; solution[0][1]=theta2_1; solution[0][2]=theta3_1 + theta3_init_offset; solution[0][3]=theta4_1;
 	solution[1][0]=theta1; solution[1][1]=theta2_2; solution[1][2]=theta3_2 + theta3_init_offset; solution[1][3]=theta4_2;
    
-	
 	// check if turning over constraint and solution exist
 	for(j=0;j<2;j++)
 	{
@@ -942,7 +900,6 @@ void hand_desired_angle_crl(uint8_t enable_angle_crl, uint8_t desired_rx_angle, 
 { 
 	/*calc hand rotation angle, 02/18/2013 new version*/ 
 	arm->theta_solution[4] =  - arm->theta_solution[0] - arm->theta_solution[2]; // 02/18/2014,  general ok
-	
 }
 
 /*(4dof rigid arm sulution)angles to motor postions, update 08/07/2013*/
@@ -1074,7 +1031,6 @@ void AX_12_Syn_Ctrl_5DOF_Rigid_Arm(uint8_t arm_index, int32_t position_in[5], in
 	}	
 }
 
-
 void delay_t(unsigned int dl)
 {
 	unsigned int i,y;
@@ -1084,15 +1040,12 @@ void delay_t(unsigned int dl)
 	}
 }
 
-
 /*exactly count ms, 01/01/2014 update*/
 void Delay_ms(uint32_t nTime)
 {
 	TimingDelay = nTime;
 	while((TimingDelay != 0x00)&&(ARM_D.breakForLoop != 1));//new version with break 
 }
-
-
 
 /*Homing, 06052013*/
 void Homing(Arm_Data *arm)
@@ -1116,10 +1069,6 @@ void Homing(Arm_Data *arm)
 	AX_12_Syn_Ctrl_5DOF_Rigid_Arm(2,r_teach_pos,r_teach_spd);		
 }
 
-
-
-
-
 /*system interput, 01/01/2014*/
 // void SysTick_Handler(void)
 // {
@@ -1127,8 +1076,6 @@ void Homing(Arm_Data *arm)
 // 	if ((TimingDelay != 0x00)&&(ARM_D.breakForLoop != 1)) //new version with break
 // 	TimingDelay --;
 // }
-
-
 
 /* Dynamixel_Moving_Mode_Swtich*/
 /* mode=0 is endless, mode=1 is joint control, 05222013*/
@@ -1172,7 +1119,6 @@ void AX_12_Moving_Mode_Swtich(uint8_t id_index, uint8_t mode)
 	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??璣ゅ?σ521??TXE砆竚癬???誹??ЧΘ
 	}	
 }
-
 
 /* Read AX_12 current positions, and speed, 05222013*/
 //void AX_12_Read(uint8_t id_index)
@@ -1248,19 +1194,18 @@ void AX_12_5DOF_Syn_Torque_Enable(uint8_t arm_index, uint8_t torque_enable)
 	uint8_t ax12_command[syn_5dof_torque_enable_len];
 	uint8_t sub_id_N[5],sub_torque_N[5];	
 	
-
 	// initial
 	sub_id_sum=0;
 	torque_sum=0;	
 	
 	// command
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = 254;	ax12_command[2] = id;
-	length = 14; ax12_command[3] = length;	
-	instruction = 131; ax12_command[4] = instruction;
-	tTorque = 24; ax12_command[5] = tTorque; 	
-	each_length=1;ax12_command[6] = each_length;  	 	
+	head1 = 255; 				ax12_command[0] = head1;
+	head2 = 255; 				ax12_command[1] = head2;			  
+	id = 254;						ax12_command[2] = id;
+	length = 14; 				ax12_command[3] = length;	
+	instruction = 131; 	ax12_command[4] = instruction;
+	tTorque = 24; 			ax12_command[5] = tTorque; 	
+	each_length=1;			ax12_command[6] = each_length;  	 	
 	
 	for(j=0;j<5;j++)
 	{
@@ -1291,10 +1236,9 @@ void AX_12_5DOF_Syn_Torque_Enable(uint8_t arm_index, uint8_t torque_enable)
 	 	/* Loop until the end of transmission */
 	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //?????s?521???TXE????????????T
 	}	
+	
+	
 }
-
-
-
 
 /* single motor or all motors torque, must be mofied when swtiches from turnless to joint mode, 05272013*/
 void AX_12_MaxTorque_Ctrl(uint8_t id_index, int max_torque)
@@ -1309,15 +1253,14 @@ void AX_12_MaxTorque_Ctrl(uint8_t id_index, int max_torque)
 	maxTorqueHigh = XDec2High(max_torque);  // 0-1023 
 	
 	// commond
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = id_index;	ax12_command[2] = id;	
-	length = 5; ax12_command[3] = length;	
-	instruction = 3; ax12_command[4] = instruction;	
-	maxTorque = 34; ax12_command[5] = maxTorque;
-	ax12_command[6] = maxTorqueLow;
-	ax12_command[7] = maxTorqueHigh;
-	
+	head1 = 255; 			ax12_command[0] = head1;
+	head2 = 255; 			ax12_command[1] = head2;			  
+	id = id_index;		ax12_command[2] = id;	
+	length = 5; 			ax12_command[3] = length;	
+	instruction = 3; 	ax12_command[4] = instruction;	
+	maxTorque = 34; 	ax12_command[5] = maxTorque;
+										ax12_command[6] = maxTorqueLow;
+										ax12_command[7] = maxTorqueHigh;
 	
 	checksum = testNot1(id + length + instruction + maxTorque + maxTorqueLow + maxTorqueHigh);
 	ax12_command[8] = checksum;
@@ -1361,7 +1304,6 @@ void AX_12_Ctrl(uint8_t id_index,uint8_t posLow, uint8_t posHigh)
 	}	
 }
 
-
 /* single motor or all motors move(input position and speed), 05222013*/
 void AX_12_Ctrl_Pos_and_Speed(uint8_t id_index, int position_in, int speed_in)
 {
@@ -1387,8 +1329,7 @@ void AX_12_Ctrl_Pos_and_Speed(uint8_t id_index, int position_in, int speed_in)
 	positionHigh = positionHigh; ax12_command[7] = positionHigh;
 	speedLow = speedLow; ax12_command[8] = speedLow;
 	speedHigh = speedHigh; ax12_command[9] = speedHigh;	
-	
-	
+		
 	checksum = testNot1(id + length + instruction + position + positionLow + positionHigh + speedLow + speedHigh);
 
 	ax12_command[10] = checksum;
@@ -1418,13 +1359,13 @@ void AX_12_Syn_Ctrl(uint8_t arm_index, int32_t position_in[6], int32_t speed_in[
 	speedHigh_sum=0;
 	
 	// command
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = 254;	ax12_command[2] = id;
-	length = 34; ax12_command[3] = length;	// 6 motors move at the same time	
-	instruction = 131; ax12_command[4] = instruction;
-	position = 30; ax12_command[5] = position; 	
-	each_length=4;ax12_command[6] = each_length;  	 	
+	head1 = 255; 				ax12_command[0] = head1;
+	head2 = 255; 				ax12_command[1] = head2;			  
+	id = 254;						ax12_command[2] = id;
+	length = 34; 				ax12_command[3] = length;	// 6 motors move at the same time	
+	instruction = 131; 	ax12_command[4] = instruction;
+	position = 30; 			ax12_command[5] = position; 	
+	each_length=4;			ax12_command[6] = each_length;  	 	
 	
 	for(j=0;j<6;j++)
 	{
@@ -1470,9 +1411,6 @@ void AX_12_Syn_Ctrl(uint8_t arm_index, int32_t position_in[6], int32_t speed_in[
 	}	
 } 
 
-
-
-
 /* clear all AX_12 errors, 06052013*/
 void AX_12_CLEAR_ERROR(uint8_t id_index)
 {
@@ -1514,15 +1452,14 @@ void AX_12_Speed_Ctrl(uint8_t id_index, int goal_speed_in)
 	goalspeedHigh = XDec2High(goal_speed_in);  // 0-1023 is CCW(0 stop), 1024-2047 is CW(1024 stop)	
 	
 	// commond
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = id_index;	ax12_command[2] = id;	
-	length = 5; ax12_command[3] = length;	
-	instruction = 3; ax12_command[4] = instruction;	
-	goalspeed = 32; ax12_command[5] = goalspeed;
-	ax12_command[6] = goalspeedLow;
-	ax12_command[7] = goalspeedHigh;
-	
+	head1 = 255; 			ax12_command[0] = head1;
+	head2 = 255; 			ax12_command[1] = head2;			  
+	id = id_index;		ax12_command[2] = id;	
+	length = 5; 			ax12_command[3] = length;	
+	instruction = 3; 	ax12_command[4] = instruction;	
+	goalspeed = 32; 	ax12_command[5] = goalspeed;
+										ax12_command[6] = goalspeedLow;
+										ax12_command[7] = goalspeedHigh;
 	
 	checksum = testNot1(id + length + instruction + goalspeed + goalspeedLow + goalspeedHigh);
 	ax12_command[8] = checksum;
@@ -1534,7 +1471,6 @@ void AX_12_Speed_Ctrl(uint8_t id_index, int goal_speed_in)
 	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??璣ゅ?σ521??TXE砆竚癬???誹??ЧΘ
 	}	
 }
-
 
 /* syn wheel turnless speed move, 05222013*/
 void AX_12_Speed_Syn_Ctrl(unsigned char arm_index, int speed_in[6])
@@ -1550,13 +1486,13 @@ void AX_12_Speed_Syn_Ctrl(unsigned char arm_index, int speed_in[6])
 	speedLow_sum=0;
 	speedHigh_sum=0;
 
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = 254;	ax12_command[2] = id;	
-	length = 22; ax12_command[3] = length;	// 6 motors move at the same time	
-	instruction = 131; ax12_command[4] = instruction;
-	goalspeed = 32; ax12_command[5] = goalspeed; 	
-	each_length=2;ax12_command[6] = each_length;  	 	
+	head1 = 255;				ax12_command[0] = head1;
+	head2 = 255; 				ax12_command[1] = head2;			  
+	id = 254;						ax12_command[2] = id;	
+	length = 22; 				ax12_command[3] = length;	// 6 motors move at the same time	
+	instruction = 131; 	ax12_command[4] = instruction;
+	goalspeed = 32; 		ax12_command[5] = goalspeed; 	
+	each_length=2;			ax12_command[6] = each_length;  	 	
 	
 	for(j=0;j<6;j++)
 	{
@@ -1593,12 +1529,6 @@ void AX_12_Speed_Syn_Ctrl(unsigned char arm_index, int speed_in[6])
 	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??璣ゅ?σ521??TXE砆竚癬???誹??ЧΘ
 	}	
 }
-
-
-
-
-
-
 
  /*Initial postion, 06052013*/
 void InitialPosTest(Arm_Data *arm)
@@ -1644,7 +1574,6 @@ void InitialPos(Arm_Data *arm)
 	AX_12_Syn_Ctrl_5DOF_Rigid_Arm(2,r_teach_pos,r_teach_spd);		
 }
 
-
 /*Homing, 06052013*/
 void SingleArmHoming(uint8_t arm_index,Arm_Data *arm)
 {	
@@ -1676,7 +1605,6 @@ void SingleArmHoming(uint8_t arm_index,Arm_Data *arm)
 	}	
 }
 
-
 /*Homing, 06052013*/
 void HomingFast(Arm_Data *arm)
 {	
@@ -1698,10 +1626,6 @@ void HomingFast(Arm_Data *arm)
 	r_teach_pos[4]=arm->right_arm_home_motor_pos[4]; r_teach_spd[4]=100; 
 	AX_12_Syn_Ctrl_5DOF_Rigid_Arm(2,r_teach_pos,r_teach_spd);		
 }
-
-
-
-
 
 /*infltableHandMotion, 11/06/2013*/
 void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t motion_direction,Arm_Data *arm)
@@ -1928,7 +1852,6 @@ void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t 
 		}
    }
 }
-
 
 /*hand pose, 12/18/2013*/
 void infltableHandPose(uint8_t pneumatic_enable, uint8_t hand_index, uint8_t pose_index)
@@ -2210,10 +2133,6 @@ void infltableHandPose(uint8_t pneumatic_enable, uint8_t hand_index, uint8_t pos
 	}
 }
 
-
-
-
-
 /*TouchSensorBasedArmTorqueCtrl, 08/12/2014*/
 void TouchSensorBasedArmTorqueCtrl(uint8_t hand_index)
 { 
@@ -2262,7 +2181,6 @@ void TouchSensorBasedArmTorqueCtrl(uint8_t hand_index)
 		}	
 }
 
-
 uint8_t testNot1(int32_t XDec)
 {
 	uint8_t i,result;
@@ -2274,13 +2192,9 @@ uint8_t testNot1(int32_t XDec)
 		    XDec=XDec-i*256;
 		}
 	}
-	
 	result = 255-XDec;
-
 	return result;
 }
-
-
 
 uint8_t XDec2Low(int32_t XDec)  
 {		
@@ -2297,28 +2211,19 @@ uint8_t XDec2Low(int32_t XDec)
 			}
 		}
 	}
-
 	result = XDec; 
-		
 	return result;	
-
 }
 
 //XDec2High, 05222013
 uint8_t XDec2High(int32_t XDec)  
 {		
 	uint8_t result;	 	
-		
 	// get high value
 	result=(int)(XDec/256); // important here, 05222013
 	
 	return result;
 }
-
- 
-
-
-
 
 /**
   * @brief  This function handles TIM4 global interrupt request.
@@ -2332,7 +2237,6 @@ void TIM2_IRQHandler(void)
   {
     TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);
 		/* LED4 toggling with frequency = 4.57 Hz */
-		
 		
 		/*This channel is used to monitor routine to check whether back to home and disable servo torque, 10/24/2014 added*/		
 		switch (ARM_D.gb_current_moving_mode)
@@ -2380,26 +2284,19 @@ void TIM2_IRQHandler(void)
 			default: 				
 				break;
 		}
-			
-				
-    /* LED4 toggling with frequency = 4.57 Hz */
-    //STM_EVAL_LEDToggle(LED4);
-	  capture = TIM_GetCapture1(TIM2);
-    TIM_SetCompare1(TIM2, capture + CCR1_Val);
-
+		capture = TIM_GetCapture1(TIM2);
+		TIM_SetCompare1(TIM2, capture + CCR1_Val);
   }
   else if (TIM_GetITStatus(TIM2, TIM_IT_CC2) != RESET)
   {
     TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
 
-    /* LED3 toggling with frequency = 9.15 Hz */
     capture = TIM_GetCapture2(TIM2);
     TIM_SetCompare2(TIM2, capture + CCR2_Val);
   }
   else if (TIM_GetITStatus(TIM2, TIM_IT_CC3) != RESET)
   {
-    TIM_ClearITPendingBit(TIM2, TIM_IT_CC3); 
-    /* LED5 toggling with frequency = 18.31 Hz */   
+    TIM_ClearITPendingBit(TIM2, TIM_IT_CC3);    
     capture = TIM_GetCapture3(TIM2);
     TIM_SetCompare3(TIM2, capture + CCR3_Val);
   }
@@ -2414,8 +2311,6 @@ void TIM2_IRQHandler(void)
 		ARM_D.delta_arm_pz=0; // delta_arm_pz
 		ARM_D.delta_arm_pos=0; // delta_arm pos	 
 		
-
-
 		/* get ADC values, 1000x*/
 		// 11282013 based on new pcb config	
 		left_hand_actual_AD_value[0]= ADC1_ConvertedValue[0]*3300/0xFFF;	// 1000X, left thumb 左大拇指
@@ -2544,9 +2439,7 @@ void TIM2_IRQHandler(void)
 					break;
 			}	
 
-		
-		
-				/*PID pump control*/
+			/*PID pump control*/
 			if (ARM_D.pneumatic_control_enable==1)  // <=1mm	means arriving the target pos
 			{
 					pump_pwm_duty = pid_update(arm_suitable_voltage,AD_value_1, 100,&pid_per);
@@ -2558,7 +2451,7 @@ void TIM2_IRQHandler(void)
 
 			/*jump to new movement, 06052013*/
 			if((ARM_D.command_hand==1)||(ARM_D.command_hand==2)||(ARM_D.command_hand==3)||(ARM_D.command_hand==4)
-			||(ARM_D.command_hand==5)||(ARM_D.command_hand==6)||(ARM_D.command_hand==8)||(ARM_D.command_hand==9))
+			 ||(ARM_D.command_hand==5)||(ARM_D.command_hand==6)||(ARM_D.command_hand==8)||(ARM_D.command_hand==9))
 			{
 				 if((ARM_D.preMoveCommand!=ARM_D.command_hand)&&(ARM_D.preMoveCommand!=7))//diff hand
 				 {
@@ -2577,23 +2470,14 @@ void TIM2_IRQHandler(void)
 			ARM_D.gb_pre_rx_pz = ARM_D.gb_rx_pz;
 			/* control command over*/
 				
-
-			//delay_t(100);
 			uart1_rx_index=0;
 			//plan2send_index = 0; //important here, 05222013		//---jim test 01222015
 	}	
 		
-	
-
-	/* LED6 toggling with frequency = 36.62 Hz */
 	capture = TIM_GetCapture4(TIM2);
 	TIM_SetCompare4(TIM2, capture + CCR4_Val);
   }
 }
-
-
-
-
 
 /**
   * @brief  This function handles CAN2 RX0 request.
@@ -2609,13 +2493,11 @@ void CAN2_RX0(void)
 	CAN_Receive(CAN2, CAN_FIFO0, &RxMessage_FIFO0);
 	GPIO_ResetBits(GPIOE, GPIO_Pin_5);//LED "ON",on pcb is used for CAN2 communictation display
 		
-	//TXMSG.StdId = ARM_TO_PC_CAN_ID;
 	TXMSG.StdId = 0x021; // arm->pc	//TXMSG.StdId = 0x061; //ref lifter ->pc	
 	TXMSG.ExtId = 0;
 	TXMSG.IDE = CAN_ID_STD;                                    
 	TXMSG.RTR = CAN_RTR_DATA;
 	TXMSG.DLC = 4;  	
-
 	
 	switch (RxMessage_FIFO0.Data[0])
 	{
@@ -2626,17 +2508,17 @@ void CAN2_RX0(void)
 
 			break;
 		case 0x12:       // 启动示教动作模式			
-			ARM_D.pneumatic_control_enable=1;
-			ARM_D.gb_current_moving_mode = 1;  //	teach moving mode 
-			ARM_D.breakForLoop = 0; // release break, 06052013	
-			ARM_D.gb_monitor_counter = 0; // enable gb_monitor_counter, 10/24/2014
+			ARM_D.pneumatic_control_enable= 1;
+			ARM_D.gb_current_moving_mode  = 1;  //	teach moving mode 
+			ARM_D.breakForLoop 						= 0; // release break, 06052013	
+			ARM_D.gb_monitor_counter 			= 0; // enable gb_monitor_counter, 10/24/2014
 		
 		
 			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
 			ARM_D.command_hand =(uint8_t)RxMessage_FIFO0.Data[1]; //command
-			ARM_D.gb_rx_px =(uint8_t)RxMessage_FIFO0.Data[2];	// px
-			ARM_D.gb_rx_py =(uint8_t)RxMessage_FIFO0.Data[3];	// py
-			ARM_D.gb_rx_pz =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
+			ARM_D.gb_rx_px 		 =(uint8_t)RxMessage_FIFO0.Data[2];	// px
+			ARM_D.gb_rx_py		 =(uint8_t)RxMessage_FIFO0.Data[3];	// py
+			ARM_D.gb_rx_pz 		 =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
 				
 			/*hand pose control*/
 			CAN2_RX_Hand_Pose_Ctrl((uint8_t)RxMessage_FIFO0.Data[1],(uint8_t)RxMessage_FIFO0.Data[2],&ARM_D); 
@@ -2644,20 +2526,20 @@ void CAN2_RX0(void)
 			ARM_D.gb_previous_moving_mode = ARM_D.gb_current_moving_mode;  //update command, 11/06/2014
 			break;
 		case 0x13:       // 启动手势跟踪模式			
-			ARM_D.pneumatic_control_enable=1;
-			ARM_D.gb_current_moving_mode = 2; //	vision tracking moving mode 
-			ARM_D.breakForLoop = 0; // release break, 06052013  
-			ARM_D.gb_left_touchsensor_switch_cmd = 0; // 08/08/2014 added	
+			ARM_D.pneumatic_control_enable 				= 1;
+			ARM_D.gb_current_moving_mode 	 				= 2; //	vision tracking moving mode 
+			ARM_D.breakForLoop 						 				= 0; // release break, 06052013  
+			ARM_D.gb_left_touchsensor_switch_cmd  = 0; // 08/08/2014 added	
 			ARM_D.gb_right_touchsensor_switch_cmd = 0; // 08/08/2014 added	
 			ARM_D.gb_monitor_counter = 0; // enable gb_monitor_counter, 10/24/2014		
 
 		
 			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
 			ARM_D.command_hand =(uint8_t)RxMessage_FIFO0.Data[1]; //command
-			ARM_D.gb_rx_px =(uint8_t)RxMessage_FIFO0.Data[2];	// px
-			ARM_D.gb_rx_py =(uint8_t)RxMessage_FIFO0.Data[3];	// py
-			ARM_D.gb_rx_pz =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
-			ARM_D.gb_rx_az =(uint8_t)RxMessage_FIFO0.Data[5]; // hand rotation			
+			ARM_D.gb_rx_px 		 =(uint8_t)RxMessage_FIFO0.Data[2];	// px
+			ARM_D.gb_rx_py 		 =(uint8_t)RxMessage_FIFO0.Data[3];	// py
+			ARM_D.gb_rx_pz 		 =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
+			ARM_D.gb_rx_az 		 =(uint8_t)RxMessage_FIFO0.Data[5]; // hand rotation			
 
 		
 			/*transfer data*/
@@ -2672,10 +2554,12 @@ void CAN2_RX0(void)
 			ARM_D.gb_previous_moving_mode = ARM_D.gb_current_moving_mode;  //update command, 11/06/2014
 			break;
 		case 0x14:       // 手臂复位			 
-			ARM_D.pneumatic_control_enable=0; 
-			ARM_D.gb_hand_pose_enable = 0; ARM_D.gb_hand_index = 0; ARM_D.gb_hand_pose_index = 0; // 12/19/2013 update
-			ARM_D.gb_current_moving_mode = 0; //	release moving mode 					
-			ARM_D.gb_left_touchsensor_switch_cmd = 0; // 08/08/2014 added	
+			ARM_D.pneumatic_control_enable				= 0; 
+			ARM_D.gb_hand_pose_enable 						= 0; 
+			ARM_D.gb_hand_index 									= 0; 
+			ARM_D.gb_hand_pose_index 							= 0; // 12/19/2013 update
+			ARM_D.gb_current_moving_mode 					= 0; //	release moving mode 					
+			ARM_D.gb_left_touchsensor_switch_cmd  = 0; // 08/08/2014 added	
 			ARM_D.gb_right_touchsensor_switch_cmd = 0; // 08/08/2014 added				
 				
 			ARM_D.breakForLoop = 1; // enable break, 11/27/2014 added
@@ -2688,9 +2572,9 @@ void CAN2_RX0(void)
 		
 			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
 			ARM_D.command_hand =(uint8_t)RxMessage_FIFO0.Data[1]; //command
-			ARM_D.gb_rx_px =(uint8_t)RxMessage_FIFO0.Data[2];	// px
-			ARM_D.gb_rx_py =(uint8_t)RxMessage_FIFO0.Data[3];	// py
-			ARM_D.gb_rx_pz =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
+			ARM_D.gb_rx_px 		 =(uint8_t)RxMessage_FIFO0.Data[2];	// px
+			ARM_D.gb_rx_py 		 =(uint8_t)RxMessage_FIFO0.Data[3];	// py
+			ARM_D.gb_rx_pz 		 =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
 			
 			break; 
 		case 0x15:       // parameters setting, added 06/27/2014	 								
@@ -2702,9 +2586,9 @@ void CAN2_RX0(void)
 	
 	// update command
 	ARM_D.preMoveCommand = ARM_D.command_hand;
-	ARM_D.gb_pre_rx_px = ARM_D.gb_rx_px;
-	ARM_D.gb_pre_rx_py = ARM_D.gb_rx_py;
-	ARM_D.gb_pre_rx_pz = ARM_D.gb_rx_pz;	
+	ARM_D.gb_pre_rx_px 	 = ARM_D.gb_rx_px;
+	ARM_D.gb_pre_rx_py 	 = ARM_D.gb_rx_py;
+	ARM_D.gb_pre_rx_pz 	 = ARM_D.gb_rx_pz;	
 	/* control command over*/
 	
 
