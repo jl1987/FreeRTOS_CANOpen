@@ -4,11 +4,11 @@ FileVersion=1
 FileRevision=1
 EDSVersion=4.0
 Description=CHASSIS OD v1.0
-CreationTime=05:15PM
-CreationDate=01-16-2015
+CreationTime=11:45AM
+CreationDate=01-30-2015
 CreatedBy=CANFestival
-ModificationTime=05:15PM
-ModificationDate=01-16-2015
+ModificationTime=11:45AM
+ModificationDate=01-30-2015
 ModifiedBy=CANFestival
 
 [DeviceInfo]
@@ -537,14 +537,14 @@ PDOMapping=0
 [1600]
 ParameterName=Receive PDO 1 Mapping
 ObjectType=0x8
-SubNumber=2
+SubNumber=3
 
 [1600sub0]
 ParameterName=Number of Entries
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw
-DefaultValue=1
+DefaultValue=2
 PDOMapping=0
 
 [1600sub1]
@@ -553,6 +553,14 @@ ObjectType=0x7
 DataType=0x0007
 AccessType=rw
 DefaultValue=536870920
+PDOMapping=0
+
+[1600sub2]
+ParameterName=PDO 1 Mapping for an application object 2
+ObjectType=0x7
+DataType=0x0007
+AccessType=rw
+DefaultValue=536936456
 PDOMapping=0
 
 [1601]
@@ -1785,11 +1793,20 @@ DefaultValue=0
 PDOMapping=0
 
 [ManufacturerObjects]
-SupportedObjects=1
+SupportedObjects=2
 1=0x2000
+2=0x2001
 
 [2000]
 ParameterName=motion command
+ObjectType=0x7
+DataType=0x0005
+AccessType=rw
+DefaultValue=0
+PDOMapping=1
+
+[2001]
+ParameterName=direction_control_word
 ObjectType=0x7
 DataType=0x0005
 AccessType=rw

@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    lifter_control.c
+  * @file    chassis_control.h
   * @author  Jim
   * @version V1.0
   * @date    01-Sep-2014
@@ -95,6 +95,7 @@ typedef struct struct_Chassis_Data Chassis_Data;
 struct struct_Chassis_Data {
 	/* Drive Par */
 	u8 motion_command;						// the motion command of the chassis
+	u8 direction;
 	
 	s32 V_SET;
 	s32 V_GET;

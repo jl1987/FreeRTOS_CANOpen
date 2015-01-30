@@ -7,6 +7,7 @@
 /* Declaration of mapped variables                                        */
 /**************************************************************************/
 UNS8 motion_command = 0x0;		/* Mapped at index 0x2000, subindex 0x00 */
+UNS8 direction_control_word = 0x0;		/* Mapped at index 0x2001, subindex 0x00 */
 UNS16 Controlword = 0x0;		/* Mapped at index 0x6040, subindex 0x00 */
 UNS16 Statusword = 0x0;		/* Mapped at index 0x6041, subindex 0x00 */
 INTEGER8 Modes_of_operation = 0x0;		/* Mapped at index 0x6060, subindex 0x00 */
@@ -324,15 +325,17 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                      };
 
 /* index 0x1600 :   Receive PDO 1 Mapping. */
-                    UNS8 CHASSIS_OD_highestSubIndex_obj1600 = 1; /* number of subindex - 1*/
+                    UNS8 CHASSIS_OD_highestSubIndex_obj1600 = 2; /* number of subindex - 1*/
                     UNS32 CHASSIS_OD_obj1600[] = 
                     {
-                      0x20000008	/* 536870920 */
+                      0x20000008,	/* 536870920 */
+                      0x20010008	/* 536936456 */
                     };
                     subindex CHASSIS_OD_Index1600[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&CHASSIS_OD_highestSubIndex_obj1600 },
-                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1600[0] }
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1600[0] },
+                       { RW, uint32, sizeof (UNS32), (void*)&CHASSIS_OD_obj1600[1] }
                      };
 
 /* index 0x1601 :   Receive PDO 2 Mapping. */
@@ -641,6 +644,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                     subindex CHASSIS_OD_Index2000[] = 
                      {
                        { RW, uint8, sizeof (UNS8), (void*)&motion_command }
+                     };
+
+/* index 0x2001 :   Mapped variable direction_control_word */
+                    subindex CHASSIS_OD_Index2001[] = 
+                     {
+                       { RW, uint8, sizeof (UNS8), (void*)&direction_control_word }
                      };
 
 /* index 0x6040 :   Mapped variable Controlword */
@@ -1104,6 +1113,7 @@ const indextable CHASSIS_OD_objdict[] =
   { (subindex*)CHASSIS_OD_Index1A02,sizeof(CHASSIS_OD_Index1A02)/sizeof(CHASSIS_OD_Index1A02[0]), 0x1A02},
   { (subindex*)CHASSIS_OD_Index1A03,sizeof(CHASSIS_OD_Index1A03)/sizeof(CHASSIS_OD_Index1A03[0]), 0x1A03},
   { (subindex*)CHASSIS_OD_Index2000,sizeof(CHASSIS_OD_Index2000)/sizeof(CHASSIS_OD_Index2000[0]), 0x2000},
+  { (subindex*)CHASSIS_OD_Index2001,sizeof(CHASSIS_OD_Index2001)/sizeof(CHASSIS_OD_Index2001[0]), 0x2001},
   { (subindex*)CHASSIS_OD_Index6040,sizeof(CHASSIS_OD_Index6040)/sizeof(CHASSIS_OD_Index6040[0]), 0x6040},
   { (subindex*)CHASSIS_OD_Index6041,sizeof(CHASSIS_OD_Index6041)/sizeof(CHASSIS_OD_Index6041[0]), 0x6041},
   { (subindex*)CHASSIS_OD_Index6060,sizeof(CHASSIS_OD_Index6060)/sizeof(CHASSIS_OD_Index6060[0]), 0x6060},
@@ -1182,44 +1192,45 @@ const indextable * CHASSIS_OD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCa
 		case 0x1A02: i = 30;break;
 		case 0x1A03: i = 31;break;
 		case 0x2000: i = 32;*callbacks = motion_command_callbacks; break;
-		case 0x6040: i = 33;*callbacks = Controlword_callbacks; break;
-		case 0x6041: i = 34;*callbacks = Statusword_callbacks; break;
-		case 0x6060: i = 35;*callbacks = Modes_of_operation_callbacks; break;
-		case 0x6061: i = 36;*callbacks = Modes_of_operation_display_callbacks; break;
-		case 0x6062: i = 37;*callbacks = Position_demannd_value_callbacks; break;
-		case 0x6064: i = 38;*callbacks = Position_actual_value_callbacks; break;
-		case 0x6065: i = 39;*callbacks = Maximal_following_error_callbacks; break;
-		case 0x6067: i = 40;*callbacks = Position_window_callbacks; break;
-		case 0x6068: i = 41;*callbacks = Position_window_time_callbacks; break;
-		case 0x6069: i = 42;*callbacks = Velocity_sensor_actual_value_callbacks; break;
-		case 0x606B: i = 43;*callbacks = Velocity_demand_value_callbacks; break;
-		case 0x606C: i = 44;*callbacks = Velocity_actual_value_callbacks; break;
-		case 0x6078: i = 45;*callbacks = Current_actual_value_callbacks; break;
-		case 0x607A: i = 46;*callbacks = Target_position_callbacks; break;
-		case 0x607C: i = 47;*callbacks = Home_offset_callbacks; break;
-		case 0x607D: i = 48;*callbacks = Software_position_limit_callbacks; break;
-		case 0x607F: i = 49;*callbacks = Maximal_profile_velocity_callbacks; break;
-		case 0x6081: i = 50;*callbacks = Profile_velocity_callbacks; break;
-		case 0x6083: i = 51;*callbacks = Profile_acceleration_callbacks; break;
-		case 0x6084: i = 52;*callbacks = Profile_deceleration_callbacks; break;
-		case 0x6085: i = 53;*callbacks = Quick_stop_deceleration_callbacks; break;
-		case 0x6086: i = 54;*callbacks = Motion_profile_type_callbacks; break;
-		case 0x6089: i = 55;*callbacks = Position_notation_index_callbacks; break;
-		case 0x608A: i = 56;*callbacks = Position_dimention_index_callbacks; break;
-		case 0x608B: i = 57;*callbacks = Velocity_notation_index_callbacks; break;
-		case 0x608C: i = 58;*callbacks = Velocity_dimention_index_callbacks; break;
-		case 0x608D: i = 59;*callbacks = Acceleraion_notation_index_callbacks; break;
-		case 0x608E: i = 60;*callbacks = Acceleraion_dimention_index_callbacks; break;
-		case 0x6098: i = 61;*callbacks = Homing_method_callbacks; break;
-		case 0x6099: i = 62;*callbacks = Homing_speeds_callbacks; break;
-		case 0x609A: i = 63;*callbacks = Homing_acceleration_callbacks; break;
-		case 0x60F6: i = 64;*callbacks = Current_control_parameter_set_callbacks; break;
-		case 0x60F9: i = 65;*callbacks = Velocity_control_parameter_set_callbacks; break;
-		case 0x60FB: i = 66;*callbacks = Position_control_parameter_set_callbacks; break;
-		case 0x60FF: i = 67;*callbacks = Target_velocity_callbacks; break;
-		case 0x6402: i = 68;*callbacks = Motor_type_callbacks; break;
-		case 0x6410: i = 69;*callbacks = Motor_data_callbacks; break;
-		case 0x6502: i = 70;*callbacks = Supported_drive_modes_callbacks; break;
+		case 0x2001: i = 33;break;
+		case 0x6040: i = 34;*callbacks = Controlword_callbacks; break;
+		case 0x6041: i = 35;*callbacks = Statusword_callbacks; break;
+		case 0x6060: i = 36;*callbacks = Modes_of_operation_callbacks; break;
+		case 0x6061: i = 37;*callbacks = Modes_of_operation_display_callbacks; break;
+		case 0x6062: i = 38;*callbacks = Position_demannd_value_callbacks; break;
+		case 0x6064: i = 39;*callbacks = Position_actual_value_callbacks; break;
+		case 0x6065: i = 40;*callbacks = Maximal_following_error_callbacks; break;
+		case 0x6067: i = 41;*callbacks = Position_window_callbacks; break;
+		case 0x6068: i = 42;*callbacks = Position_window_time_callbacks; break;
+		case 0x6069: i = 43;*callbacks = Velocity_sensor_actual_value_callbacks; break;
+		case 0x606B: i = 44;*callbacks = Velocity_demand_value_callbacks; break;
+		case 0x606C: i = 45;*callbacks = Velocity_actual_value_callbacks; break;
+		case 0x6078: i = 46;*callbacks = Current_actual_value_callbacks; break;
+		case 0x607A: i = 47;*callbacks = Target_position_callbacks; break;
+		case 0x607C: i = 48;*callbacks = Home_offset_callbacks; break;
+		case 0x607D: i = 49;*callbacks = Software_position_limit_callbacks; break;
+		case 0x607F: i = 50;*callbacks = Maximal_profile_velocity_callbacks; break;
+		case 0x6081: i = 51;*callbacks = Profile_velocity_callbacks; break;
+		case 0x6083: i = 52;*callbacks = Profile_acceleration_callbacks; break;
+		case 0x6084: i = 53;*callbacks = Profile_deceleration_callbacks; break;
+		case 0x6085: i = 54;*callbacks = Quick_stop_deceleration_callbacks; break;
+		case 0x6086: i = 55;*callbacks = Motion_profile_type_callbacks; break;
+		case 0x6089: i = 56;*callbacks = Position_notation_index_callbacks; break;
+		case 0x608A: i = 57;*callbacks = Position_dimention_index_callbacks; break;
+		case 0x608B: i = 58;*callbacks = Velocity_notation_index_callbacks; break;
+		case 0x608C: i = 59;*callbacks = Velocity_dimention_index_callbacks; break;
+		case 0x608D: i = 60;*callbacks = Acceleraion_notation_index_callbacks; break;
+		case 0x608E: i = 61;*callbacks = Acceleraion_dimention_index_callbacks; break;
+		case 0x6098: i = 62;*callbacks = Homing_method_callbacks; break;
+		case 0x6099: i = 63;*callbacks = Homing_speeds_callbacks; break;
+		case 0x609A: i = 64;*callbacks = Homing_acceleration_callbacks; break;
+		case 0x60F6: i = 65;*callbacks = Current_control_parameter_set_callbacks; break;
+		case 0x60F9: i = 66;*callbacks = Velocity_control_parameter_set_callbacks; break;
+		case 0x60FB: i = 67;*callbacks = Position_control_parameter_set_callbacks; break;
+		case 0x60FF: i = 68;*callbacks = Target_velocity_callbacks; break;
+		case 0x6402: i = 69;*callbacks = Motor_type_callbacks; break;
+		case 0x6410: i = 70;*callbacks = Motor_data_callbacks; break;
+		case 0x6502: i = 71;*callbacks = Supported_drive_modes_callbacks; break;
 		default:
 			*errorCode = OD_NO_SUCH_OBJECT;
 			return NULL;

@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    lifter_control.c
+  * @file    chassis_control.c
   * @author  Jim
   * @version V1.0
   * @date    01-Sep-2014
@@ -37,8 +37,6 @@ volatile int RP_Lidar_Buf[360][1];
 volatile int RP_Lidar_Duf_Index = 0;
 volatile double repul_force_x[360];
 volatile double repul_force_y[360];
-
-
 
 
 void chassis_control_thread(void * pvParameters)
@@ -83,9 +81,6 @@ void chassis_control_thread(void * pvParameters)
 		vTaskDelay(CHASSIS_CONTROL_THREAD_DELAY_TIMER);
 	}
 }
-
-
-
 
 
 // void CAN1Master_ConfigureNode(CO_Data* d)
@@ -147,363 +142,373 @@ void Chassis_Init(Chassis_Data *ch)
 void ChassisMotionCtrl(Chassis_Data *ch)
 {
 	int ii;	
-	switch(ch->motion_command)
+	if (ch->motion_command == 0x01)
 	{
-		case 0:		// No keys is pressed --> stop the chassis
-			ch->target_speed1  = 0; ch->target_speed2  = 0; ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		case 1:		// Key D is pressed	--> right turning
-			ch->target_speed1  = 0; ch->target_speed2  = 0; ch->target_speed3  = SPEED_CONSTANT/2;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		case 2:		// Key S is pressed	--> move backward
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if(ii>89 && ii<271)
-				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y += repul_force_y[ii];
-				}
-			}
-			ch->result_speed_y += -SPEED_CONSTANT;
-				
-			// reverse motion filtering
-			if(ch->result_speed_y>0)
-			{
-				ch->result_speed_y = 0;
-			}
-			
-			ch->result_speed = sqrt(ch->result_speed_x * ch->result_speed_x + ch->result_speed_y * ch->result_speed_y);
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
+		switch(ch->direction)
+		{
+			case 0:		// No keys is pressed --> stop the chassis
+				ch->target_speed1  = 0; ch->target_speed2  = 0; ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 1:		// Key D is pressed	--> right turning
+				ch->target_speed1  = 0; ch->target_speed2  = 0; ch->target_speed3  = SPEED_CONSTANT/2;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 2:		// Key S is pressed	--> move backward
+				// compute the resultant speed
 				ch->result_speed_x = 0;
 				ch->result_speed_y = 0;
-			}
+				for(ii=0;ii<360;ii++)
+				{
+					if(ii>89 && ii<271)
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y += repul_force_y[ii];
+					}
+				}
+				ch->result_speed_y += -SPEED_CONSTANT;
 					
-			ch->target_speed1  = ch->result_speed_x; 
-			ch->target_speed2  = ch->result_speed_y; 
-			ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-			
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		case 4:		// Key A is pressed	--> left turning
-			ch->target_speed1  = 0; ch->target_speed2  = 0; ch->target_speed3  = -SPEED_CONSTANT/2;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		case 8:		// Key E is pressed	--> move to right
-			
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if(ii>-1 && ii<181)
+				// reverse motion filtering
+				if(ch->result_speed_y>0)
 				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y += repul_force_y[ii];
+					ch->result_speed_y = 0;
 				}
-			}
-			ch->result_speed_x += SPEED_CONSTANT;
-
-			// reverse motion filtering
-			if(ch->result_speed_x<0)
-			{
-				ch->result_speed_x = 0;
-			}		
-			ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
-				ch->result_speed_x = 0;
-				ch->result_speed_y = 0;
-			}
-
-			
-			ch->target_speed1  = ch->result_speed_x; 
-			ch->target_speed2  = ch->result_speed_y; 
-			ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-			
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		case 16:		// Key W is pressed	--> move forward
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if((ii>-1&&ii<91)||(ii>269&&ii<360))
+				
+				ch->result_speed = sqrt(ch->result_speed_x * ch->result_speed_x + ch->result_speed_y * ch->result_speed_y);
+				if(ch->result_speed > SPEED_CONSTANT)
 				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y += repul_force_y[ii];
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
 				}
-			}
-			ch->result_speed_y += SPEED_CONSTANT;
-			
-			// reverse motion filtering
-			if(ch->result_speed_y<0)
-			{
-				ch->result_speed_y = 0;	
-			}
-		
-			ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
-				ch->result_speed_x = 0;
-				ch->result_speed_y = 0;
-			}
-			
-			
-			ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
 						
-			 
-// 			sprintf(message,"%d %d %d \r\n",target_speed1, target_speed2,123);
-// 			USART1_Puts(message);
-			
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);		
-			break;
-		case 17:		// Keys W + D are pressed --> turn right [forward]
-			
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if((ii>-1&&ii<136)||(ii>314&&ii<360))
-				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y += repul_force_y[ii];
-				}
-			}
-			ch->result_speed_y += SPEED_CONSTANT;
-
-			// reverse motion filtering
-			if(ch->result_speed_y<0)
-			{
-				ch->result_speed_y = 0;	
-			}
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
+				ch->target_speed1  = ch->result_speed_x; 
+				ch->target_speed2  = ch->result_speed_y; 
+				ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 4:		// Key A is pressed	--> left turning
+				ch->target_speed1  = 0; ch->target_speed2  = 0; ch->target_speed3  = -SPEED_CONSTANT/2;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 8:		// Key E is pressed	--> move to right
+				
+				// compute the resultant speed
 				ch->result_speed_x = 0;
 				ch->result_speed_y = 0;
-			}
-
-			ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-			
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		case 20:		// Keys W + A are pressed --> turn left [forward]
-			
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if((ii>-1 && ii<46)||(ii>224&&ii<360))
+				for(ii=0;ii<360;ii++)
 				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y += repul_force_y[ii];
+					if(ii>-1 && ii<181)
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y += repul_force_y[ii];
+					}
 				}
-			}
-			ch->result_speed_y += SPEED_CONSTANT;
-			
-			// reverse motion filtering
-			if(ch->result_speed_y<0)
-			{
-				ch->result_speed_y = 0;	
-			}
+				ch->result_speed_x += SPEED_CONSTANT;
 
-			ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
+				// reverse motion filtering
+				if(ch->result_speed_x<0)
+				{
+					ch->result_speed_x = 0;
+				}		
+				ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
+				if(ch->result_speed > SPEED_CONSTANT)
+				{
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
+				}
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
+
+				
+				ch->target_speed1  = ch->result_speed_x; 
+				ch->target_speed2  = ch->result_speed_y; 
+				ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 16:		// Key W is pressed	--> move forward
+				// compute the resultant speed
 				ch->result_speed_x = 0;
 				ch->result_speed_y = 0;
-			}
-
-			ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			
-			break;
-		case 24:		  // Keys W + E are pressed	--> move to right [forward]
-			
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if((ii>-1 && ii<136)||(ii>314&&ii<360))
+				for(ii=0;ii<360;ii++)
 				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y += repul_force_y[ii];
+					if((ii>-1&&ii<91)||(ii>269&&ii<360))
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y += repul_force_y[ii];
+					}
 				}
-			}
-			ch->result_speed_y += SPEED_CONSTANT;
+				ch->result_speed_y += SPEED_CONSTANT;
+				
+				// reverse motion filtering
+				if(ch->result_speed_y<0)
+				{
+					ch->result_speed_y = 0;	
+				}
 			
-			// reverse motion filtering
-			if(ch->result_speed_y<0)
-			{
-				ch->result_speed_y = 0;	
-			}
-			
-			ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
+				ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
+				if(ch->result_speed > SPEED_CONSTANT)
+				{
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
+				}
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
+				
+				
+				ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+							
+				 
+	// 			sprintf(message,"%d %d %d \r\n",target_speed1, target_speed2,123);
+	// 			USART1_Puts(message);
+				
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);		
+				break;
+			case 17:		// Keys W + D are pressed --> turn right [forward]
+				
+				// compute the resultant speed
 				ch->result_speed_x = 0;
 				ch->result_speed_y = 0;
-			}
-
-			ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-	
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		case 30:
-		break;
-		case 32:		// Key Q is pressed --> move to left
-			
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if(ii>179&&ii<360)
+				for(ii=0;ii<360;ii++)
 				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y +=repul_force_y[ii];
+					if((ii>-1&&ii<136)||(ii>314&&ii<360))
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y += repul_force_y[ii];
+					}
 				}
-			}
-			ch->result_speed_x += -SPEED_CONSTANT;
-			
-			// reverse motion filtering
-			if(ch->result_speed_x>0)
-			{
-				ch->result_speed_x = 0;
-			}
+				ch->result_speed_y += SPEED_CONSTANT;
 
-			ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
+				// reverse motion filtering
+				if(ch->result_speed_y<0)
+				{
+					ch->result_speed_y = 0;	
+				}
+				if(ch->result_speed > SPEED_CONSTANT)
+				{
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
+				}
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
+
+				ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 20:		// Keys W + A are pressed --> turn left [forward]
+				
+				// compute the resultant speed
 				ch->result_speed_x = 0;
 				ch->result_speed_y = 0;
-			}
+				for(ii=0;ii<360;ii++)
+				{
+					if((ii>-1 && ii<46)||(ii>224&&ii<360))
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y += repul_force_y[ii];
+					}
+				}
+				ch->result_speed_y += SPEED_CONSTANT;
+				
+				// reverse motion filtering
+				if(ch->result_speed_y<0)
+				{
+					ch->result_speed_y = 0;	
+				}
 
-			ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+				ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
+				if(ch->result_speed > SPEED_CONSTANT)
+				{
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
+				}
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
+
+				ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				
+				break;
+			case 24:		  // Keys W + E are pressed	--> move to right [forward]
+				
+				// compute the resultant speed
+				ch->result_speed_x = 0;
+				ch->result_speed_y = 0;
+				for(ii=0;ii<360;ii++)
+				{
+					if((ii>-1 && ii<136)||(ii>314&&ii<360))
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y += repul_force_y[ii];
+					}
+				}
+				ch->result_speed_y += SPEED_CONSTANT;
+				
+				// reverse motion filtering
+				if(ch->result_speed_y<0)
+				{
+					ch->result_speed_y = 0;	
+				}
+				
+				ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
+				if(ch->result_speed > SPEED_CONSTANT)
+				{
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
+				}
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
+
+				ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
 		
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 30:
 			break;
-		case 48:		// Keys W + Q are pressed --> move to left [forward]
-			
-			// compute the resultant speed
-			ch->result_speed_x = 0;
-			ch->result_speed_y = 0;
-			for(ii=0;ii<360;ii++)
-			{
-				if((ii>-1 && ii<46)||(ii>224 && ii<360))
-				{
-					ch->result_speed_x += repul_force_x[ii];
-					ch->result_speed_y += repul_force_y[ii];
-				}
-			}
-			ch->result_speed_y += SPEED_CONSTANT;
-			
-			// reverse motion filtering
-			if(ch->result_speed_y<0)
-			{
-				ch->result_speed_y = 0;	
-			}
-
-			ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
-			if(ch->result_speed > SPEED_CONSTANT)
-			{
-					ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
-					ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
-			}
-			else if(ch->result_speed<SPEED_CONSTANT_MIN)
-			{
+			case 32:		// Key Q is pressed --> move to left
+				
+				// compute the resultant speed
 				ch->result_speed_x = 0;
 				ch->result_speed_y = 0;
-			}
+				for(ii=0;ii<360;ii++)
+				{
+					if(ii>179&&ii<360)
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y +=repul_force_y[ii];
+					}
+				}
+				ch->result_speed_x += -SPEED_CONSTANT;
+				
+				// reverse motion filtering
+				if(ch->result_speed_x>0)
+				{
+					ch->result_speed_x = 0;
+				}
 
-			ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
-			DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
-			DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
-			DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
-		
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
-		default:
-			DRIVE1.V_SET=chassis_drive(0,0,0,1);
-			DRIVE2.V_SET=chassis_drive(0,0,0,2);
-			DRIVE3.V_SET=chassis_drive(0,0,0,3);
-			chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
-			break;
+				ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
+				if(ch->result_speed > SPEED_CONSTANT)
+				{
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
+				}
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
+
+				ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+			
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			case 48:		// Keys W + Q are pressed --> move to left [forward]
+				
+				// compute the resultant speed
+				ch->result_speed_x = 0;
+				ch->result_speed_y = 0;
+				for(ii=0;ii<360;ii++)
+				{
+					if((ii>-1 && ii<46)||(ii>224 && ii<360))
+					{
+						ch->result_speed_x += repul_force_x[ii];
+						ch->result_speed_y += repul_force_y[ii];
+					}
+				}
+				ch->result_speed_y += SPEED_CONSTANT;
+				
+				// reverse motion filtering
+				if(ch->result_speed_y<0)
+				{
+					ch->result_speed_y = 0;	
+				}
+
+				ch->result_speed = sqrt(ch->result_speed_x*ch->result_speed_x + ch->result_speed_y*ch->result_speed_y);
+				if(ch->result_speed > SPEED_CONSTANT)
+				{
+						ch->result_speed_x = ch->result_speed_x*SPEED_CONSTANT/ch->result_speed;
+						ch->result_speed_y = ch->result_speed_y*SPEED_CONSTANT/ch->result_speed;
+				}
+				else if(ch->result_speed<SPEED_CONSTANT_MIN)
+				{
+					ch->result_speed_x = 0;
+					ch->result_speed_y = 0;
+				}
+
+				ch->target_speed1  = ch->result_speed_x; ch->target_speed2  = ch->result_speed_y; ch->target_speed3  = 0;
+				DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+				DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+				DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+			
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+			default:
+				DRIVE1.V_SET=chassis_drive(0,0,0,1);
+				DRIVE2.V_SET=chassis_drive(0,0,0,2);
+				DRIVE3.V_SET=chassis_drive(0,0,0,3);
+				chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
+				break;
+		}
+	}else if (ch->motion_command == 0x00)
+	{
+		ch->target_speed1  = 0; ch->target_speed2  = 0; ch->target_speed3  = 0;
+		DRIVE1.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,1);
+		DRIVE2.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,2);
+		DRIVE3.V_SET=chassis_drive(ch->drive_speed1,ch->drive_speed2,ch->drive_speed3,3);
+		chassis_move(DRIVE1.V_SET, DRIVE2.V_SET, DRIVE3.V_SET);
 	}
 } 
 
@@ -514,6 +519,7 @@ UNS32 OnChassisCommandWordUpdate(CO_Data* d, const indextable * unsused_indextab
 	printf("Chassis Control Word Update @2000|00...\r\n");
 	
 	CHASSIS_D.motion_command = motion_command;
+	CHASSIS_D.direction = direction_control_word;
 	
   return 0;
 }
@@ -592,15 +598,6 @@ void StepwiseFunction(Chassis_Data *chassis)
 		chassis->drive_speed3 = 0;
 	}
 }
-
-
-
-
-
-
-
-
-
 
 
 

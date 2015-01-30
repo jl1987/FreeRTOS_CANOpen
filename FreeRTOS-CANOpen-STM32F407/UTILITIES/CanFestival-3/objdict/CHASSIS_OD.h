@@ -13,6 +13,7 @@ const indextable * CHASSIS_OD_scanIndexOD (UNS16 wIndex, UNS32 * errorCode, ODCa
 /* Master node data struct */
 extern CO_Data CHASSIS_OD_Data;
 extern UNS8 motion_command;		/* Mapped at index 0x2000, subindex 0x00*/
+extern UNS8 direction_control_word;		/* Mapped at index 0x2001, subindex 0x00*/
 extern UNS16 Controlword;		/* Mapped at index 0x6040, subindex 0x00*/
 extern UNS16 Statusword;		/* Mapped at index 0x6041, subindex 0x00*/
 extern INTEGER8 Modes_of_operation;		/* Mapped at index 0x6060, subindex 0x00*/
