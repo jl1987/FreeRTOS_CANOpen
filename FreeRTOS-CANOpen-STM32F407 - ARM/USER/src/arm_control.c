@@ -1129,16 +1129,16 @@ uint8_t AX_12_Read(uint8_t id_index)
 	uint8_t head1, head2, id, length, instruction, positionLow, positionHigh, speedLow, speedHigh, readLength, checksum;
 	uint8_t ax12_command[read_motor_len];
 
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = id_index;	ax12_command[2] = id;
-	length = 7; ax12_command[3] = length;
-	instruction = 2; ax12_command[4] = instruction;		
-	positionLow = 36; ax12_command[5] = positionLow;
-	positionHigh = 37; ax12_command[6] = positionHigh;
-	speedLow = 38; ax12_command[7] = speedLow;
-	speedHigh = 39; ax12_command[8] = speedHigh;	
-	readLength = 4; ax12_command[9] = readLength;
+	head1 			= 255; 				ax12_command[0] = head1;
+	head2 			= 255; 				ax12_command[1] = head2;			  
+	id 					= id_index;		ax12_command[2] = id;
+	length 			= 7; 					ax12_command[3] = length;
+	instruction = 2; 					ax12_command[4] = instruction;		
+	positionLow = 36; 				ax12_command[5] = positionLow;
+	positionHigh= 37; 				ax12_command[6] = positionHigh;
+	speedLow 		= 38; 				ax12_command[7] = speedLow;
+	speedHigh 	= 39; 				ax12_command[8] = speedHigh;	
+	readLength 	= 4; 					ax12_command[9] = readLength;
 	
 	checksum = testNot1(id + length + instruction + positionLow + positionHigh + speedLow + speedHigh + readLength);
 
@@ -1165,13 +1165,13 @@ void AX_12_Torque_Enable(uint8_t id_index, uint8_t torque_enable)
 	uint8_t ax12_command[single_maxtorque_ctrl_len];
 	
 	// commond
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = id_index;	ax12_command[2] = id;	
-	length = 4; ax12_command[3] = length;	
-	instruction = 3; ax12_command[4] = instruction;	
-	tTorque = 24; ax12_command[5] = tTorque;	
-	ax12_command[6] = torque_enable;
+	head1 					= 255; 				ax12_command[0] = head1;
+	head2 					= 255; 				ax12_command[1] = head2;			  
+	id 							= id_index;		ax12_command[2] = id;	
+	length 					= 4; 					ax12_command[3] = length;	
+	instruction 		= 3; 					ax12_command[4] = instruction;	
+	tTorque 				= 24; 				ax12_command[5] = tTorque;	
+																ax12_command[6] = torque_enable;
 	
 	checksum = testNot1(id + length + instruction + tTorque + torque_enable);
 	ax12_command[7] = checksum;
@@ -1319,16 +1319,16 @@ void AX_12_Ctrl_Pos_and_Speed(uint8_t id_index, int position_in, int speed_in)
 	speedHigh = XDec2High(speed_in);
 	
 	// command
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = id_index;	ax12_command[2] = id;
-	length = 7; ax12_command[3] = length;
-	instruction = 3; ax12_command[4] = instruction;
-	position = 30; ax12_command[5] = position;
-	positionLow = positionLow; ax12_command[6] = positionLow;
-	positionHigh = positionHigh; ax12_command[7] = positionHigh;
-	speedLow = speedLow; ax12_command[8] = speedLow;
-	speedHigh = speedHigh; ax12_command[9] = speedHigh;	
+	head1 = 255; 									ax12_command[0] = head1;
+	head2 = 255; 									ax12_command[1] = head2;			  
+	id = id_index;								ax12_command[2] = id;
+	length = 7; 									ax12_command[3] = length;
+	instruction = 3; 							ax12_command[4] = instruction;
+	position = 30; 								ax12_command[5] = position;
+	positionLow = positionLow; 		ax12_command[6] = positionLow;
+	positionHigh = positionHigh; 	ax12_command[7] = positionHigh;
+	speedLow = speedLow; 					ax12_command[8] = speedLow;
+	speedHigh = speedHigh; 				ax12_command[9] = speedHigh;	
 		
 	checksum = testNot1(id + length + instruction + position + positionLow + positionHigh + speedLow + speedHigh);
 
@@ -1750,19 +1750,19 @@ void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t 
 			case 1:       // 右大拇指
 				if (motion_direction==1) // fist 
 				{
-					GPIO_SetBits(GPIOG, GPIO_Pin_3); //右大拇指气泵 ON
+					GPIO_SetBits(GPIOG, GPIO_Pin_3);  //右大拇指气泵 ON
 					GPIO_SetBits(GPIOG, GPIO_Pin_4);  //右大拇指气阀 ON
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_fist_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //right thumb
 				}
 				else if (motion_direction==-1) //thumb
 				{
-					GPIO_SetBits(GPIOG, GPIO_Pin_3); //右大拇指气泵 ON
+					GPIO_SetBits(GPIOG, GPIO_Pin_3);    //右大拇指气泵 ON
 					GPIO_ResetBits(GPIOG, GPIO_Pin_4);  //右大拇指气阀 OFF 
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_plam_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //right thumb
 				}
 				else // without 
 				{
-					GPIO_ResetBits(GPIOG, GPIO_Pin_3); //右大拇指气泵 OFF
+					GPIO_ResetBits(GPIOG, GPIO_Pin_3);  //右大拇指气泵 OFF
 					GPIO_ResetBits(GPIOG, GPIO_Pin_4);  //右大拇指气阀 OFF 						
 					right_hand_pump_pwm_duty[finger_index-1]=0;// stop 				
 				}
@@ -1770,19 +1770,19 @@ void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t 
 			case 2:	      // 右食指
 				if (motion_direction==1) // fist 
 				{
-					GPIO_SetBits(GPIOB, GPIO_Pin_3); //右食指气泵 ON
+					GPIO_SetBits(GPIOB, GPIO_Pin_3);  //右食指气泵 ON
 					GPIO_SetBits(GPIOB, GPIO_Pin_4);  //右食指气阀 ON
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_fist_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //left thumb
 				}
 				else if (motion_direction==-1) //thumb
 				{
-					GPIO_SetBits(GPIOB, GPIO_Pin_3); //右食指气泵 ON
+					GPIO_SetBits(GPIOB, GPIO_Pin_3);    //右食指气泵 ON
 					GPIO_ResetBits(GPIOB, GPIO_Pin_4);  //右食指气阀 OFF
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_plam_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //left thumb
 				}
 				else // without 
 				{
-					GPIO_ResetBits(GPIOB, GPIO_Pin_3); //右食指气泵 OFF
+					GPIO_ResetBits(GPIOB, GPIO_Pin_3);  //右食指气泵 OFF
 					GPIO_ResetBits(GPIOB, GPIO_Pin_4);  //右食指气阀 OFF					
 					right_hand_pump_pwm_duty[finger_index-1]=0;// stop 				
 				} 
@@ -1790,7 +1790,7 @@ void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t 
 			case 3: 	  // 右中指
 				if (motion_direction==1) // fist 
 				{
-					GPIO_SetBits(GPIOE, GPIO_Pin_1); //右中指气泵 ON
+					GPIO_SetBits(GPIOE, GPIO_Pin_1);  //右中指气泵 ON
 					GPIO_SetBits(GPIOE, GPIO_Pin_6);  //右中指气阀 ON
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_fist_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //left thumb
 				}
@@ -1802,7 +1802,7 @@ void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t 
 				}
 				else // without 
 				{
-					GPIO_ResetBits(GPIOE, GPIO_Pin_1); //右中指气泵 OFF
+					GPIO_ResetBits(GPIOE, GPIO_Pin_1);  //右中指气泵 OFF
 					GPIO_ResetBits(GPIOE, GPIO_Pin_6);  //右中指气阀 OFF					
 					right_hand_pump_pwm_duty[finger_index-1]=0;// stop 				
 				}
@@ -1810,19 +1810,19 @@ void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t 
 			case 4: 	  // 右无名指
 				if (motion_direction==1) // fist 
 				{
-					GPIO_SetBits(GPIOF, GPIO_Pin_1); //右无名指气泵 ON
+					GPIO_SetBits(GPIOF, GPIO_Pin_1);  //右无名指气泵 ON
 					GPIO_SetBits(GPIOF, GPIO_Pin_2);  //右无名指气阀 ON
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_fist_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //left thumb
 				}
 				else if (motion_direction==-1) //thumb
 				{
-					GPIO_SetBits(GPIOF, GPIO_Pin_1); //右无名指气泵 ON
+					GPIO_SetBits(GPIOF, GPIO_Pin_1);    //右无名指气泵 ON
 					GPIO_ResetBits(GPIOF, GPIO_Pin_2);  //右无名指气阀 OFF
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_plam_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //left thumb
 				}
 				else // without 
 				{
-					GPIO_ResetBits(GPIOF, GPIO_Pin_1); //右无名指气泵 OFF
+					GPIO_ResetBits(GPIOF, GPIO_Pin_1);  //右无名指气泵 OFF
 					GPIO_ResetBits(GPIOF, GPIO_Pin_2);  //右无名指气阀 OFF					
 					right_hand_pump_pwm_duty[finger_index-1]=0;// stop 				
 				}		
@@ -1830,13 +1830,13 @@ void infltableFingerMotionCtrl(uint8_t hand_index, uint8_t finger_index, int8_t 
 			case 5: 	  // 右小指	
 				if (motion_direction==1) // fist 
 				{
-					GPIO_SetBits(GPIOF, GPIO_Pin_12); //右小指气泵 ON
+					GPIO_SetBits(GPIOF, GPIO_Pin_12);  //右小指气泵 ON
 					GPIO_SetBits(GPIOF, GPIO_Pin_13);  //右小指气阀 ON
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_fist_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //left thumb
 				}
 				else if (motion_direction==-1) //thumb
 				{
-					GPIO_SetBits(GPIOF, GPIO_Pin_12); //右小指气泵 ON
+					GPIO_SetBits(GPIOF, GPIO_Pin_12);    //右小指气泵 ON
 					GPIO_ResetBits(GPIOF, GPIO_Pin_13);  //右小指气阀 OFF
 					right_hand_pump_pwm_duty[finger_index-1] = pid_update(arm->right_plam_desired_press[finger_index-1],right_hand_actual_AD_value[finger_index-1], 100,&pid_per); //left thumb
 				}
@@ -2306,52 +2306,39 @@ void TIM2_IRQHandler(void)
 	
 		/*Main control prog*/
 		/*initial value*/
-		ARM_D.delta_arm_px=0; // delta_arm_px
-		ARM_D.delta_arm_py=0; // delta_arm_py
-		ARM_D.delta_arm_pz=0; // delta_arm_pz
-		ARM_D.delta_arm_pos=0; // delta_arm pos	 
+		ARM_D.delta_arm_px  = 0; // delta_arm_px
+		ARM_D.delta_arm_py  = 0; // delta_arm_py
+		ARM_D.delta_arm_pz  = 0; // delta_arm_pz
+		ARM_D.delta_arm_pos = 0; // delta_arm pos	 
 		
 		/* get ADC values, 1000x*/
 		// 11282013 based on new pcb config	
-		left_hand_actual_AD_value[0]= ADC1_ConvertedValue[0]*3300/0xFFF;	// 1000X, left thumb 左大拇指
-			//printf("left_hand_actual_AD_value[0] = %dV \r\n", left_hand_actual_AD_value[0]);
-		right_hand_actual_AD_value[0]= ADC1_ConvertedValue[1]*3300/0xFFF;	// 1000X, right thumb 右大拇指
-			//printf("right_hand_actual_AD_value[0] = %dV \r\n", right_hand_actual_AD_value[0]);
+		left_hand_actual_AD_value[0]  = ADC1_ConvertedValue[0]*3300/0xFFF;	// 1000X, left thumb  左大拇指
+		left_hand_actual_AD_value[1]  = ADC3_ConvertedValue[0]*3300/0xFFF;	// 1000X, left thumb  左食指
+		left_hand_actual_AD_value[2]  = ADC3_ConvertedValue[2]*3300/0xFFF;	// 1000X, left thumb  左中指
+		left_hand_actual_AD_value[3]  = ADC3_ConvertedValue[4]*3300/0xFFF;	// 1000X, left thumb  左无名指
+		left_hand_actual_AD_value[4]  = ADC1_ConvertedValue[3]*3300/0xFFF;	// 1000X, left thumb  左小指
 		
-		// 12162013 based on new pcb config	
-		left_hand_actual_AD_value[1]= ADC3_ConvertedValue[0]*3300/0xFFF;	// 1000X, left thumb 左食指
-			//printf("left_hand_actual_AD_value[1] = %dV \r\n", left_hand_actual_AD_value[1]);
-		right_hand_actual_AD_value[1]= ADC3_ConvertedValue[1]*3300/0xFFF;	// 1000X, right thumb 右食指
-			//printf("right_hand_actual_AD_value[1] = %dV \r\n", right_hand_actual_AD_value[1]); 	   
-		left_hand_actual_AD_value[2]= ADC3_ConvertedValue[2]*3300/0xFFF;	// 1000X, left thumb 左中指
-			//printf("left_hand_actual_AD_value[2] = %dV \r\n", left_hand_actual_AD_value[2]);
-		right_hand_actual_AD_value[2]= ADC3_ConvertedValue[3]*3300/0xFFF;	// 1000X, right thumb 右中指
-			//printf("right_hand_actual_AD_value[2] = %dV \r\n", right_hand_actual_AD_value[2]);	
-		left_hand_actual_AD_value[3]= ADC3_ConvertedValue[4]*3300/0xFFF;	// 1000X, left thumb 左无名指
-			//printf("left_hand_actual_AD_value[3] = %dV \r\n", left_hand_actual_AD_value[3]);	 
-
-		// 11282013 based on new pcb config	
-		right_hand_actual_AD_value[3]= ADC1_ConvertedValue[2]*3300/0xFFF;	// 1000X, 右无名指
-			//printf("left_hand_actual_AD_value[3] = %dV \r\n", right_hand_actual_AD_value[3]);
-		left_hand_actual_AD_value[4]= ADC1_ConvertedValue[3]*3300/0xFFF;	// 1000X, 左小指
-			//printf("left_hand_actual_AD_value[4] = %dV \r\n", left_hand_actual_AD_value[4]); 
-		right_hand_actual_AD_value[4]= ADC1_ConvertedValue[4]*3300/0xFFF;	// 1000X, 右小指
-			//printf("right_hand_actual_AD_value[4] = %dV \r\n", right_hand_actual_AD_value[4]);  
+		right_hand_actual_AD_value[0] = ADC1_ConvertedValue[1]*3300/0xFFF;	// 1000X, right thumb 右大拇指
+		right_hand_actual_AD_value[1] = ADC3_ConvertedValue[1]*3300/0xFFF;	// 1000X, right thumb 右食指
+		right_hand_actual_AD_value[2] = ADC3_ConvertedValue[3]*3300/0xFFF;	// 1000X, right thumb 右中指
+		right_hand_actual_AD_value[3] = ADC1_ConvertedValue[2]*3300/0xFFF;	// 1000X, right thumb 右无名指
+		right_hand_actual_AD_value[4] = ADC1_ConvertedValue[4]*3300/0xFFF;	// 1000X, right thumb 右小指
 
 		/*infltableHandMotionCtrl, 12/19/2013*/		
 		infltableHandPose(ARM_D.gb_hand_pose_enable, ARM_D.gb_hand_index, ARM_D.gb_hand_pose_index); // 12/19/2013 added
 
 		/* UART1 receive data, defalut Hex*/
 		if(uart1_rx_index==uart1_rx_len)
-		{ 
+		{
 			//command		
 			ARM_D.command_hand =(uint8_t)uart1_rx_buffer[0]; 		
 			// px
-			ARM_D.gb_rx_px =(uint8_t)uart1_rx_buffer[1]; 		
+			ARM_D.gb_rx_px = (uint8_t)uart1_rx_buffer[1]; 		
 			// py
-			ARM_D.gb_rx_py =(uint8_t)uart1_rx_buffer[2];	
+			ARM_D.gb_rx_py = (uint8_t)uart1_rx_buffer[2];	
 			// pz
-			ARM_D.gb_rx_pz =(uint8_t)uart1_rx_buffer[3];		
+			ARM_D.gb_rx_pz = (uint8_t)uart1_rx_buffer[3];		
 			
 			/*4dof rigid arm region tranfer: ARM :-380~380 => p=(rx-95)*4	<=> tx=p/4+95 , 08072013*/
 			ARM_D.gb_arm_px = (ARM_D.gb_rx_px-95)*4; 
@@ -2380,24 +2367,24 @@ void TIM2_IRQHandler(void)
 					ARM_D.gb_hand_pose_enable = 0; ARM_D.gb_hand_index = 2; ARM_D.gb_hand_pose_index = 0; // 12/19/2013 update
 					break;
 				case 7: 	  // enable teach moving mode, default initial system 
-					ARM_D.pneumatic_control_enable=1;
-					ARM_D.gb_current_moving_mode = 1;  //	teach moving mode 
-					ARM_D.breakForLoop = 0; // release break, 06052013				
-					GPIO_SetBits(GPIOC, GPIO_Pin_15);  //pump on						
+					ARM_D.pneumatic_control_enable = 1;
+					ARM_D.gb_current_moving_mode   = 1;  //	teach moving mode 
+					ARM_D.breakForLoop             = 0;  // release break, 06052013				
+					GPIO_SetBits(GPIOC, GPIO_Pin_15);    //pump on						
 					break;
 				case 8: 	  // all initial, may lead error	
-					ARM_D.pneumatic_control_enable=0; 
-					ARM_D.gb_hand_pose_enable = 0; ARM_D.gb_hand_index = 0; ARM_D.gb_hand_pose_index = 0; // 12/19/2013 update
-					ARM_D.gb_current_moving_mode = 0; //	release moving mode 
+					ARM_D.pneumatic_control_enable = 0; 
+					ARM_D.gb_hand_pose_enable      = 0; ARM_D.gb_hand_index = 0; ARM_D.gb_hand_pose_index = 0; // 12/19/2013 update
+					ARM_D.gb_current_moving_mode   = 0; //	release moving mode 
 					Homing(&ARM_D); //Home pos
 					GPIO_ResetBits(GPIOC, GPIO_Pin_15); // pump off
-					ARM_D.gb_left_touchsensor_switch_cmd = 0; // 08/08/2014 added	
+					ARM_D.gb_left_touchsensor_switch_cmd  = 0; // 08/08/2014 added	
 					ARM_D.gb_right_touchsensor_switch_cmd = 0; // 08/08/2014 added	
 					break; 
 				case 9: 	  // back to home pos 					 
 					Homing(&ARM_D); //Home pos
 					ARM_D.gb_hand_pose_enable = 0; ARM_D.gb_hand_index = 0; ARM_D.gb_hand_pose_index = 0; // 12/19/2013 update
-					ARM_D.gb_left_touchsensor_switch_cmd = 0; // 08/08/2014 added	
+					ARM_D.gb_left_touchsensor_switch_cmd  = 0; // 08/08/2014 added	
 					ARM_D.gb_right_touchsensor_switch_cmd = 0; // 08/08/2014 added	
 					break;
 				case 10: 	  // add vectority input and control, 03152013
@@ -2414,18 +2401,18 @@ void TIM2_IRQHandler(void)
 					ARM_D.gb_hand_pose_enable = 0; ARM_D.gb_hand_index = 0; ARM_D.gb_hand_pose_index = 0; // 12/19/2013 update
 					break;
 				case 12: 	  //	enable vision tracking moving mode 
-					ARM_D.pneumatic_control_enable=1;
-					ARM_D.gb_current_moving_mode = 2; //	vision tracking moving mode 
-					ARM_D.breakForLoop = 0; // release break, 06052013
-					ARM_D.gb_left_touchsensor_switch_cmd = 0; // 08/08/2014 added	
+					ARM_D.pneumatic_control_enable = 1;
+					ARM_D.gb_current_moving_mode   = 2; //	vision tracking moving mode 
+					ARM_D.breakForLoop             = 0; // release break, 06052013
+					ARM_D.gb_left_touchsensor_switch_cmd  = 0; // 08/08/2014 added	
 					ARM_D.gb_right_touchsensor_switch_cmd = 0; // 08/08/2014 added	
 					// motion follows ->7 -> 12..->8->7->8->9->7 (important, 05282013)
 					GPIO_SetBits(GPIOC, GPIO_Pin_15);  //pump on						
 					break;			
 				case 13: 	  // hand pose control, 01/22/2014 update
 					ARM_D.gb_hand_pose_enable = (uint8_t)uart1_rx_buffer[1]; 
-					ARM_D.gb_hand_index = (uint8_t)uart1_rx_buffer[2]; 
-					ARM_D.gb_hand_pose_index = (uint8_t)uart1_rx_buffer[3];
+					ARM_D.gb_hand_index       = (uint8_t)uart1_rx_buffer[2]; 
+					ARM_D.gb_hand_pose_index  = (uint8_t)uart1_rx_buffer[3];
 					break;			
 				case 253: 	  // to kinematica intial postion 09172013, for debugging
 					InitialPos(&ARM_D);
@@ -2465,9 +2452,9 @@ void TIM2_IRQHandler(void)
 				
 			// update command
 			ARM_D.preMoveCommand = ARM_D.command_hand;
-			ARM_D.gb_pre_rx_px = ARM_D.gb_rx_px;
-			ARM_D.gb_pre_rx_py = ARM_D.gb_rx_py;
-			ARM_D.gb_pre_rx_pz = ARM_D.gb_rx_pz;
+			ARM_D.gb_pre_rx_px   = ARM_D.gb_rx_px;
+			ARM_D.gb_pre_rx_py   = ARM_D.gb_rx_py;
+			ARM_D.gb_pre_rx_pz   = ARM_D.gb_rx_pz;
 			/* control command over*/
 				
 			uart1_rx_index=0;
@@ -2486,46 +2473,27 @@ void TIM2_IRQHandler(void)
   */
 void CAN2_RX0(void)
 {
-	CanTxMsg TXMSG;	
-	CanRxMsg RxMessage_FIFO0;	
-	
-	CAN_ITConfig(CAN2,CAN_IT_FMP0, DISABLE);
-	CAN_Receive(CAN2, CAN_FIFO0, &RxMessage_FIFO0);
-	GPIO_ResetBits(GPIOE, GPIO_Pin_5);//LED "ON",on pcb is used for CAN2 communictation display
-		
-	TXMSG.StdId = 0x021; // arm->pc	//TXMSG.StdId = 0x061; //ref lifter ->pc	
-	TXMSG.ExtId = 0;
-	TXMSG.IDE = CAN_ID_STD;                                    
-	TXMSG.RTR = CAN_RTR_DATA;
-	TXMSG.DLC = 4;  	
-	
-	switch (RxMessage_FIFO0.Data[0])
+	switch (motion_command)
 	{
-		case 0x10:       // 请求状态 
+		case 0x00:       // 手臂复位
 
 			break;
-		case 0x11:       // 设置状态			
-
-			break;
-		case 0x12:       // 启动示教动作模式			
+		case 0x01:       // 启动示教动作模式			
 			ARM_D.pneumatic_control_enable= 1;
 			ARM_D.gb_current_moving_mode  = 1;  //	teach moving mode 
-			ARM_D.breakForLoop 						= 0; // release break, 06052013	
-			ARM_D.gb_monitor_counter 			= 0; // enable gb_monitor_counter, 10/24/2014
-		
+			ARM_D.breakForLoop 						= 0; 	//  release break, 06052013	
+			ARM_D.gb_monitor_counter 			= 0; 	//  enable gb_monitor_counter, 10/24/2014
 		
 			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
-			ARM_D.command_hand =(uint8_t)RxMessage_FIFO0.Data[1]; //command
-			ARM_D.gb_rx_px 		 =(uint8_t)RxMessage_FIFO0.Data[2];	// px
-			ARM_D.gb_rx_py		 =(uint8_t)RxMessage_FIFO0.Data[3];	// py
-			ARM_D.gb_rx_pz 		 =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
-				
+			ARM_D.command_hand = (uint8_t)arm_rpdo1_data[0]; 	//command
+			ARM_D.gb_rx_px 		 = (uint8_t)arm_rpdo1_data[1];	// px
+
 			/*hand pose control*/
-			CAN2_RX_Hand_Pose_Ctrl((uint8_t)RxMessage_FIFO0.Data[1],(uint8_t)RxMessage_FIFO0.Data[2],&ARM_D); 
+			CAN2_RX_Hand_Pose_Ctrl(ARM_D.command_hand,ARM_D.gb_rx_px,&ARM_D); 
 
 			ARM_D.gb_previous_moving_mode = ARM_D.gb_current_moving_mode;  //update command, 11/06/2014
 			break;
-		case 0x13:       // 启动手势跟踪模式			
+		case 0x02:       // 启动手势跟踪模式			
 			ARM_D.pneumatic_control_enable 				= 1;
 			ARM_D.gb_current_moving_mode 	 				= 2; //	vision tracking moving mode 
 			ARM_D.breakForLoop 						 				= 0; // release break, 06052013  
@@ -2535,13 +2503,12 @@ void CAN2_RX0(void)
 
 		
 			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
-			ARM_D.command_hand =(uint8_t)RxMessage_FIFO0.Data[1]; //command
-			ARM_D.gb_rx_px 		 =(uint8_t)RxMessage_FIFO0.Data[2];	// px
-			ARM_D.gb_rx_py 		 =(uint8_t)RxMessage_FIFO0.Data[3];	// py
-			ARM_D.gb_rx_pz 		 =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
-			ARM_D.gb_rx_az 		 =(uint8_t)RxMessage_FIFO0.Data[5]; // hand rotation			
+			ARM_D.command_hand = (uint8_t)arm_rpdo1_data[0]; //command
+			ARM_D.gb_rx_px 		 = (uint8_t)arm_rpdo1_data[2];	// px
+			ARM_D.gb_rx_py 		 = (uint8_t)arm_rpdo1_data[3];	// py
+			ARM_D.gb_rx_pz 		 = (uint8_t)arm_rpdo1_data[4]; // pz
+			ARM_D.gb_rx_az 		 = (uint8_t)arm_rpdo1_data[5]; // hand rotation			
 
-		
 			/*transfer data*/
 			/*4dof rigid arm region tranfer: ARM :-380~380 => p=(rx-95)*4	<=> tx=p/4+95 , 08072013*/
 			ARM_D.gb_arm_px = (ARM_D.gb_rx_px-95)*4; 
@@ -2552,33 +2519,7 @@ void CAN2_RX0(void)
 			CAN2_RX_Hand_Pose_Ctrl(ARM_D.command_hand,0,&ARM_D); 			
 
 			ARM_D.gb_previous_moving_mode = ARM_D.gb_current_moving_mode;  //update command, 11/06/2014
-			break;
-		case 0x14:       // 手臂复位			 
-			ARM_D.pneumatic_control_enable				= 0; 
-			ARM_D.gb_hand_pose_enable 						= 0; 
-			ARM_D.gb_hand_index 									= 0; 
-			ARM_D.gb_hand_pose_index 							= 0; // 12/19/2013 update
-			ARM_D.gb_current_moving_mode 					= 0; //	release moving mode 					
-			ARM_D.gb_left_touchsensor_switch_cmd  = 0; // 08/08/2014 added	
-			ARM_D.gb_right_touchsensor_switch_cmd = 0; // 08/08/2014 added				
-				
-			ARM_D.breakForLoop = 1; // enable break, 11/27/2014 added
-
-			// Homing with disable torque function, 11/06/2014
-			if(ARM_D.gb_previous_moving_mode != ARM_D.gb_current_moving_mode)
-			{			
-				Homing(&ARM_D);								
-			}				
-		
-			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
-			ARM_D.command_hand =(uint8_t)RxMessage_FIFO0.Data[1]; //command
-			ARM_D.gb_rx_px 		 =(uint8_t)RxMessage_FIFO0.Data[2];	// px
-			ARM_D.gb_rx_py 		 =(uint8_t)RxMessage_FIFO0.Data[3];	// py
-			ARM_D.gb_rx_pz 		 =(uint8_t)RxMessage_FIFO0.Data[4]; // pz
-			
-			break; 
-		case 0x15:       // parameters setting, added 06/27/2014	 								
-			break; 		
+			break;	
 		default: 
 			break; 	
 			
@@ -2590,12 +2531,7 @@ void CAN2_RX0(void)
 	ARM_D.gb_pre_rx_py 	 = ARM_D.gb_rx_py;
 	ARM_D.gb_pre_rx_pz 	 = ARM_D.gb_rx_pz;	
 	/* control command over*/
-	
 
-	CAN_Transmit(CAN2,&TXMSG);	
-	//GPIO_SetBits(GPIOE,GPIO_Pin_5); //LED "OFF",on pcb is used for CAN2 communictation display	
-	CAN_ClearITPendingBit(CAN2, CAN_IT_FMP0);
-	CAN_ITConfig(CAN2,CAN_IT_FMP0, ENABLE);
 }
 
 
