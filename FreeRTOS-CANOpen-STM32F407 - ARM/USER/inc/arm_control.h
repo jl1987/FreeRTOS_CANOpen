@@ -181,6 +181,8 @@ static float EPSILON 	 = 1e-6; 				//Min value
 void arm_control_thread(void *arg);
 void start_arm_control(void);
 
+void ArmMotionCtrl(Arm_Data *arm);
+
 /* Total Init Functions */ 
 void Arm_Init(Arm_Data *ch);
 
@@ -217,20 +219,9 @@ void angle_2_motor_pos(uint8_t arm_index, float angle[5],Arm_Data *arm);
 /* AX12 Motor Control Functions */ 
 void AX_12_Syn_Ctrl_5DOF_Rigid_Arm(uint8_t arm_index, int32_t position_in[5], int32_t speed_in[5]);
 void AX_12_Syn_Ctrl(uint8_t arm_index,int32_t position_in[6], int32_t speed_in[6]);
-void AX_12_Speed_Syn_Ctrl(uint8_t arm_index, int speed_in[6]);
-void AX_12_5DOF_Syn_Torque_Enable(uint8_t arm_index, uint8_t torque_enable);
 
-
-uint8_t AX_12_Read(uint8_t id_index);
 void AX_12_CLEAR_ERROR(uint8_t id_index);
 void AX_12_Ctrl(uint8_t id_index,uint8_t posLow, uint8_t posHigh);
-void AX_12_Moving_Mode_Swtich(uint8_t id_index, uint8_t mode);
-void AX_12_Ctrl_Pos_and_Speed(uint8_t id_index, int position_in, int speed_in);
-void AX_12_Speed_Ctrl(uint8_t id_index, int goal_speed_in);
-
-void AX_12_MaxTorque_Ctrl(uint8_t id_index, int max_torque);
-
-
 
 void AX_12_Torque_Enable(uint8_t id_index, uint8_t torque_enable);
 uint8_t testNot1(int32_t XDec);	

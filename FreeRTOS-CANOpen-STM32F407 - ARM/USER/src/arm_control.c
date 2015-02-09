@@ -67,7 +67,8 @@ void arm_control_thread(void * pvParameters)
 	
 	while(1)
 	{
-		/* Check Motor Fault */
+		ArmMotionCtrl(&ARM_D);
+		
 		
 		
 		//printf("chassis control is running\r\n");
@@ -264,34 +265,34 @@ void ArmMotionCtrl(Arm_Data *arm)
 					}
 					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==0))
 					{
-						Joint_Teach_DEMO_3(1,&ARM_D);	// shake hand, ok
+						Joint_Teach_DEMO_3(1,arm);	// shake hand, ok
 					}
 					else if((arm->gb_rx_px==1)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==0))
 					{
-						Joint_Teach_DEMO_4(1,&ARM_D); 	// go style, ok
+						Joint_Teach_DEMO_4(1,arm); 	// go style, ok
 					}
 					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==1))
 					{
-						Joint_Teach_DEMO_6(1,&ARM_D); 	// dancing, ok
+						Joint_Teach_DEMO_6(1,arm); 	// dancing, ok
 					}
 				}
 				else if ((arm->command_hand==3)||(arm->command_hand==4)||(arm->command_hand==6))
 				{
 					if((arm->gb_rx_px==0)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==1))
 					{
-						Joint_Teach_DEMO_2(2,&ARM_D);   // wave hand, ok
+						Joint_Teach_DEMO_2(2,arm);   // wave hand, ok
 					}
 					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==0))
 					{
-						Joint_Teach_DEMO_3(2,&ARM_D);	// shake hand, ok
+						Joint_Teach_DEMO_3(2,arm);	// shake hand, ok
 					}
 					else if((arm->gb_rx_px==1)&&(arm->gb_rx_py==0)&&(arm->gb_rx_pz==0))
 					{
-						Joint_Teach_DEMO_4(2,&ARM_D); 	// go style, ok
+						Joint_Teach_DEMO_4(2,arm); 	// go style, ok
 					}
 					else if((arm->gb_rx_px==0)&&(arm->gb_rx_py==1)&&(arm->gb_rx_pz==1))
 					{
-						Joint_Teach_DEMO_6(2,&ARM_D); 	// dancing, ok
+						Joint_Teach_DEMO_6(2,arm); 	// dancing, ok
 					}
 				}
 				break;
@@ -321,7 +322,7 @@ void ArmMotionCtrl(Arm_Data *arm)
 					{
 						arm->gb_theta3f_calc_times = arm->gb_theta3f_calc_times+1; //debug	
 						arm->gb_theta3f_var 		   = (float)(arm->gb_theta3f_t*PI_DIV_36); //pi/30, region [-150 150] degree,08092013 update								
-						arm->gb_theta3f_exist 		 = ikine_4dof_rigid_arm_theta3f(arm->gb_arm_index, arm->gb_arm_px, arm->gb_arm_py, arm->gb_arm_pz,arm->gb_theta3f_var,0,&ARM_D);		
+						arm->gb_theta3f_exist 		 = ikine_4dof_rigid_arm_theta3f(arm->gb_arm_index, arm->gb_arm_px, arm->gb_arm_py, arm->gb_arm_pz,arm->gb_theta3f_var,0,arm);		
 						if(arm->gb_theta3f_exist>=1) // when exist solution, record solution
 						{								
 							arm->theta_solution_buffer[arm->gb_theta_s_index][0]= arm->theta3f_solution[0];
@@ -333,7 +334,7 @@ void ArmMotionCtrl(Arm_Data *arm)
 							//break;
 						}		 
 					}
-
+					
 					/*When exist solution, get the best solution*/
 					if(arm->gb_theta_s_index>0)
 					{							
@@ -355,11 +356,10 @@ void ArmMotionCtrl(Arm_Data *arm)
 						arm->theta_solution[3] = arm->theta_solution_buffer[arm->gb_best_s_index][3]; 
 							
 						/*calc hand rotation angle, 12/05/2013 new version*/ 
-						hand_desired_angle_crl(1,arm->gb_rx_az,&ARM_D);	
-						
+						hand_desired_angle_crl(1,arm->gb_rx_az,arm);		
 						
 						/*calc motor position*/
-						angle_2_motor_pos(arm->gb_arm_index,arm->theta_solution,&ARM_D);
+						angle_2_motor_pos(arm->gb_arm_index,arm->theta_solution,arm);
 						
 						/*send positions to motor*/
 						if (arm->gb_arm_index==1) // left arm
@@ -465,7 +465,7 @@ void Joint_Teach_DEMO_2(uint8_t arm_index,Arm_Data *arm)
 		}
 
 		// P0, Home pos				
-		Homing(&ARM_D);		
+		Homing(arm);		
 		Delay_ms(5000); /// exactly delay, ms*/
 	}
 	if(arm_index ==2) // right arm
@@ -712,13 +712,13 @@ uint8_t ikine_4dof_rigid_arm_theta3f(uint8_t arm_index, int32_t px, int32_t py, 
 	theta1_max = (float)(4*pi/3) + theta_error;  //max 240 degree, NOTE: RX64 may diff with ax12, update latter<=> motor 1 inital pos: 205 
 	theta1_min = -(float)(pi/3) - theta_error;   //min -60 degree, NOTE: RX64 may diff with ax12, update latter<=> motor 1 inital pos: 205
 	theta2_max = (float)pi + theta_error;        //max 180 degree, <=> motor 2 inital pos: 512
-	theta2_min = ZERO_f - theta_error;	      	 //min 0 degree(-45 may be better, but unsafty), <=> motor 2 inital pos: 512
+	theta2_min = ZERO_f - theta_error;	      	 //min 0 	 degree (-45 may be better, but unsafty), <=> motor 2 inital pos: 512
 
 	// 09172013 test 2
-	theta3_max = (float)(pi/3) + theta_error;  //max 150+(-90) degree, <=> motor 3 inital pos: 512
-	theta3_min = -(float)(5*pi/6) - theta_error; //min -150+(-90) degree, <=> motor 3 inital pos: 512	
-	theta4_max = (float)(11*pi/18) + theta_error;  //max 110 degree, <=> motor 4 inital pos: 512
-	theta4_min = ZERO_f - theta_error;	       //min 0 degree, <=> motor 4 inital pos: 512
+	theta3_max = (float)(pi/3) + theta_error;  		//max 150+(-90)	 degree, <=> motor 3 inital pos: 512
+	theta3_min = -(float)(5*pi/6) - theta_error; 	//min -150+(-90) degree, <=> motor 3 inital pos: 512	
+	theta4_max = (float)(11*pi/18) + theta_error; //max 110 			 degree, <=> motor 4 inital pos: 512
+	theta4_min = ZERO_f - theta_error;	       		//min 0 				 degree, <=> motor 4 inital pos: 512
 
 	theta_max[0]=theta1_max; theta_max[1]=theta2_max; theta_max[2]=theta3_max; theta_max[3]=theta4_max;
   theta_min[0]=theta1_min; theta_min[1]=theta2_min; theta_min[2]=theta3_min; theta_min[3]=theta4_min;  
@@ -1054,18 +1054,18 @@ void Homing(Arm_Data *arm)
 	int32_t r_teach_pos[5],r_teach_spd[5];	 	
 	
 	// P0, Home pos
-	l_teach_pos[0]=arm->left_arm_home_motor_pos[0]; l_teach_spd[0]=50;
-	l_teach_pos[1]=arm->left_arm_home_motor_pos[1]; l_teach_spd[1]=50;
-	l_teach_pos[2]=arm->left_arm_home_motor_pos[2]; l_teach_spd[2]=50;
-	l_teach_pos[3]=arm->left_arm_home_motor_pos[3]; l_teach_spd[3]=50;
-	l_teach_pos[4]=arm->left_arm_home_motor_pos[4]; l_teach_spd[4]=50;
+	l_teach_pos[0] = arm->left_arm_home_motor_pos[0]; l_teach_spd[0]=50;
+	l_teach_pos[1] = arm->left_arm_home_motor_pos[1]; l_teach_spd[1]=50;
+	l_teach_pos[2] = arm->left_arm_home_motor_pos[2]; l_teach_spd[2]=50;
+	l_teach_pos[3] = arm->left_arm_home_motor_pos[3]; l_teach_spd[3]=50;
+	l_teach_pos[4] = arm->left_arm_home_motor_pos[4]; l_teach_spd[4]=50;
   AX_12_Syn_Ctrl_5DOF_Rigid_Arm(1,l_teach_pos,l_teach_spd); 
 
-	r_teach_pos[0]=arm->right_arm_home_motor_pos[0]; r_teach_spd[0]=50;
-	r_teach_pos[1]=arm->right_arm_home_motor_pos[1]; r_teach_spd[1]=50;
-	r_teach_pos[2]=arm->right_arm_home_motor_pos[2]; r_teach_spd[2]=50;
-	r_teach_pos[3]=arm->right_arm_home_motor_pos[3]; r_teach_spd[3]=50;
-	r_teach_pos[4]=arm->right_arm_home_motor_pos[4]; r_teach_spd[4]=50; 
+	r_teach_pos[0] = arm->right_arm_home_motor_pos[0]; r_teach_spd[0]=50;
+	r_teach_pos[1] = arm->right_arm_home_motor_pos[1]; r_teach_spd[1]=50;
+	r_teach_pos[2] = arm->right_arm_home_motor_pos[2]; r_teach_spd[2]=50;
+	r_teach_pos[3] = arm->right_arm_home_motor_pos[3]; r_teach_spd[3]=50;
+	r_teach_pos[4] = arm->right_arm_home_motor_pos[4]; r_teach_spd[4]=50; 
 	AX_12_Syn_Ctrl_5DOF_Rigid_Arm(2,r_teach_pos,r_teach_spd);		
 }
 
@@ -1077,83 +1077,7 @@ void Homing(Arm_Data *arm)
 // 	TimingDelay --;
 // }
 
-/* Dynamixel_Moving_Mode_Swtich*/
-/* mode=0 is endless, mode=1 is joint control, 05222013*/
-void AX_12_Moving_Mode_Swtich(uint8_t id_index, uint8_t mode)
-{
-	int ii;
-	
-	uint8_t head1, head2, id, length, instruction, CWAngleLimit, CWAngleLimitLow, CWAngleLimitHigh, CCWAngleLimitLow, CCWAngleLimitHigh, checksum;
-	uint8_t ax12_command[ctrl_mode_swtich_len];
 
-	head1 = 255; ax12_command[0] = head1;
-	head2 = 255; ax12_command[1] = head2;			  
-	id = id_index;	ax12_command[2] = id;
-	length = 7; ax12_command[3] = length;
-	instruction = 3; ax12_command[4] = instruction;
-	CWAngleLimit = 6; ax12_command[5] = CWAngleLimit;
-
-	// switch control mode
-	if (mode==0) // Wheel endless moving
-	{	
-		CWAngleLimitLow = 0; ax12_command[6] = CWAngleLimitLow;
-		CWAngleLimitHigh = 0; ax12_command[7] = CWAngleLimitHigh;
-		CCWAngleLimitLow = 0; ax12_command[8] = CCWAngleLimitLow;
-		CCWAngleLimitHigh = 0; ax12_command[9] = CCWAngleLimitHigh;	
-	}
-	else   // joint CWAngleLimit moving
-	{
-	  CWAngleLimitLow = 0; ax12_command[6] = CWAngleLimitLow;	  // important here
-		CWAngleLimitHigh = 0; ax12_command[7] = CWAngleLimitHigh; // important here
-		CCWAngleLimitLow = 255; ax12_command[8] = CCWAngleLimitLow;
-		CCWAngleLimitHigh = 3; ax12_command[9] = CCWAngleLimitHigh;	
-	}
-	
-	checksum = testNot1(id + length + instruction + CWAngleLimit + CWAngleLimitLow + CWAngleLimitHigh + CCWAngleLimitLow + CCWAngleLimitHigh);
-	ax12_command[10] = checksum;
-
-	for(ii=0;ii<ctrl_mode_swtich_len;ii++)
-	{
-		USART_SendData(USART1, ax12_command[ii]);
-	 	/* Loop until the end of transmission */
-	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??英文?考的521?，?TXE被置起?，一??据??完成
-	}	
-}
-
-/* Read AX_12 current positions, and speed, 05222013*/
-//void AX_12_Read(uint8_t id_index)
-uint8_t AX_12_Read(uint8_t id_index)
-{
-	int ii;
-	
-	uint8_t head1, head2, id, length, instruction, positionLow, positionHigh, speedLow, speedHigh, readLength, checksum;
-	uint8_t ax12_command[read_motor_len];
-
-	head1 			= 255; 				ax12_command[0] = head1;
-	head2 			= 255; 				ax12_command[1] = head2;			  
-	id 					= id_index;		ax12_command[2] = id;
-	length 			= 7; 					ax12_command[3] = length;
-	instruction = 2; 					ax12_command[4] = instruction;		
-	positionLow = 36; 				ax12_command[5] = positionLow;
-	positionHigh= 37; 				ax12_command[6] = positionHigh;
-	speedLow 		= 38; 				ax12_command[7] = speedLow;
-	speedHigh 	= 39; 				ax12_command[8] = speedHigh;	
-	readLength 	= 4; 					ax12_command[9] = readLength;
-	
-	checksum = testNot1(id + length + instruction + positionLow + positionHigh + speedLow + speedHigh + readLength);
-
-	ax12_command[10] = checksum;
-
-	for(ii=0;ii<read_motor_len;ii++)
-	{
-		USART_SendData(USART1, ax12_command[ii]);
-	 	/* Loop until the end of transmission */
-	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??英文?考的521?，?TXE被置起?，一??据??完成
-	}	
-	
-	// judge have sent data here, 05222013
-	return id;		
-}
 
 
 /* single motor or all motors torque on/off, 07/24/2014*/
@@ -1185,93 +1109,6 @@ void AX_12_Torque_Enable(uint8_t id_index, uint8_t torque_enable)
 }
 
 
-/* 5dof motors torque on/off, 07/24/2014*/
-void AX_12_5DOF_Syn_Torque_Enable(uint8_t arm_index, uint8_t torque_enable)
-{
-	int ii,j;
-	
-	uint8_t head1, head2, id, length, instruction, tTorque, each_length, sub_id_sum, torque_sum, checksum;
-	uint8_t ax12_command[syn_5dof_torque_enable_len];
-	uint8_t sub_id_N[5],sub_torque_N[5];	
-	
-	// initial
-	sub_id_sum=0;
-	torque_sum=0;	
-	
-	// command
-	head1 = 255; 				ax12_command[0] = head1;
-	head2 = 255; 				ax12_command[1] = head2;			  
-	id = 254;						ax12_command[2] = id;
-	length = 14; 				ax12_command[3] = length;	
-	instruction = 131; 	ax12_command[4] = instruction;
-	tTorque = 24; 			ax12_command[5] = tTorque; 	
-	each_length=1;			ax12_command[6] = each_length;  	 	
-	
-	for(j=0;j<5;j++)
-	{
-		sub_torque_N[j] = 0;
-		
-		if (arm_index==2) // right arm
-		{
-			sub_id_N[j]=j+1;  ax12_command[7+j*5]=sub_id_N[j];
-												ax12_command[8+j*5]=sub_torque_N[j];
-		}
-		if (arm_index==1) // left arm
-		{
-			sub_id_N[j]=j+6;  ax12_command[7+j*5]=sub_id_N[j];
-												ax12_command[8+j*5]=sub_torque_N[j];
-		}
-
-		sub_id_sum=sub_id_sum + sub_id_N[j];
-		torque_sum=torque_sum + sub_torque_N[j];
-	}
-	
-	checksum = testNot1(id + length + instruction + tTorque + each_length + sub_id_sum + torque_sum);
-
-	ax12_command[29] = checksum;
-
-	for(ii=0;ii<syn_5dof_torque_enable_len;ii++)
-	{
-		USART_SendData(USART1, ax12_command[ii]);
-	 	/* Loop until the end of transmission */
-	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //?????s?521???TXE????????????T
-	}	
-	
-	
-}
-
-/* single motor or all motors torque, must be mofied when swtiches from turnless to joint mode, 05272013*/
-void AX_12_MaxTorque_Ctrl(uint8_t id_index, int max_torque)
-{
-	int ii;
-	
-	uint8_t head1, head2, id, length, instruction, maxTorque, maxTorqueLow, maxTorqueHigh, checksum;
-	uint8_t ax12_command[single_maxtorque_ctrl_len];
-	
-	// transfer
-	maxTorqueLow = XDec2Low(max_torque); // 0-1023 
-	maxTorqueHigh = XDec2High(max_torque);  // 0-1023 
-	
-	// commond
-	head1 = 255; 			ax12_command[0] = head1;
-	head2 = 255; 			ax12_command[1] = head2;			  
-	id = id_index;		ax12_command[2] = id;	
-	length = 5; 			ax12_command[3] = length;	
-	instruction = 3; 	ax12_command[4] = instruction;	
-	maxTorque = 34; 	ax12_command[5] = maxTorque;
-										ax12_command[6] = maxTorqueLow;
-										ax12_command[7] = maxTorqueHigh;
-	
-	checksum = testNot1(id + length + instruction + maxTorque + maxTorqueLow + maxTorqueHigh);
-	ax12_command[8] = checksum;
-
-	for(ii=0;ii<single_maxtorque_ctrl_len;ii++)
-	{
-		USART_SendData(USART1, ax12_command[ii]);
-	 	/* Loop until the end of transmission */
-	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??英文?考的521?，?TXE被置起?，一??据??完成
-	}	
-}
 
 /* single motor or all motors move(input position and fixed speed), 05222013*/
 void AX_12_Ctrl(uint8_t id_index,uint8_t posLow, uint8_t posHigh)
@@ -1304,43 +1141,6 @@ void AX_12_Ctrl(uint8_t id_index,uint8_t posLow, uint8_t posHigh)
 	}	
 }
 
-/* single motor or all motors move(input position and speed), 05222013*/
-void AX_12_Ctrl_Pos_and_Speed(uint8_t id_index, int position_in, int speed_in)
-{
-	int ii;
-	
-	uint8_t head1, head2, id, length, instruction, position, positionLow, positionHigh, speedLow, speedHigh, checksum;
-	uint8_t ax12_command[single_joint_ctrl_len];
-
-	// transfer
-	positionLow = XDec2Low(position_in);
-	positionHigh = XDec2High(position_in);
-	speedLow = XDec2Low(speed_in);
-	speedHigh = XDec2High(speed_in);
-	
-	// command
-	head1 = 255; 									ax12_command[0] = head1;
-	head2 = 255; 									ax12_command[1] = head2;			  
-	id = id_index;								ax12_command[2] = id;
-	length = 7; 									ax12_command[3] = length;
-	instruction = 3; 							ax12_command[4] = instruction;
-	position = 30; 								ax12_command[5] = position;
-	positionLow = positionLow; 		ax12_command[6] = positionLow;
-	positionHigh = positionHigh; 	ax12_command[7] = positionHigh;
-	speedLow = speedLow; 					ax12_command[8] = speedLow;
-	speedHigh = speedHigh; 				ax12_command[9] = speedHigh;	
-		
-	checksum = testNot1(id + length + instruction + position + positionLow + positionHigh + speedLow + speedHigh);
-
-	ax12_command[10] = checksum;
-
-	for(ii=0;ii<single_joint_ctrl_len;ii++)
-	{
-		USART_SendData(USART1, ax12_command[ii]);
-	 	/* Loop until the end of transmission */
-	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??英文?考的521?，?TXE被置起?，一??据??完成
-	}	
-}
 
 /* joint position syn move */
 void AX_12_Syn_Ctrl(uint8_t arm_index, int32_t position_in[6], int32_t speed_in[6])
@@ -1439,96 +1239,6 @@ void AX_12_CLEAR_ERROR(uint8_t id_index)
 	}	
 }
 
-/* AX_12 single motor or all motors speed control mode, 05222013*/
-void AX_12_Speed_Ctrl(uint8_t id_index, int goal_speed_in)
-{
-	int ii;
-	
-	uint8_t head1, head2, id, length, instruction, goalspeed, goalspeedLow, goalspeedHigh, checksum;
-	uint8_t ax12_command[single_speed_ctrl_len];
-	
-	// transfer
-	goalspeedLow = XDec2Low(goal_speed_in); // 0-1023 is CCW(0 stop), 1024-2047 is CW(1024 stop)
-	goalspeedHigh = XDec2High(goal_speed_in);  // 0-1023 is CCW(0 stop), 1024-2047 is CW(1024 stop)	
-	
-	// commond
-	head1 = 255; 			ax12_command[0] = head1;
-	head2 = 255; 			ax12_command[1] = head2;			  
-	id = id_index;		ax12_command[2] = id;	
-	length = 5; 			ax12_command[3] = length;	
-	instruction = 3; 	ax12_command[4] = instruction;	
-	goalspeed = 32; 	ax12_command[5] = goalspeed;
-										ax12_command[6] = goalspeedLow;
-										ax12_command[7] = goalspeedHigh;
-	
-	checksum = testNot1(id + length + instruction + goalspeed + goalspeedLow + goalspeedHigh);
-	ax12_command[8] = checksum;
-
-	for(ii=0;ii<single_speed_ctrl_len;ii++)
-	{
-		USART_SendData(USART1, ax12_command[ii]);
-	 	/* Loop until the end of transmission */
-	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??英文?考的521?，?TXE被置起?，一??据??完成
-	}	
-}
-
-/* syn wheel turnless speed move, 05222013*/
-void AX_12_Speed_Syn_Ctrl(unsigned char arm_index, int speed_in[6])
-{
-	int ii,j;
-	
-	uint8_t head1, head2, id, length, instruction, goalspeed, each_length, sub_id_sum, speedLow_sum, speedHigh_sum, checksum;
-	uint8_t ax12_command[syn_speed_ctrl_len];
-	uint8_t sub_id_N[6],speedLow_N[6],speedHigh_N[6];
-
-	// initial
-	sub_id_sum=0;
-	speedLow_sum=0;
-	speedHigh_sum=0;
-
-	head1 = 255;				ax12_command[0] = head1;
-	head2 = 255; 				ax12_command[1] = head2;			  
-	id = 254;						ax12_command[2] = id;	
-	length = 22; 				ax12_command[3] = length;	// 6 motors move at the same time	
-	instruction = 131; 	ax12_command[4] = instruction;
-	goalspeed = 32; 		ax12_command[5] = goalspeed; 	
-	each_length=2;			ax12_command[6] = each_length;  	 	
-	
-	for(j=0;j<6;j++)
-	{
-		// transfer	
-		speedLow_N[j] = XDec2Low(speed_in[j]);
-		speedHigh_N[j] = XDec2High(speed_in[j]);
-
-		if (arm_index==2) // right arm
-		{
-			sub_id_N[j]=j+1;                   ax12_command[7+j*5]=sub_id_N[j];
-			/*speedLow_N[j]=speedLow[j];   */  ax12_command[8+j*5]=speedLow_N[j];
-			/*speedHigh_N[j]=speedHigh[j]; */  ax12_command[9+j*5]=speedHigh_N[j];
-		}
-		if (arm_index==1)  // left arm
-		{
-			sub_id_N[j]=j+7;                   ax12_command[7+j*5]=sub_id_N[j];
-			/*speedLow_N[j]=speedLow[j];   */  ax12_command[8+j*5]=speedLow_N[j];
-			/*speedHigh_N[j]=speedHigh[j]; */  ax12_command[9+j*5]=speedHigh_N[j];
-		}
-		 
-		sub_id_sum=sub_id_sum + sub_id_N[j];
-		speedLow_sum=speedLow_sum + speedLow_N[j];
-		speedHigh_sum=speedHigh_sum + speedHigh_N[j];
-	}
-	
-	checksum = testNot1(id + length + instruction + goalspeed + each_length + sub_id_sum +  speedLow_sum + speedHigh_sum);
-
-	ax12_command[25] = checksum;
-
-	for(ii=0;ii<syn_speed_ctrl_len;ii++)
-	{
-		USART_SendData(USART1, ax12_command[ii]);
-	 	/* Loop until the end of transmission */
-	 	while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET); //??英文?考的521?，?TXE被置起?，一??据??完成
-	}	
-}
 
  /*Initial postion, 06052013*/
 void InitialPosTest(Arm_Data *arm)
@@ -2287,19 +1997,6 @@ void TIM2_IRQHandler(void)
 		capture = TIM_GetCapture1(TIM2);
 		TIM_SetCompare1(TIM2, capture + CCR1_Val);
   }
-  else if (TIM_GetITStatus(TIM2, TIM_IT_CC2) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
-
-    capture = TIM_GetCapture2(TIM2);
-    TIM_SetCompare2(TIM2, capture + CCR2_Val);
-  }
-  else if (TIM_GetITStatus(TIM2, TIM_IT_CC3) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM2, TIM_IT_CC3);    
-    capture = TIM_GetCapture3(TIM2);
-    TIM_SetCompare3(TIM2, capture + CCR3_Val);
-  }
   else
   {
     TIM_ClearITPendingBit(TIM2, TIM_IT_CC4);	
@@ -2531,7 +2228,6 @@ void CAN2_RX0(void)
 	ARM_D.gb_pre_rx_py 	 = ARM_D.gb_rx_py;
 	ARM_D.gb_pre_rx_pz 	 = ARM_D.gb_rx_pz;	
 	/* control command over*/
-
 }
 
 
