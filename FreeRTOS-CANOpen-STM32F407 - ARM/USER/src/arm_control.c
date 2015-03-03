@@ -55,7 +55,6 @@ volatile 	uint8_t uart1_rx_buffer[uart1_rx_len];  // uart buffer
 
 static __IO uint32_t TimingDelay;
 
-
 /* Private functions ---------------------------------------------------------*/
 void arm_control_thread(void * pvParameters)
 {
@@ -68,8 +67,6 @@ void arm_control_thread(void * pvParameters)
 	while(1)
 	{
 		ArmMotionCtrl(&ARM_D);
-		
-		
 		
 		//printf("chassis control is running\r\n");
 		printf("ODODODODO:0x2000|00: %x \r\n",motion_command);
@@ -116,8 +113,8 @@ void Arm_Init(Arm_Data *arm)
 	arm->gb_current_moving_mode	 = -1; 		// 0 is homing mode, 1 is teach mode, 2 is tracking mode
 	arm->gb_previous_moving_mode = -2;  	// 0 is homing mode, 1 is teach mode, 2 is tracking mode, added 11/06/2014
 	
-	arm->gb_hand_index 			= 0; 
-	arm->gb_hand_pose_index 	= 0; 
+	arm->gb_hand_index 			 = 0; 
+	arm->gb_hand_pose_index  = 0; 
 	arm->gb_hand_pose_enable = 0;
 	
 	arm->command_hand=0; 
@@ -554,7 +551,7 @@ void Joint_Teach_DEMO_3(uint8_t arm_index,Arm_Data *arm)
 			AX_12_Torque_Enable(254, 1); // servo generates torque
 			
 			/*hand pose control*/
-			CAN2_RX_Hand_Pose_Ctrl(5,0,&ARM_D); // without left plam	
+			CAN2_RX_Hand_Pose_Ctrl(5,0,arm); // without left plam	
 		}		
 	}
 	
@@ -583,14 +580,14 @@ void Joint_Teach_DEMO_3(uint8_t arm_index,Arm_Data *arm)
 			
 			Delay_ms(50); // exactly delay, ms
 			/*hand pose control*/
-			CAN2_RX_Hand_Pose_Ctrl(4,0,&ARM_D); // right fist					
+			CAN2_RX_Hand_Pose_Ctrl(4,0,arm); // right fist					
 		}
 		else if((GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_7) != 1) && (arm->gb_right_touchsensor_switch_cmd != 0))
 		{
 			AX_12_Torque_Enable(254, 1); // servo generates torque 
 			
 			/*hand pose control*/
-			CAN2_RX_Hand_Pose_Ctrl(6,0,&ARM_D); // right fist				
+			CAN2_RX_Hand_Pose_Ctrl(6,0,arm); // right fist				
 		}		
 	}
 
@@ -627,7 +624,7 @@ void Joint_Teach_DEMO_4(uint8_t arm_index,Arm_Data *arm)
 		Delay(0xffffff);  		
 		
 		// P1, Home pos				
-		Homing(&ARM_D);
+		Homing(arm);
 		Delay(0xffffff); 
 	}
 	if(arm_index ==2) // right arm
@@ -653,7 +650,7 @@ void Joint_Teach_DEMO_4(uint8_t arm_index,Arm_Data *arm)
 		Delay(0xffffff);  		
 		
 		// P1, Home pos				
-		Homing(&ARM_D);
+		Homing(arm);
 		Delay(0xffffff); 		
 	}	
 
@@ -2287,6 +2284,64 @@ void CAN2_RX_Hand_Pose_Ctrl(uint8_t hand_pose, uint8_t arm_motion, Arm_Data *arm
 UNS32 OnArmCommandWordUpdate(CO_Data* d, const indextable * unsused_indextable, UNS8 unsused_bSubindex)
 {
 	printf("Chassis Control Word Update @2000|00...\r\n");
+	
+	switch (motion_command)
+	{
+		case 0x00:       // 手臂复位
+
+			break;
+		case 0x01:       // 启动示教动作模式			
+			ARM_D.pneumatic_control_enable= 1;
+			ARM_D.gb_current_moving_mode  = 1;  //	teach moving mode 
+			ARM_D.breakForLoop 						= 0; 	//  release break, 06052013	
+			ARM_D.gb_monitor_counter 			= 0; 	//  enable gb_monitor_counter, 10/24/2014
+		
+			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
+			ARM_D.command_hand = (uint8_t)arm_rpdo1_data[0]; 	//command
+			ARM_D.gb_rx_px 		 = (uint8_t)arm_rpdo1_data[1];	// px
+
+			/*hand pose control*/
+			CAN2_RX_Hand_Pose_Ctrl(ARM_D.command_hand,ARM_D.gb_rx_px,&ARM_D); 
+
+			ARM_D.gb_previous_moving_mode = ARM_D.gb_current_moving_mode;  //update command, 11/06/2014
+			break;
+		case 0x02:       // 启动手势跟踪模式			
+			ARM_D.pneumatic_control_enable 				= 1;
+			ARM_D.gb_current_moving_mode 	 				= 2; //	vision tracking moving mode 
+			ARM_D.breakForLoop 						 				= 0; // release break, 06052013  
+			ARM_D.gb_left_touchsensor_switch_cmd  = 0; // 08/08/2014 added	
+			ARM_D.gb_right_touchsensor_switch_cmd = 0; // 08/08/2014 added	
+			ARM_D.gb_monitor_counter = 0; // enable gb_monitor_counter, 10/24/2014		
+		
+			/* RX commands, and TX statements of arm and hand, 01/14/2014 new version*/	
+			ARM_D.command_hand = (uint8_t)arm_rpdo1_data[0]; //command
+			ARM_D.gb_rx_px 		 = (uint8_t)arm_rpdo1_data[2]; // px
+			ARM_D.gb_rx_py 		 = (uint8_t)arm_rpdo1_data[3]; // py
+			ARM_D.gb_rx_pz 		 = (uint8_t)arm_rpdo1_data[4]; // pz
+			ARM_D.gb_rx_az 		 = (uint8_t)arm_rpdo1_data[5]; // hand rotation			
+
+			/*transfer data*/
+			/*4dof rigid arm region tranfer: ARM :-380~380 => p=(rx-95)*4	<=> tx=p/4+95 , 08072013*/
+			ARM_D.gb_arm_px = (ARM_D.gb_rx_px-95)*4; 
+			ARM_D.gb_arm_py = (ARM_D.gb_rx_py-95)*4; 
+			ARM_D.gb_arm_pz = (ARM_D.gb_rx_pz-95)*4;	
+
+			/*hand pose control*/
+			CAN2_RX_Hand_Pose_Ctrl(ARM_D.command_hand,0,&ARM_D); 			
+
+			ARM_D.gb_previous_moving_mode = ARM_D.gb_current_moving_mode;  //update command, 11/06/2014
+			break;	
+		default: 
+			break; 	
+			
+	}	
+	
+	// update command
+	ARM_D.preMoveCommand = ARM_D.command_hand;
+	ARM_D.gb_pre_rx_px 	 = ARM_D.gb_rx_px;
+	ARM_D.gb_pre_rx_py 	 = ARM_D.gb_rx_py;
+	ARM_D.gb_pre_rx_pz 	 = ARM_D.gb_rx_pz;	
+	/* control command over*/
 	
 	//ARM_D.motion_command = motion_command;
 	

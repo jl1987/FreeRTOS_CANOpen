@@ -88,7 +88,7 @@ static void canopen_dataprocess_thread(void * pvParameters)
 	
 	//CO_D.CO_CAN2 = &ObjDict_CAN2_Data;
 	CO_D.CO_CAN2 = &ARM_OD_Data;
-	CO_D.CO_CAN2->canHandle = CAN2;  //Config CANOpen Port CAN1
+	CO_D.CO_CAN2->canHandle = CAN2;  //Config CANOpen Port CAN2
   printf("CANOpen OD Get The Lifer NodeID...\r\n");
 
   ret_canInit = canInit(CAN2,CAN_BAUD_1M);
